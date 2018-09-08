@@ -42,8 +42,8 @@ public class HomeController {
 			model.addAttribute("username", principal.getName());
 		}
 		
-		List<Channel> peerInformationList = channelManager.getChannelsByPopularity(6);
-		model.addAttribute("topChannels", peerInformationList);
+		List<Channel> channelList = channelManager.getAllChannels();
+		model.addAttribute("topChannels", channelList);
 		
 		return "channel";
 	}
@@ -53,11 +53,11 @@ public class HomeController {
 		return channelManager.getChannelByID(channelId);
 	}
 	
-	@RequestMapping(value="/channel", method=RequestMethod.POST)
+	/*@RequestMapping(value="/channel", method=RequestMethod.POST)
 	public String addChannel(@ModelAttribute("user") Channel channel) {
 		
 		
 		
 		return "channel";
-	}
+	}*/
 }

@@ -24,7 +24,7 @@
 				<!--  Main navigation  -->
 				<ul class="main-nav nav navbar-nav navbar-right">
 					<li><a href="#home">Home</a></li>
-					<li><a href="#channels">Top channels</a></li>
+					<li><a href="#channels">All channels</a></li>
 					<li><a href="#createChannel">Create channel</a></li>
 					<li><a href="#about">About</a></li>
 					<li><a href="#service">Services</a></li>
@@ -57,8 +57,8 @@
 							<p class="white-text">Fully operated p2p protocol for the purpose of delivering synchronized shared video content. 
 							Developed from scratch. Fast, stabile and free. Open source.
 							</p>
-							<button class="white-btn">Get Started!</button>
-							<button class="main-btn">Create channel</button>
+							<a href="#channels"><button class="white-btn">Get Started!</button></a>
+							<a href="#createChannel"><button class="main-btn">Create channel</button></a>
 						</div>
 					</div>
 					<!-- /home content -->
@@ -82,21 +82,21 @@
 
 				<!-- Section header -->
 				<div class="section-header text-center">
-					<h2 class="title">Top 6 channels</h2>
+					<h2 class="title">All channels</h2>
 				</div>
 				<!-- /Section header -->
 
 				<!-- Top Channel -->
 				<c:forEach items="${topChannels}" var="item">
 					<div class="col-md-4 col-xs-6 work">
-						<img class="img-responsive" src='<c:url value="/resources/img/work1.jpg" />' alt="">
+						<img class="img-responsive" src='<c:url value="/resources/img/channel/${item.name}.jpg" />' alt="${item.name} picture">
 						<div class="overlay"></div>
 						<div class="work-content">
 							<span>Channel</span>
 							<h3>${item.name}</h3>
 							<div class="work-link">
 								<a href="javascript:onclickFunction('${item.channelId}')" id='anchorDownload${item.channelId}' download='channel.json'><i class="fa fa-external-link"></i></a>
-								<a class="lightbox" href='<c:url value="/resources/img/work1.jpg" />' ><i class="fa fa-search"></i></a>
+								<a class="lightbox" href='<c:url value="/resources/img/channel/${item.name}.jpg" />' ><i class="fa fa-search"></i></a>
 							</div>
 						</div>
 					</div>				
@@ -111,23 +111,6 @@
 
 	</div>
 	<!-- /Channel list -->
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	<!-- Create channel -->
 	<div id="createChannel" class="section md-padding">
@@ -146,12 +129,31 @@
 
 				<!-- channel form -->
 				<div class="col-md-8 col-md-offset-2">
-					<form class="contact-form">
-						<input type="text" class="input" placeholder="Name">
-						<input type="number" class="input" placeholder="Chunk size (bytes)">
-						<input type="number" class="input" placeholder="Bitrate">
-						<textarea class="input" placeholder="Description"></textarea>
-						<button class="main-btn">Add channel</button>
+					<form class="contact-form" action="/channel/fileUpload" method="post" enctype="multipart/form-data">
+						<input type="text" class="input" name="name" placeholder="Name">
+						<input type="number" class="input" name="chunkSize" placeholder="Chunk size (bytes)">
+						<input type="number" class="input" name="bitrate" placeholder="Bitrate">
+						<textarea class="input" name="description" placeholder="Description"></textarea>
+						
+						<!-- File Upload From -->
+					    <div class="form-group">
+					       <label class="custom-file">
+							  <input type="file" id="file" class="custom-file-input" name="file" accept="image/jpeg">
+							  <span class="custom-file-control"></span>
+							</label>
+					    </div>
+						<!-- /File Upload From -->
+						
+					    <!-- Bootstrap Progress bar -->
+					    <div class="progress">
+					      <div id="progressBar" class="progress-bar progress-bar-success" role="progressbar"
+					        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div>
+					    </div>
+					
+					    <!-- Alert -->
+					    <div id="alertMsg" style="color: red;font-size: 18px;"></div>
+						
+						<button class="main-btn" type="submit">Add channel</button>
 					</form>
 				</div>
 				<!-- /contact form -->

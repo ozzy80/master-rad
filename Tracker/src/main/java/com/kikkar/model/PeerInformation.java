@@ -8,30 +8,41 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+
+import com.google.gson.annotations.Expose;
 
 @Entity
 @Table(name = "peer_information")
 public class PeerInformation {
 
+	@Expose
 	@Id
 	@NotNull
 	@Column(name = "ip_address")
 	private byte[] ipAddress;
 	
+	@Expose
 	@NotNull
-	@Size(min = 0, max = 65535)
+	@Min(0)
+	@Max(65535)
 	@Column(name = "port_number")
 	private Integer portNumber;
 
+	@Expose
 	@NotNull
-	@Size(min = 0, max = 255)
+	@Min(0)
+	@Max(255)
 	@Column(name = "club_number")
 	private Short clubNumber;
 
 	@NotNull
-	@Column(name = "last_active_message", columnDefinition="DATETIME")
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "last_active_message")
 	private Date lastActiveMessage;
 	
 	@NotNull

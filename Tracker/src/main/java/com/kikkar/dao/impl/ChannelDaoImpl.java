@@ -72,5 +72,4 @@ public class ChannelDaoImpl implements ChannelDao {
 		return topChannelList;
 	}
 
-
 }

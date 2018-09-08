@@ -7,8 +7,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
@@ -21,7 +26,7 @@ public class Channel {
 	private Long channelId;
 	
 	@NotNull
-	@Size(min = 0, max = 65535)
+	@Min(0)
 	@Column(name = "chunk_size")
 	private Integer chunkSize;
 	
@@ -38,7 +43,7 @@ public class Channel {
 	
 	@Transient
 	private String ipAddress;
-
+	
 	public Long getChannelId() {
 		return channelId;
 	}
@@ -86,5 +91,5 @@ public class Channel {
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
-	
+
 }
