@@ -5,6 +5,7 @@ import java.util.List;
 import com.kikkar.model.Channel;
 
 public interface ChannelDao {
+	
 	void addChannel(Channel channel);
 
 	Channel getChannelByID(Long channelId);
@@ -12,7 +13,7 @@ public interface ChannelDao {
 	void deleteChannel(Channel channel);
 
 	List<Channel> getAllChannels();
-	
+
 	List<Channel> getChannelsByPopularity(int limit);
 
 }

@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kikkar.model.Channel;
 
 public interface ChannelManager {
+
 	void addChannel(Channel channel);
 
 	Channel getChannelByID(Long channelId);

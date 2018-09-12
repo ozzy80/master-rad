@@ -19,31 +19,31 @@ public class HomeController {
 
 	@Autowired
 	private ChannelManager channelManager;
-	
-	@RequestMapping(value="/")
+
+	@RequestMapping(value = "/")
 	public String home(Model model) {
 		User user = new User();
 		user.setEnabled(true);
-		
+
 		model.addAttribute("user", user);
 		return "login";
 	}
-		
-	@RequestMapping(value="/channel")
+
+	@RequestMapping(value = "/channel")
 	public String login(Principal principal, Model model) {
-		if(principal != null) {
+		if (principal != null) {
 			model.addAttribute("username", principal.getName());
 		}
-		
+
 		List<Channel> channelList = channelManager.getAllChannels();
 		model.addAttribute("topChannels", channelList);
-		
+
 		return "channel";
 	}
-	
-	@RequestMapping(value="/channel/{channelId}")
+
+	@RequestMapping(value = "/channel/{channelId}")
 	public @ResponseBody Channel getChannelData(@PathVariable(value = "channelId") Long channelId) {
 		return channelManager.getChannelByID(channelId);
 	}
-	
+
 }

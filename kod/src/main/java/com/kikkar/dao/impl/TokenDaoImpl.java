@@ -13,7 +13,7 @@ import com.kikkar.model.Token;
 @Repository
 @Transactional
 public class TokenDaoImpl implements TokenDao {
-	
+
 	@Autowired
 	private SessionFactory sessionFactory;
 
@@ -29,7 +29,7 @@ public class TokenDaoImpl implements TokenDao {
 		Session session = sessionFactory.getCurrentSession();
 		Token token = session.get(Token.class, ipAddress);
 		session.flush();
-		
+
 		return token;
 	}
 

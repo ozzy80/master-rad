@@ -14,10 +14,10 @@ public class UserManagerImpl implements UserManager {
 
 	@Autowired
 	private UserDao userDao;
-	
+
 	@Autowired
 	private AuthorityDao authorityDao;
-	
+
 	@Override
 	public void addUser(User user) {
 		Authorities authority = new Authorities();

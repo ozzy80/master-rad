@@ -1,13 +1,12 @@
 package com.kikkar.service;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.kikkar.model.Token;
 
 public interface TokenManager {
-	void addToken(Short token, HttpServletRequest request);
+	
+	void addToken(Short token, String ip);
 
-	Token getTokenByIpAddress(HttpServletRequest request);
+	Token getTokenByIpAddress(String ip);
 
 	void deleteToken(Token token);
 }

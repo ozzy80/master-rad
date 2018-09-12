@@ -4,8 +4,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -17,11 +15,7 @@ import com.kikkar.dao.ChannelDao;
 import com.kikkar.model.Channel;
 import com.kikkar.service.ChannelManager;
 
-import de.javawi.jstun.attribute.ChangeRequest;
-import de.javawi.jstun.attribute.MappedAddress;
-import de.javawi.jstun.attribute.MessageAttributeInterface.MessageAttributeType;
 import de.javawi.jstun.attribute.MessageAttributeParsingException;
-import de.javawi.jstun.header.MessageHeader;
 import de.javawi.jstun.util.UtilityException;
 
 @Service
@@ -58,26 +52,28 @@ public class ChannelManagerImpl implements ChannelManager {
 	}
 
 	public String getServerIpAddress() throws UtilityException, IOException, MessageAttributeParsingException {
-		MessageHeader sendMH = new MessageHeader(MessageHeader.MessageHeaderType.BindingRequest);
-		ChangeRequest changeRequest = new ChangeRequest();
-		sendMH.addMessageAttribute(changeRequest);
-
-		byte[] data = sendMH.getBytes();
-
-		DatagramSocket s = new DatagramSocket();
-		DatagramPacket p = new DatagramPacket(data, data.length, InetAddress.getByName("stun.l.google.com"), 19302);
-		s.setReuseAddress(true);
-		s.send(p);
-
-		DatagramPacket rp;
-		rp = new DatagramPacket(new byte[32], 32);
-		s.receive(rp);
-
-		MessageHeader receiveMH = new MessageHeader(MessageHeader.MessageHeaderType.BindingResponse);
-		receiveMH.parseAttributes(rp.getData());
-		MappedAddress ma = (MappedAddress) receiveMH.getMessageAttribute(MessageAttributeType.MappedAddress);
-
-		return ma.getAddress().toString();
+		/*
+		 * MessageHeader sendMH = new
+		 * MessageHeader(MessageHeader.MessageHeaderType.BindingRequest); ChangeRequest
+		 * changeRequest = new ChangeRequest();
+		 * sendMH.addMessageAttribute(changeRequest);
+		 * 
+		 * byte[] data = sendMH.getBytes();
+		 * 
+		 * DatagramSocket s = new DatagramSocket(); DatagramPacket p = new
+		 * DatagramPacket(data, data.length, InetAddress.getByName("stun.l.google.com"),
+		 * 19302); s.setReuseAddress(true); s.send(p);
+		 * 
+		 * DatagramPacket rp; rp = new DatagramPacket(new byte[32], 32); s.receive(rp);
+		 * 
+		 * MessageHeader receiveMH = new
+		 * MessageHeader(MessageHeader.MessageHeaderType.BindingResponse);
+		 * receiveMH.parseAttributes(rp.getData()); MappedAddress ma = (MappedAddress)
+		 * receiveMH.getMessageAttribute(MessageAttributeType.MappedAddress);
+		 * 
+		 * return ma.getAddress().toString();
+		 */
+		return InetAddress.getLocalHost().getHostAddress();
 	}
 
 	@Override

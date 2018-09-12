@@ -1,9 +1,12 @@
 package com.kikkar.service;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface PeerConnectionMenager {
-	
-	public boolean checkIsProtocolVersionSupported(String protocolVersion);
-	
-	public boolean checkIsPeerHasEnoughResources(Long channelId, Long downloadSpeed, Long uploadSpeed);
-	
+
+	boolean checkIsProtocolVersionSupported(String protocolVersion);
+
+	boolean checkIsPeerHasEnoughResources(Long channelId, Long downloadSpeed, Long uploadSpeed);
+
+	String getClientIp(HttpServletRequest request);
 }

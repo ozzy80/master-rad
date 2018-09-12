@@ -29,7 +29,7 @@ public class UserDaoImpl implements UserDao {
 		Session session = sessionFactory.getCurrentSession();
 		User user = session.get(User.class, username);
 		session.flush();
-		
+
 		return user;
 	}
 

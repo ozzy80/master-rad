@@ -18,14 +18,14 @@ public class FileUploadController {
 
 	@Autowired
 	private ChannelManager channelManager;
-	
+
 	// Handling file upload request
 	@PostMapping("/channel/fileUpload")
-	public ResponseEntity<Object> fileUpload(@RequestParam(value="name", required = true) String channelName, 
-											@RequestParam(value="chunkSize", required = true) Integer chunkSize,
-											@RequestParam(value="bitrate", required = true) Long bitrate,
-											@RequestParam(value="description", required = false) String description,
-											@RequestParam("file") MultipartFile file) throws IOException {
+	public ResponseEntity<Object> fileUpload(@RequestParam(value = "name", required = true) String channelName,
+			@RequestParam(value = "chunkSize", required = true) Integer chunkSize,
+			@RequestParam(value = "bitrate", required = true) Long bitrate,
+			@RequestParam(value = "description", required = false) String description,
+			@RequestParam("file") MultipartFile file) throws IOException {
 
 		Channel channel = new Channel();
 		channel.setName(channelName);
@@ -33,7 +33,7 @@ public class FileUploadController {
 		channel.setBitrate(bitrate);
 		channel.setDescription(description);
 		channelManager.addChannel(channel);
-		
+
 		try {
 			boolean savedSuccessfully = channelManager.savePicture(channelName, file);
 			if (savedSuccessfully) {

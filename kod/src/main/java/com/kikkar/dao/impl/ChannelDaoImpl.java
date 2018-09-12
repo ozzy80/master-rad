@@ -23,7 +23,7 @@ public class ChannelDaoImpl implements ChannelDao {
 
 	@Autowired
 	private SessionFactory sessionFactory;
-	
+
 	@Override
 	public void addChannel(Channel channel) {
 		Session session = sessionFactory.getCurrentSession();
@@ -36,7 +36,7 @@ public class ChannelDaoImpl implements ChannelDao {
 		Session session = sessionFactory.getCurrentSession();
 		Channel channel = session.get(Channel.class, channelId);
 		session.flush();
-		
+
 		return channel;
 	}
 
@@ -53,22 +53,22 @@ public class ChannelDaoImpl implements ChannelDao {
 		Query query = session.createQuery("from Channel");
 		List<Channel> channelList = query.list();
 		session.flush();
-		
+
 		return channelList;
 	}
-	
+
 	@Override
 	public List<Channel> getChannelsByPopularity(int limit) {
 		Session session = sessionFactory.getCurrentSession();
-		
-		Criteria criteria  = session.createCriteria(TopChannel.class);
+
+		Criteria criteria = session.createCriteria(TopChannel.class);
 		criteria.setProjection(Projections.property("channel"));
 		criteria.addOrder(Order.desc("viewsNumber"));
 		criteria.setMaxResults(limit);
-		
+
 		List<Channel> topChannelList = criteria.list();
 		session.flush();
-						
+
 		return topChannelList;
 	}
 

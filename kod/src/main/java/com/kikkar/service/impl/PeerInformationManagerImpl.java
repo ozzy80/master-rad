@@ -21,7 +21,7 @@ public class PeerInformationManagerImpl implements PeerInformationManager {
 
 	@Autowired
 	private ChannelDao channelDao;
-	
+
 	@Override
 	public List<PeerInformation> getPeersList(int limit, Long channelId) {
 		Channel channel = channelDao.getChannelByID(channelId);
@@ -37,8 +37,8 @@ public class PeerInformationManagerImpl implements PeerInformationManager {
 	public Short getLastChannelClubNumber(Long channelId) {
 		Channel channel = channelDao.getChannelByID(channelId);
 		PeerInformation peerInformation = peerInformationDao.getLastActivePeer(channel);
-		if(peerInformation == null) {
-			return (short)0;
+		if (peerInformation == null) {
+			return (short) 0;
 		}
 		return peerInformation.getClubNumber();
 	}
@@ -55,11 +55,11 @@ public class PeerInformationManagerImpl implements PeerInformationManager {
 		peerInformation.setLastActiveMessage(new Date());
 		peerInformationDao.addPeer(peerInformation);
 	}
-	
-	//TODO Odkomentarisi kad se povezu parnjaci
-	@Scheduled(fixedRate=600000)
+
+	// TODO Odkomentarisi kad se povezu parnjaci
+	@Scheduled(fixedRate = 600000)
 	private void helloWorld() {
 		System.out.println("aaaaaaaaa" + new Date());
-		//peerInformationDao.deleteDeadPeers(10l);
+		// peerInformationDao.deleteDeadPeers(10l);
 	}
 }

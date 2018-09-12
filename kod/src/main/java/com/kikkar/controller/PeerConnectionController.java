@@ -65,50 +65,53 @@ public class PeerConnectionController {
 		}
 
 		Short token = (short) ThreadLocalRandom.current().nextInt(Short.MIN_VALUE, Short.MAX_VALUE);
-		tokenManager.addToken(token, request);
+		String ip = peerConnectionMenager.getClientIp(request);
+		tokenManager.addToken(token, ip);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
 	}
 
 	@RequestMapping(value = "/list/{channelId}", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Object> getPeersList(
-			@RequestParam(value = "token", required = true) Short token,
-			@RequestParam(value = "ipAddress", required = true) String ipAddress,
-			@RequestParam(value = "port", required = true) Integer port,
+			@RequestParam(value = "token", required = true) Short peerToken,
+			@RequestParam(value = "port", required = true) Integer peerPort,
 			@PathVariable(value = "channelId") Long channelId, HttpServletRequest request) {
 
-		Token tokenObj = tokenManager.getTokenByIpAddress(request);
-		if (tokenObj == null || !tokenObj.getToken().equals(token)) {
-			return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("Token is not valid");
+		String ip = peerConnectionMenager.getClientIp(request);
+		Token token = tokenManager.getTokenByIpAddress(ip);
+		if (token != null && token.getToken().equals(peerToken)) {
+			tokenManager.deleteToken(token);
 		} else {
-			tokenManager.deleteToken(tokenObj);
+			return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("Token is not valid");
 		}
 
-		List<PeerInformation> peerInformationList = peerInformationManager.getPeersList(30, channelId);
+		List<PeerInformation> peerList = peerInformationManager.getPeersList(30, channelId);
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		StringBuffer json = new StringBuffer();
-		peerInformationList.stream().map(p -> gson.toJson(p)).forEach(json::append);
-		
-		Short lastPeerClub = peerInformationManager.getLastChannelClubNumber(channelId);
-		Channel channel = channelManager.getChannelByID(channelId);
-		PeerInformation peerInformation = new PeerInformation(ipAddress.getBytes(), port, (short) (lastPeerClub + 1),
-				new Date(), channel);
-		peerInformationManager.addPeer(peerInformation);
+		peerList.stream().map(peer -> gson.toJson(peer)).forEach(json::append);
 
-		json.append(gson.toJson(peerInformation));
+		Short clubNumber = (short) (peerInformationManager.getLastChannelClubNumber(channelId) + 1);
+		Channel channel = channelManager.getChannelByID(channelId);
+		PeerInformation currentPeer = new PeerInformation(token.getIpAddress(), peerPort, clubNumber, new Date(),
+				channel);
+		peerInformationManager.addPeer(currentPeer);
+		json.append(gson.toJson(currentPeer));
+
 		return ResponseEntity.status(HttpStatus.OK).body(json.toString());
 	}
 
 	@RequestMapping(value = "/leave", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Object> leaveChannel(
-			@RequestParam(value = "ipAddress", required = true) String ipAddress) {
-		peerInformationManager.deletePeer(ipAddress);
+	public @ResponseBody ResponseEntity<Object> leaveChannel(HttpServletRequest request) {
+		String ip = peerConnectionMenager.getClientIp(request);
+		peerInformationManager.deletePeer(ip);
+
 		return ResponseEntity.status(HttpStatus.OK).body("Goodbye");
 	}
 
 	@RequestMapping(value = "/stayAlive", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Object> stayAliveMessage(
-			@RequestParam(value = "ipAddress", required = true) String ipAddress) {
-		peerInformationManager.stayAlive(ipAddress);
+	public @ResponseBody ResponseEntity<Object> stayAliveMessage(HttpServletRequest request) {
+		String ip = peerConnectionMenager.getClientIp(request);
+		peerInformationManager.stayAlive(ip);
+
 		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
 
