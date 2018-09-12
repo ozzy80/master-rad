@@ -9,14 +9,14 @@ import java.time.Instant;
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
 
-import com.kikkar.global.Clock;
+import com.kikkar.global.ClockSingleton;
 
 public class App {
 
 	public static void main(String[] args) throws InterruptedException {
 		NTPUDPClient client = new NTPUDPClient();
 		client.setDefaultTimeout(10000);
-		Clock clock = Clock.getInstance();
+		ClockSingleton clock = ClockSingleton.getInstance();
 
 		try {
 			client.open();
