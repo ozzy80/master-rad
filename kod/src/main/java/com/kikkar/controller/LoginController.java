@@ -16,27 +16,25 @@ public class LoginController {
 
 	@Autowired
 	private UserManager userManager;
-	
-	
-	@RequestMapping(value="/login")
-	public String login(@RequestParam(value="error", required=false) String error,
-						@RequestParam(value="logout", required=false) String logout, Model model) {
-		
-		if(error != null) {
+
+	@RequestMapping(value = "/login")
+	public String login(@RequestParam(value = "error", required = false) String error,
+			@RequestParam(value = "logout", required = false) String logout, Model model) {
+
+		if (error != null) {
 			model.addAttribute("error", "Invalid username or password");
-		}
-		else if(logout != null) {
+		} else if (logout != null) {
 			model.addAttribute("logout", "You have been logged out successfully");
 		}
-		
+
 		model.addAttribute("user", new User());
-		
+
 		return "login";
 	}
 
-	@RequestMapping(value="/register", method=RequestMethod.POST)
+	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public String registerUser(@ModelAttribute("user") User user) {
-		if(user != null) {
+		if (user != null) {
 			userManager.addUser(user);
 		}
 		return "login";

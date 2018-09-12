@@ -10,12 +10,11 @@ import javax.validation.constraints.NotNull;
 @Table(name = "user")
 public class User {
 
-
 	@Id
 	@NotNull
 	@Column(name = "username", length = 50)
 	private String username;
-	
+
 	@NotNull
 	@Column(name = "password", length = 255)
 	private String password;
@@ -27,7 +26,7 @@ public class User {
 	@NotNull
 	@Column(name = "enabled")
 	private Boolean enabled;
-	
+
 	public String getUsername() {
 		return username;
 	}

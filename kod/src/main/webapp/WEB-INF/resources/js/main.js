@@ -136,10 +136,16 @@
 	    });
 	    
 	    // Called on failure of file upload
-	    ajaxReq.fail(function(jqXHR) {
-	      $('#alertMsg').text(jqXHR.responseText+'('+jqXHR.status+
-	      		' - '+jqXHR.statusText+')');
-	      $('button[type=submit]').prop('disabled',false);
+	    ajaxReq.fail(function(jqXHR) {  
+	    	if(jqXHR.status == 400){
+	  	      $('#alertMsg').text(jqXHR.responseText+'('+jqXHR.status+
+	  	      		' - '+jqXHR.statusText+')');
+	  	      $('button[type=submit]').prop('disabled',false);	    		
+	    	} else{
+	    	  $('#alertMsg').text("Some error occurred. Please try again."+'('+jqXHR.status+
+	 	  	      		' - '+jqXHR.statusText+')');
+	 	  	  $('button[type=submit]').prop('disabled',false);	  
+	    	}
 	    });
 	  });
 	

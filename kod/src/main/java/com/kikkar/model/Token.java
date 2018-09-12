@@ -14,7 +14,7 @@ public class Token {
 	@NotNull
 	@Column(name = "ip_address")
 	private byte[] ipAddress;
-	
+
 	@NotNull
 	@Column(name = "token")
 	private Short token;

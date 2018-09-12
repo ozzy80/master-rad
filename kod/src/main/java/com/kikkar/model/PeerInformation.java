@@ -25,7 +25,7 @@ public class PeerInformation {
 	@NotNull
 	@Column(name = "ip_address")
 	private byte[] ipAddress;
-	
+
 	@Expose
 	@NotNull
 	@Min(0)
@@ -44,11 +44,23 @@ public class PeerInformation {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "last_active_message")
 	private Date lastActiveMessage;
-	
+
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name="channel_id")
+	@JoinColumn(name = "channel_id")
 	private Channel channel;
+
+	public PeerInformation() {
+	}
+
+	public PeerInformation(byte[] ipAddress, Integer portNumber, Short clubNumber, Date lastActiveMessage,
+			Channel channel) {
+		this.ipAddress = ipAddress;
+		this.portNumber = portNumber;
+		this.clubNumber = clubNumber;
+		this.lastActiveMessage = lastActiveMessage;
+		this.channel = channel;
+	}
 
 	public byte[] getIpAddress() {
 		return ipAddress;

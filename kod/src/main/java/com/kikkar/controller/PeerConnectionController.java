@@ -45,7 +45,7 @@ public class PeerConnectionController {
 	private ChannelManager channelManager;
 
 	@RequestMapping(value = "/initial/{channelId}", method = RequestMethod.GET)
-	public ResponseEntity<Object> initialConnect(
+	public @ResponseBody ResponseEntity<Object> initialConnect(
 			@RequestParam(value = "protocol", required = true) String protocolVersion,
 			@RequestParam(value = "download", required = true) Long downloadSpeed,
 			@RequestParam(value = "upload", required = true) Long uploadSpeed,
@@ -53,20 +53,20 @@ public class PeerConnectionController {
 
 		boolean supportedProtocolVersion = peerConnectionMenager.checkIsProtocolVersionSupported(protocolVersion);
 		if (!supportedProtocolVersion) {
-			return new ResponseEntity<>("P2P protocol version not supported", HttpStatus.HTTP_VERSION_NOT_SUPPORTED);
+			return ResponseEntity.status(HttpStatus.HTTP_VERSION_NOT_SUPPORTED)
+					.body("P2P protocol version not supported");
 		}
 
 		boolean hasEnoughResources = peerConnectionMenager.checkIsPeerHasEnoughResources(channelId, downloadSpeed,
 				uploadSpeed);
 		if (!hasEnoughResources) {
-			return new ResponseEntity<>("Peer has lower download/upload than it is required",
-					HttpStatus.BANDWIDTH_LIMIT_EXCEEDED);
+			return ResponseEntity.status(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED)
+					.body("Peer has lower download/upload than it is required");
 		}
 
 		Short token = (short) ThreadLocalRandom.current().nextInt(Short.MIN_VALUE, Short.MAX_VALUE);
 		tokenManager.addToken(token, request);
-
-		return new ResponseEntity<>(token, HttpStatus.ACCEPTED);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
 	}
 
 	@RequestMapping(value = "/list/{channelId}", method = RequestMethod.GET)
@@ -79,28 +79,22 @@ public class PeerConnectionController {
 		Token tokenObj = tokenManager.getTokenByIpAddress(request);
 		if (tokenObj == null || !tokenObj.getToken().equals(token)) {
 			return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("Token is not valid");
+		} else {
+			tokenManager.deleteToken(tokenObj);
 		}
-		tokenManager.deleteToken(tokenObj);
 
-		List<PeerInformation> peerInformationList = peerInformationManager.getPeersList(3, channelId);
+		List<PeerInformation> peerInformationList = peerInformationManager.getPeersList(30, channelId);
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		StringBuffer json = new StringBuffer();
-		for (PeerInformation peerInformation : peerInformationList) {
-			json.append(gson.toJson(peerInformation));
-		}
-
+		peerInformationList.stream().map(p -> gson.toJson(p)).forEach(json::append);
+		
 		Short lastPeerClub = peerInformationManager.getLastChannelClubNumber(channelId);
-		PeerInformation peerInformation = new PeerInformation();
 		Channel channel = channelManager.getChannelByID(channelId);
-		peerInformation.setChannel(channel);
-		peerInformation.setClubNumber((short) (lastPeerClub + 1));
-		peerInformation.setIpAddress(ipAddress.getBytes());
-		peerInformation.setLastActiveMessage(new Date());
-		peerInformation.setPortNumber(port);
+		PeerInformation peerInformation = new PeerInformation(ipAddress.getBytes(), port, (short) (lastPeerClub + 1),
+				new Date(), channel);
 		peerInformationManager.addPeer(peerInformation);
 
 		json.append(gson.toJson(peerInformation));
-
 		return ResponseEntity.status(HttpStatus.OK).body(json.toString());
 	}
 
@@ -110,12 +104,12 @@ public class PeerConnectionController {
 		peerInformationManager.deletePeer(ipAddress);
 		return ResponseEntity.status(HttpStatus.OK).body("Goodbye");
 	}
-	
+
 	@RequestMapping(value = "/stayAlive", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Object> stayAliveMessage(
 			@RequestParam(value = "ipAddress", required = true) String ipAddress) {
 		peerInformationManager.stayAlive(ipAddress);
 		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
-	
+
 }

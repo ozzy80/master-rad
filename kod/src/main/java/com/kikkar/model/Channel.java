@@ -9,12 +9,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 
 @Entity
 @Table(name = "channel")
@@ -24,26 +18,26 @@ public class Channel {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "channel_id")
 	private Long channelId;
-	
+
 	@NotNull
 	@Min(0)
 	@Column(name = "chunk_size")
 	private Integer chunkSize;
-	
-	@NotNull	
+
+	@NotNull
 	@Column(name = "bitrate")
 	private Long bitrate;
-	
+
 	@NotNull
 	@Column(name = "name", length = 45)
 	private String name;
-	
+
 	@Column(name = "description", length = 512)
 	private String description;
-	
+
 	@Transient
 	private String ipAddress;
-	
+
 	public Long getChannelId() {
 		return channelId;
 	}

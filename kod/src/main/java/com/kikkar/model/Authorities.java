@@ -18,14 +18,14 @@ public class Authorities {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "authorityId")
 	private Integer authorityId;
-	
+
 	@NotNull
 	@Column(name = "authority", length = 45)
 	private String authority;
-	
+
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name="username")
+	@JoinColumn(name = "username")
 	private User username;
 
 	public Integer getAuthorityId() {

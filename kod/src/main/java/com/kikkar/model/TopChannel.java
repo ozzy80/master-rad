@@ -13,19 +13,19 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "top_channel")
 public class TopChannel {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "top_channel_id")
 	private Integer topChannelId;
-	
+
 	@NotNull
 	@Column(name = "views_number")
 	private Long viewsNumber;
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name="channel_id")
+	@JoinColumn(name = "channel_id")
 	private Channel channel;
 
 	public Channel getChannel() {
@@ -43,6 +43,5 @@ public class TopChannel {
 	public void setViewsNumber(Long viewsNumber) {
 		this.viewsNumber = viewsNumber;
 	}
-	
-}
 
+}
