@@ -35,7 +35,7 @@ public class ChannelManagerImpl implements ChannelManager {
 
 		String ip = null;
 		try {
-			ip = getServerIpAddress();
+			ip = "http://" + getServerIpAddress() + ":8080/Tracker";
 		} catch (MessageAttributeParsingException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();

@@ -79,22 +79,21 @@ public class PeerConnectionController {
 		String ip = peerConnectionMenager.getClientIp(request);
 		Token token = tokenManager.getTokenByIpAddress(ip);
 		if (token != null && token.getToken().equals(peerToken)) {
-			tokenManager.deleteToken(token);
+			//tokenManager.deleteToken(token);
 		} else {
 			return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("Token is not valid");
 		}
 
 		List<PeerInformation> peerList = peerInformationManager.getPeersList(30, channelId);
-		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		StringBuffer json = new StringBuffer();
-		peerList.stream().map(peer -> gson.toJson(peer)).forEach(json::append);
-
-		Short clubNumber = (short) (peerInformationManager.getLastChannelClubNumber(channelId) + 1);
+		Short clubNumber = (short) ((peerInformationManager.getLastChannelClubNumber(channelId) + 1) % 6);
 		Channel channel = channelManager.getChannelByID(channelId);
 		PeerInformation currentPeer = new PeerInformation(token.getIpAddress(), peerPort, clubNumber, new Date(),
 				channel);
 		peerInformationManager.addPeer(currentPeer);
-		json.append(gson.toJson(currentPeer));
+		peerList.add(currentPeer);
+		
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		String json = gson.toJson(peerList);
 
 		return ResponseEntity.status(HttpStatus.OK).body(json.toString());
 	}
