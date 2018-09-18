@@ -51,9 +51,8 @@ public class ServerConnectorImpl implements ServerConnector, Job {
 		return channel;
 	}
 
-	public URL createConnectURL(SpeedTest speedTest) throws MalformedURLException {
-		String url = channel.getIpAddress() + "/connect/initial/" + channel.getChannelId();
-
+	@Override
+	public Map<String, String> createConnectionParamerets(SpeedTest speedTest) throws MalformedURLException {
 		Long downloadSpeed = speedTest.downloadSpeedTest(5000, 1000);
 		Long uploadSpeed = speedTest.uploadSpeedTest(5000, 1000);
 
@@ -61,8 +60,13 @@ public class ServerConnectorImpl implements ServerConnector, Job {
 		parameters.put("protocol", "P2Pv.1");
 		parameters.put("download", downloadSpeed.toString());
 		parameters.put("upload", uploadSpeed.toString());
-		url += getParamsString(parameters);
 
+		return parameters;
+	}
+
+	@Override
+	public URL createURL(String baseURL, Map<String, String> parameters) throws MalformedURLException {
+		String url = baseURL + getParamsString(parameters);
 		return new URL(url);
 	}
 
@@ -124,17 +128,6 @@ public class ServerConnectorImpl implements ServerConnector, Job {
 		}
 	}
 
-	public URL createPeerInfoURL(Short token, Integer port) throws MalformedURLException {
-		String url = channel.getIpAddress() + "/connect/list/" + channel.getChannelId();
-
-		Map<String, String> parameters = new HashMap<>();
-		parameters.put("token", token.toString());
-		parameters.put("port", port.toString());
-		url += getParamsString(parameters);
-
-		return new URL(url);
-	}
-
 	public List<PeerInformation> getPeerInfoList(URL url) throws IOException {
 		HttpURLConnection connect = getURLConnection(url);
 
@@ -155,25 +148,23 @@ public class ServerConnectorImpl implements ServerConnector, Job {
 		}
 	}
 
-	public void sendStayAliveMessage() throws MalformedURLException, IOException {
-		String url = channel.getIpAddress() + "/connect/stayAlive";
-		HttpURLConnection connect = getURLConnection(new URL(url));
+	public void sendStayAliveMessage(URL url) throws MalformedURLException, IOException {
+		HttpURLConnection connect = getURLConnection(url);
 
 		int status = connect.getResponseCode();
 		if (status != 200) {
-			throw new IOException("Wrong URL");
+			throw new HTTPException(status);
 		}
 	}
 
-	public void sendLeaveMessage() throws IOException {
-		String url = channel.getIpAddress() + "/connect/leave";
-		HttpURLConnection connect = getURLConnection(new URL(url));
+	public void sendLeaveMessage(URL url) throws IOException {
+		HttpURLConnection connect = getURLConnection(url);
 
 		int status = connect.getResponseCode();
 		if (status == 200) {
 			System.out.println("Goodbye");
 		} else {
-			throw new IOException("Wrong URL");
+			throw new HTTPException(status);
 		}
 	}
 
@@ -228,7 +219,8 @@ public class ServerConnectorImpl implements ServerConnector, Job {
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		try {
 			ServerConnectorImpl obj = (ServerConnectorImpl) context.getScheduler().getContext().get("serverObj");
-			obj.sendStayAliveMessage();
+			URL url = new URL(obj.getChannel().getIpAddress() + "/connect/stayAlive");
+			obj.sendStayAliveMessage(url);
 			obj.synchronizeTime(new NTPUDPClient(), "0.pool.ntp.org");
 		} catch (IOException e) {
 			e.printStackTrace();
