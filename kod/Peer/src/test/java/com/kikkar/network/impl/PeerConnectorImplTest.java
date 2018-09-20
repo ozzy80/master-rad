@@ -29,7 +29,6 @@ import com.kikkar.packet.TerminatedReason;
 class PeerConnectorImplTest {
 
 	private PeerConnectorImpl peerConnectorImpl;
-
 	private byte[] ipAddress = "192.168.0.2".getBytes();
 	private short clubNum = 0;
 	private Integer portNum = 54321;

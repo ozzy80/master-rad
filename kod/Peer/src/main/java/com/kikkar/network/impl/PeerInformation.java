@@ -161,7 +161,7 @@ public class PeerInformation {
 	}
 	
 	public void incrementLastSentPacketNumber() {
-		requestMessageNumber++;
+		lastSentPacketNumber++;
 	}
 	
 }
