@@ -10,23 +10,27 @@ import java.util.Map;
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.quartz.SchedulerException;
 
-import com.kikkar.global.PeerInformation;
 import com.kikkar.network.impl.Channel;
+import com.kikkar.network.impl.PeerInformation;
 import com.kikkar.network.impl.ServerConnectorImpl;
-import com.kikkar.network.impl.SpeedTestIMpl;
+import com.kikkar.network.impl.SpeedTestImpl;
 
 import fr.bmartel.speedtest.SpeedTestSocket;
 
 public class App {
 
 	public static void main(String[] args) throws InterruptedException, SchedulerException {
+		/*
+		 * Server connector part
+		 */
+		/*
 		ServerConnectorImpl serverConnector = new ServerConnectorImpl();
 		Channel channel = serverConnector.loadJson(
 				"{\"channelId\":1,\"chunkSize\":1500,\"bitrate\":1500,\"name\":\"BBC\",\"description\":null,\"ipAddress\":\"http://192.168.0.171:8080/Tracker\"}");
 
 		try {
 			String baseURL = channel.getIpAddress() + "/connect/initial/" + channel.getChannelId();
-			Map<String, String> parameters = serverConnector.createConnectionParamerets(new SpeedTestIMpl(new SpeedTestSocket()));
+			Map<String, String> parameters = serverConnector.createConnectionParamerets(new SpeedTestImpl(new SpeedTestSocket()));
 			URL url = serverConnector.createURL(baseURL, parameters);
 			
 			
@@ -54,6 +58,6 @@ public class App {
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
-
+		*/
 	}
 }

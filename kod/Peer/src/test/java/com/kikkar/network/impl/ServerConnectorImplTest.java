@@ -32,7 +32,6 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.kikkar.global.PeerInformation;
 import com.kikkar.network.SpeedTest;
 
 import javafx.beans.binding.SetExpression;
@@ -85,7 +84,7 @@ class ServerConnectorImplTest {
 	}
 
 	@ParameterizedTest(name = "{index} => download={0}, upload={1}")
-	@CsvSource({ "2500, 1800", "2400, 2400", "3800, 5400" })
+	@CsvSource({ "2500, 1800", "2400, 2400", "3800, 5400", "0, 240", "0, 0", "25000, 0" })
 	void testCreateConnectionParamerets_checkParametersWithDifferentSpeed(Long download, Long upload)
 			throws MalformedURLException {
 		Map<String, String> parametersExpected = new HashMap<>();

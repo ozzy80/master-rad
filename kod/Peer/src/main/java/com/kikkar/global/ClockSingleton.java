@@ -5,7 +5,7 @@ import java.util.TimeZone;
 public class ClockSingleton {
 
 	private static ClockSingleton firstInstance;
-	private Long offsetValue;
+	private Long offsetValue = 0l;
 	private TimeZone timeZone = TimeZone.getTimeZone("Europe/Belgrade");
 
 	private ClockSingleton() {

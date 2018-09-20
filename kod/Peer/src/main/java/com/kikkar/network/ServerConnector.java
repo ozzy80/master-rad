@@ -9,8 +9,8 @@ import java.util.Map;
 
 import org.apache.commons.net.ntp.NTPUDPClient;
 
-import com.kikkar.global.PeerInformation;
 import com.kikkar.network.impl.Channel;
+import com.kikkar.network.impl.PeerInformation;
 
 public interface ServerConnector {
 

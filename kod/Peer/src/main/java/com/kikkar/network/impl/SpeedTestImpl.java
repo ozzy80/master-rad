@@ -7,12 +7,12 @@ import fr.bmartel.speedtest.SpeedTestSocket;
 import fr.bmartel.speedtest.inter.ISpeedTestListener;
 import fr.bmartel.speedtest.model.SpeedTestError;
 
-public class SpeedTestIMpl implements SpeedTest {
+public class SpeedTestImpl implements SpeedTest {
 
 	private static Long bitePerSecond = 0l;
 	private SpeedTestSocket speedTestSocket;
 
-	public SpeedTestIMpl(SpeedTestSocket speedTestSocket) {
+	public SpeedTestImpl(SpeedTestSocket speedTestSocket) {
 		this.speedTestSocket = speedTestSocket;
 	}
 

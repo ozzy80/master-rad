@@ -34,7 +34,6 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.google.gson.Gson;
 import com.kikkar.global.ClockSingleton;
-import com.kikkar.global.PeerInformation;
 import com.kikkar.network.ServerConnector;
 import com.kikkar.network.SpeedTest;
 

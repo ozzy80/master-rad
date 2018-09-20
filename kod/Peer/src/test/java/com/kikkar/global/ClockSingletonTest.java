@@ -26,6 +26,14 @@ class ClockSingletonTest {
 		assertEquals(ClockSingleton.getInstance(), ClockSingleton.getInstance());
 	}
 
+	@Test
+	void testGetInstance_checkInitialSettings() {
+		ClockSingleton clockExpected = ClockSingleton.getInstance();
+		clockExpected.setOffsetValue(0l);
+		
+		assertEquals(clockExpected, clockSingleton);
+	}
+
 	@ParameterizedTest
 	@ValueSource(longs = { 31800l, 3000l, 300l, 0l, -31800l, -3000l, -300l })
 	void testGetCurrentTimeMilliseconds_checkSinhronizationWithDifferentClockMove(Long lateMillisecond) {
