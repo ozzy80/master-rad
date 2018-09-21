@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.kikkar.packet.ConnectionType;
 import com.kikkar.packet.KeepAliveMessage;
 import com.kikkar.packet.PacketWrapper;
@@ -31,23 +32,38 @@ class PeerConnectorImplTest {
 	private PeerConnectorImpl peerConnectorImpl;
 	private byte[] ipAddress = "192.168.0.2".getBytes();
 	private short clubNum = 0;
-	private Integer portNum = 54321;
+	private int portNum = 54321;
+	private PeerInformation peerInformation;
 
 	@BeforeEach
 	void setup() {
 		peerConnectorImpl = new PeerConnectorImpl();
+		peerInformation = new PeerInformation(ipAddress, portNum, clubNum);
+	}
+
+	void assertPacket(PacketWrapper packet, DatagramPacket datagramPacket) throws InvalidProtocolBufferException {
+		assertEquals(packet, PacketWrapper.parseFrom(datagramPacket.getData()));
+		assertEquals(new String(ipAddress), datagramPacket.getAddress().getHostAddress());
+		assertEquals(portNum, datagramPacket.getPort());
+	}
+
+	void resetCounters(PeerInformation peerInformation) {
+		peerInformation.setPingMessageNumber((short) 0);
+		peerInformation.setRequestMessageNumber((short) 0);
+		peerInformation.setLastSentPacketNumber(0);
 	}
 
 	@Test
-	void testCreatePingMessage_checkDefaultBehaviour() {
+	void testCreatePingMessage_checkDefaultBehaviour() throws InvalidProtocolBufferException, IOException {
 		short pingNum = 0;
 		ConnectionType connectionType = ConnectionType.BOTH;
 
-		PingMessage pingExpected = PingMessage.newBuilder().setClubNumber(clubNum).setPingId(pingNum)
+		PingMessage ping = PingMessage.newBuilder().setClubNumber(clubNum).setPingId(pingNum)
 				.setConnectionType(connectionType).build();
-		PeerInformation peerInformation = new PeerInformation(ipAddress, portNum, clubNum);
+		PacketWrapper packet = MessageWrapper.wrapMessage(ping, peerInformation);
+		resetCounters(peerInformation);
 
-		assertEquals(pingExpected, peerConnectorImpl.createPingMessage(peerInformation, clubNum, connectionType));
+		assertPacket(packet, peerConnectorImpl.createPingMessage(peerInformation, clubNum, connectionType));
 	}
 
 	private static Stream<Arguments> createDifferentShortNumberWithBoundaries() {
@@ -58,7 +74,7 @@ class PeerConnectorImplTest {
 
 	@ParameterizedTest
 	@MethodSource("createDifferentShortNumberWithBoundaries")
-	void testCreatePingMessage_checkPingMessageNumberRotation(short pingNum, short pingNumExpected) {
+	void testCreatePingMessage_checkPingMessageNumberRotation(short pingNum, short pingNumExpected) throws IOException {
 		ConnectionType connectionType = ConnectionType.BOTH;
 
 		PeerInformation peerInformation = new PeerInformation(ipAddress, portNum, clubNum);
@@ -69,7 +85,7 @@ class PeerConnectorImplTest {
 	}
 
 	@Test
-	void testCreatePongMessage_checkDefaultBehaviour() {
+	void testCreatePongMessage_checkDefaultBehaviour() throws InvalidProtocolBufferException, IOException {
 		int uploadLinkNum = 3;
 		int downloadLinkNum = 2;
 		int bufferVideoNum = 34;
@@ -77,28 +93,30 @@ class PeerConnectorImplTest {
 
 		PongMessage pongExpected = PongMessage.newBuilder().setBufferVideoNum(bufferVideoNum)
 				.setDownloadLinkNum(downloadLinkNum).setUploadLinkNum(uploadLinkNum).setResponsePingId(pingId).build();
+		PacketWrapper packet = MessageWrapper.wrapMessage(pongExpected, peerInformation);
+		resetCounters(peerInformation);
 		PingMessage ping = PingMessage.newBuilder().setPingId(pingId).build();
-		PongMessage pongActual = peerConnectorImpl.createPongMessage(uploadLinkNum, downloadLinkNum, bufferVideoNum,
-				ping);
 
-		assertEquals(pongExpected, pongActual);
+		assertPacket(packet, peerConnectorImpl.createPongMessage(peerInformation, uploadLinkNum, downloadLinkNum,
+				bufferVideoNum, ping));
 	}
 
-	void testCreateRequestMessage_checkDefaultBehaviour() {
+	void testCreateRequestMessage_checkDefaultBehaviour() throws InvalidProtocolBufferException, IOException {
 		short requestNum = 0;
 		ConnectionType connectionType = ConnectionType.DOWNLOAD;
 
-		RequestMessage requestExpected = RequestMessage.newBuilder().setClubNumber(clubNum).setRequestId(requestNum)
+		RequestMessage request = RequestMessage.newBuilder().setClubNumber(clubNum).setRequestId(requestNum)
 				.setConnectionType(connectionType).build();
-		PeerInformation peerInformation = new PeerInformation(ipAddress, portNum, clubNum);
-		RequestMessage requestActual = peerConnectorImpl.createRequestMessage(peerInformation, clubNum, connectionType);
+		PacketWrapper packet = MessageWrapper.wrapMessage(request, peerInformation);
+		resetCounters(peerInformation);
 
-		assertEquals(requestExpected, requestActual);
+		assertPacket(packet, peerConnectorImpl.createRequestMessage(peerInformation, clubNum, connectionType));
 	}
 
 	@ParameterizedTest
 	@MethodSource("createDifferentShortNumberWithBoundaries")
-	void testCreateRequestMessage_checkRequestMessageNumberRotation(short requestNum, short requestNumExpected) {
+	void testCreateRequestMessage_checkRequestMessageNumberRotation(short requestNum, short requestNumExpected)
+			throws IOException {
 		ConnectionType connectionType = ConnectionType.DOWNLOAD;
 
 		PeerInformation peerInformation = new PeerInformation(ipAddress, portNum, clubNum);
@@ -109,40 +127,26 @@ class PeerConnectorImplTest {
 	}
 
 	@Test
-	void testCreateResponseMessage_checkDefaultBehaviour() {
+	void testCreateResponseMessage_checkDefaultBehaviour() throws InvalidProtocolBufferException, IOException {
 		int requestId = 0;
 
-		ResponseMessage responseExpected = ResponseMessage.newBuilder().setResponseRequestId(requestId).build();
+		ResponseMessage response = ResponseMessage.newBuilder().setResponseRequestId(requestId).build();
 		RequestMessage request = RequestMessage.newBuilder().setRequestId(requestId).build();
-		ResponseMessage responseActual = peerConnectorImpl.createResponseMessage(request);
+		PacketWrapper packet = MessageWrapper.wrapMessage(response, peerInformation);
+		resetCounters(peerInformation);
 
-		assertEquals(responseExpected, responseActual);
-	}
-
-	@Test
-	void testCreateSendDatagramPacket_checkDefaultBehaviour() throws IOException {
-		int packetId = 0;
-		PeerInformation peerInformation = new PeerInformation(ipAddress, portNum, clubNum);
-		PacketWrapper packet = PacketWrapper.newBuilder().setPacketId(packetId).build();
-
-		DatagramPacket datagramPacket = peerConnectorImpl.createSendDatagramPacket(packet, peerInformation);
-
-		assertEquals(packet, PacketWrapper.parseFrom(datagramPacket.getData()));
-		assertEquals(new String(ipAddress), datagramPacket.getAddress().getHostAddress());
-		assertEquals(portNum, new Integer(datagramPacket.getPort()));
+		assertPacket(packet, peerConnectorImpl.createResponseMessage(peerInformation, request));
 	}
 
 	@Test
 	void testSend_checkIsPacketSent() throws IOException {
-		int packetId = 0;
+		ConnectionType connectionType = ConnectionType.DOWNLOAD;
 		DatagramSocket mockSocket = Mockito.mock(DatagramSocket.class);
-		PeerInformation peerInformation = new PeerInformation(ipAddress, portNum, clubNum);
-		PacketWrapper packetWrapper = PacketWrapper.newBuilder().setPacketId(packetId).build();
 
-		DatagramPacket datagramPacket = peerConnectorImpl.createSendDatagramPacket(packetWrapper, peerInformation);
-		peerConnectorImpl.send(datagramPacket, mockSocket);
+		DatagramPacket packet = peerConnectorImpl.createRequestMessage(peerInformation, clubNum, connectionType);
+		peerConnectorImpl.send(packet, mockSocket);
 
-		Mockito.verify(mockSocket).send(datagramPacket);
+		Mockito.verify(mockSocket).send(packet);
 	}
 
 	@Test
@@ -179,25 +183,25 @@ class PeerConnectorImplTest {
 	}
 
 	@Test
-	void testCreateTerminateConnectionMessage_checkDefaultBehaviour() {
+	void testCreateTerminateConnectionMessage_checkDefaultBehaviour()
+			throws InvalidProtocolBufferException, IOException {
 		TerminatedReason terminatedReason = TerminatedReason.BLOCK_TIMEOUT;
-		PeerInformation peerInformation = new PeerInformation(ipAddress, portNum, clubNum);
 
-		TerminatedMessage terminatedExpected = TerminatedMessage.newBuilder()
-				.setTerminatedId(peerInformation.getLastSentPacketNumber()).setTerminatedReason(terminatedReason)
-				.build();
-		TerminatedMessage terminateActual = peerConnectorImpl.createTerminateConnectionMessage(peerInformation,
-				terminatedReason);
+		TerminatedMessage terminatedMessage = TerminatedMessage.newBuilder().setTerminatedId(0)
+				.setTerminatedReason(terminatedReason).build();
+		PacketWrapper packet = MessageWrapper.wrapMessage(terminatedMessage, peerInformation);
+		resetCounters(peerInformation);
 
-		assertEquals(terminatedExpected, terminateActual);
+		assertPacket(packet, peerConnectorImpl.createTerminateConnectionMessage(peerInformation, terminatedReason));
 	}
 
 	@Test
-	void testCreateKeepAliveMessage() {
-		KeepAliveMessage aliveExpected = KeepAliveMessage.newBuilder().setMessageId(0).build();
-		KeepAliveMessage aliveActual = peerConnectorImpl.createKeepAliveMessage();
+	void testCreateKeepAliveMessage() throws InvalidProtocolBufferException, IOException {
+		KeepAliveMessage keepAlive = KeepAliveMessage.newBuilder().setMessageId(0).build();
+		PacketWrapper packet = MessageWrapper.wrapMessage(keepAlive, peerInformation);
+		resetCounters(peerInformation);
 
-		assertEquals(aliveExpected, aliveActual);
+		assertPacket(packet, peerConnectorImpl.createKeepAliveMessage(peerInformation));
 	}
 
 }

@@ -3,25 +3,20 @@ package com.kikkar.network.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.ws.http.HTTPException;
 
-import org.apache.commons.net.ntp.NTPUDPClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,12 +24,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.kikkar.network.SpeedTest;
-
-import javafx.beans.binding.SetExpression;
 
 class ServerConnectorImplTest {
 
@@ -195,7 +187,7 @@ class ServerConnectorImplTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(ints = {400, 412, 404, 505, 509 })
+	@ValueSource(ints = { 400, 412, 404, 505, 509 })
 	void testGetPeerInfoList_checkFailedResponse(int responseCode) throws IOException {
 		final HttpURLConnection connect = Mockito.mock(HttpURLConnection.class);
 		String responseJson = "1";
@@ -215,11 +207,11 @@ class ServerConnectorImplTest {
 		assertThrows(HTTPException.class, () -> {
 			serverConnectorImpl.getPeerInfoList(url);
 		});
-		
+
 	}
 
 	@ParameterizedTest
-	@ValueSource(ints = {400, 412, 404, 505})
+	@ValueSource(ints = { 400, 412, 404, 505 })
 	void testSendStayAliveMessage_checkFailedResponse(int responseCode) throws IOException {
 		final HttpURLConnection connect = Mockito.mock(HttpURLConnection.class);
 		String responseJSON = "Goodbye";
@@ -232,17 +224,15 @@ class ServerConnectorImplTest {
 
 		Mockito.when(connect.getResponseCode()).thenReturn(responseCode);
 		Mockito.when(connect.getInputStream()).thenReturn(new ByteArrayInputStream(responseJSON.getBytes()));
-		URL url = new URL(null,
-				"http://192.168.0.15/Tracker/connect/stayAlive",
-				stubURLStreamHandler);
+		URL url = new URL(null, "http://192.168.0.15/Tracker/connect/stayAlive", stubURLStreamHandler);
 
 		assertThrows(HTTPException.class, () -> {
 			serverConnectorImpl.sendStayAliveMessage(url);
 		});
 	}
-	
+
 	@ParameterizedTest
-	@ValueSource(ints = {400, 412, 404, 505})
+	@ValueSource(ints = { 400, 412, 404, 505 })
 	void testSendLeaveMessage_checkFailedResponse(int responseCode) throws IOException {
 		final HttpURLConnection connect = Mockito.mock(HttpURLConnection.class);
 		String responseJSON = "Goodbye";
@@ -255,9 +245,7 @@ class ServerConnectorImplTest {
 
 		Mockito.when(connect.getResponseCode()).thenReturn(responseCode);
 		Mockito.when(connect.getInputStream()).thenReturn(new ByteArrayInputStream(responseJSON.getBytes()));
-		URL url = new URL(null,
-				"http://192.168.0.15/Tracker/connect/leave",
-				stubURLStreamHandler);
+		URL url = new URL(null, "http://192.168.0.15/Tracker/connect/leave", stubURLStreamHandler);
 
 		assertThrows(HTTPException.class, () -> {
 			serverConnectorImpl.sendLeaveMessage(url);

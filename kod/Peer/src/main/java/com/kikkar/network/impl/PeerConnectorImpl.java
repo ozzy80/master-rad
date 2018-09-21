@@ -20,50 +20,60 @@ import com.kikkar.packet.TerminatedReason;
 public class PeerConnectorImpl implements PeerConnector {
 
 	@Override
-	public PingMessage createPingMessage(PeerInformation peerInformation, short personalClubNum,
-			ConnectionType connectionType) {
+	public DatagramPacket createPingMessage(PeerInformation peerInformation, short personalClubNum,
+			ConnectionType connectionType) throws IOException {
 		PingMessage.Builder ping = PingMessage.newBuilder();
 		ping.setClubNumber(personalClubNum);
 		ping.setPingId(peerInformation.getPingMessageNumber());
 		ping.setConnectionType(connectionType);
-
 		peerInformation.incrementPingMessageNumber();
+		
+		PacketWrapper packet = MessageWrapper.wrapMessage(ping.build(), peerInformation);
+		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
 
-		return ping.build();
+		return datagramPacket;
 	}
 
 	@Override
-	public PongMessage createPongMessage(int uploadLinkNum, int downloadLinkNum, int bufferVideoNum, PingMessage ping) {
+	public DatagramPacket createPongMessage(PeerInformation peerInformation, int uploadLinkNum, int downloadLinkNum, int bufferVideoNum, PingMessage ping) throws IOException {
 		PongMessage.Builder pong = PongMessage.newBuilder();
 		pong.setResponsePingId(ping.getPingId());
 		pong.setDownloadLinkNum(downloadLinkNum);
 		pong.setUploadLinkNum(uploadLinkNum);
 		pong.setBufferVideoNum(bufferVideoNum);
+		
+		PacketWrapper packet = MessageWrapper.wrapMessage(pong.build(), peerInformation);
+		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
 
-		return pong.build();
+		return datagramPacket;
 	}
 
 	@Override
-	public RequestMessage createRequestMessage(PeerInformation peerInformation, short personalClubNum, ConnectionType connectionType) {
+	public DatagramPacket createRequestMessage(PeerInformation peerInformation, short personalClubNum, ConnectionType connectionType) throws IOException {
 		RequestMessage.Builder request = RequestMessage.newBuilder();
 		request.setRequestId(peerInformation.getRequestMessageNumber());
 		request.setClubNumber(personalClubNum);
 		request.setConnectionType(connectionType);
 		peerInformation.incrementRequestMessageNumber();
+		
+		PacketWrapper packet = MessageWrapper.wrapMessage(request.build(), peerInformation);
+		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
 
-		return request.build();
+		return datagramPacket;
 	}
 
 	@Override
-	public ResponseMessage createResponseMessage(RequestMessage requestMessage) {
+	public DatagramPacket createResponseMessage(PeerInformation peerInformation, RequestMessage requestMessage) throws IOException {
 		ResponseMessage.Builder response = ResponseMessage.newBuilder();
 		response.setResponseRequestId(requestMessage.getRequestId());
 
-		return response.build();
+		PacketWrapper packet = MessageWrapper.wrapMessage(response.build(), peerInformation);
+		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
+
+		return datagramPacket;
 	}
 
-	@Override
-	public DatagramPacket createSendDatagramPacket(PacketWrapper packet, PeerInformation peerInformation) throws IOException {
+	private DatagramPacket createSendDatagramPacket(PacketWrapper packet, PeerInformation peerInformation) throws IOException {
 		ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
 		packet.writeTo(byteOutStream);
 		byte[] sendData = byteOutStream.toByteArray();
@@ -98,21 +108,26 @@ public class PeerConnectorImpl implements PeerConnector {
 	}
 
 	@Override
-	public TerminatedMessage createTerminateConnectionMessage(PeerInformation peerInformation, TerminatedReason terminatedReason) {
+	public DatagramPacket createTerminateConnectionMessage(PeerInformation peerInformation, TerminatedReason terminatedReason) throws IOException {
 		TerminatedMessage.Builder terminate = TerminatedMessage.newBuilder();
 		terminate.setTerminatedId(peerInformation.getLastSentPacketNumber());
 		terminate.setTerminatedReason(terminatedReason);
-		peerInformation.incrementLastSentPacketNumber();
 
-		return terminate.build();
+		PacketWrapper packet = MessageWrapper.wrapMessage(terminate.build(), peerInformation);
+		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
+
+		return datagramPacket;
 	}
 
 	@Override
-	public KeepAliveMessage createKeepAliveMessage() {
+	public DatagramPacket createKeepAliveMessage(PeerInformation peerInformation) throws IOException {
 		KeepAliveMessage.Builder alive = KeepAliveMessage.newBuilder();
 		alive.setMessageId(0);
 
-		return alive.build();
+		PacketWrapper packet = MessageWrapper.wrapMessage(alive.build(), peerInformation);
+		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
+
+		return datagramPacket;
 	}
 
 }

@@ -6,33 +6,32 @@ import java.net.DatagramSocket;
 
 import com.kikkar.network.impl.PeerInformation;
 import com.kikkar.packet.ConnectionType;
-import com.kikkar.packet.KeepAliveMessage;
 import com.kikkar.packet.PacketWrapper;
 import com.kikkar.packet.PingMessage;
-import com.kikkar.packet.PongMessage;
 import com.kikkar.packet.RequestMessage;
-import com.kikkar.packet.ResponseMessage;
-import com.kikkar.packet.TerminatedMessage;
 import com.kikkar.packet.TerminatedReason;
 
 public interface PeerConnector {
-	PingMessage createPingMessage(PeerInformation peerInformation, short personalClubNum, ConnectionType connectionType);
+	DatagramPacket createPingMessage(PeerInformation peerInformation, short personalClubNum,
+			ConnectionType connectionType) throws IOException;
 
-	PongMessage createPongMessage(int uploadLinkNum, int downloadLinkNum, int bufferVideoNum, PingMessage ping);
+	DatagramPacket createPongMessage(PeerInformation peerInformation, int uploadLinkNum, int downloadLinkNum,
+			int bufferVideoNum, PingMessage ping) throws IOException;
 
-	RequestMessage createRequestMessage(PeerInformation peerInformation, short personalClubNum, ConnectionType connectionType);
-	
-	ResponseMessage createResponseMessage(RequestMessage requestMessage);
+	DatagramPacket createRequestMessage(PeerInformation peerInformation, short personalClubNum,
+			ConnectionType connectionType) throws IOException;
 
-	public DatagramPacket createSendDatagramPacket(PacketWrapper packet, PeerInformation peerInformation) throws IOException;
-	
+	DatagramPacket createResponseMessage(PeerInformation peerInformation, RequestMessage requestMessage)
+			throws IOException;
+
 	void send(DatagramPacket sendDataPacket, DatagramSocket socket) throws IOException;
-	
+
 	public DatagramPacket createReciveDatagramPacket(int byteBufferSize) throws IOException;
-	
+
 	PacketWrapper recive(DatagramSocket socket, DatagramPacket recivePacket) throws IOException;
 
-	TerminatedMessage createTerminateConnectionMessage(PeerInformation peerInformation, TerminatedReason terminatedReason);
+	DatagramPacket createTerminateConnectionMessage(PeerInformation peerInformation,
+			TerminatedReason terminatedReason) throws IOException ;
 
-	KeepAliveMessage createKeepAliveMessage();
+	DatagramPacket createKeepAliveMessage(PeerInformation peerInformation) throws IOException;
 }
