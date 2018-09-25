@@ -1,14 +1,14 @@
 package com.kikkar.network.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,12 +21,16 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import com.kikkar.global.ClockSingleton;
 import com.kikkar.network.ServerConnector;
 import com.kikkar.network.SpeedTest;
 import com.kikkar.packet.ConnectionType;
+import com.kikkar.packet.KeepAliveMessage;
+import com.kikkar.packet.PacketWrapper;
+import com.kikkar.packet.Pair;
 import com.kikkar.packet.PongMessage;
 
 import fr.bmartel.speedtest.SpeedTestSocket;
@@ -331,7 +335,7 @@ class ConnectionManagerImplTest {
 		Thread.sleep(300);
 		assertEquals(peerListExpected.size(), peerListActual.size());
 	}
-	
+
 	@ParameterizedTest
 	@MethodSource("createMaintainClubParameters")
 	void testMaintainClubsConnection_checkNoConnection(short connInnerClubNum, short connOuterClubNum,
@@ -342,7 +346,7 @@ class ConnectionManagerImplTest {
 
 		connectionManagerImpl.maintainClubsConnection();
 		try {
-			Thread.sleep(300);
+			Thread.sleep(500);
 		} catch (Exception e) {
 		}
 		for (int i = 0; i < 6; i++) {
@@ -359,7 +363,9 @@ class ConnectionManagerImplTest {
 	}
 
 	private short getDonwloadNum(List<PeerInformation> peerListActual, int clubNum) {
-		return (short) peerListActual.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.DOWNLOAD_CONNECTION) && p.getClubNumber() == clubNum).count();
+		return (short) peerListActual.stream()
+				.filter(p -> p.getPeerStatus().equals(PeerStatus.DOWNLOAD_CONNECTION) && p.getClubNumber() == clubNum)
+				.count();
 	}
 
 	private long getConnectionCreatedNumber(List<PeerInformation> peerList, short clubNum, PeerStatus peerStatus) {
@@ -368,13 +374,70 @@ class ConnectionManagerImplTest {
 	}
 
 	private static Stream<Arguments> createMaintainClubParameters() {
-		return Stream.of(
-				Arguments.of((short) 2, (short) 1, 0, (short) 0, (short) 0), 
+		return Stream.of(Arguments.of((short) 2, (short) 1, 0, (short) 0, (short) 0),
 				Arguments.of((short) 1, (short) 0, 6, (short) 1, (short) 1),
-				Arguments.of((short) 0, (short) 0, 6*2, (short) 2, (short) 1),
-				Arguments.of((short) 0, (short) 0, 6*3, (short) 3, (short) 1),
-				Arguments.of((short) 0, (short) 0, 6*4, (short) 3, (short) 1));
+				Arguments.of((short) 0, (short) 0, 6 * 2, (short) 2, (short) 1),
+				Arguments.of((short) 0, (short) 0, 6 * 4, (short) 3, (short) 1));
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = { "15", "10", "8", "16" })
+	void testCheckPackageNumberASCOrder_testUnorderPack(int fromValue) {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(3, 3, 6);
+		connectionManagerImpl.setPeerList(peerList);
+		PeerInformation peer = peerList.get(0);
+		KeepAliveMessage alive = KeepAliveMessage.newBuilder().setMessageId(0).build();
 
+		PacketWrapper packet = MessageWrapper.wrapMessage(alive, peer);
+		for (int i = fromValue; i > 8; i--) {
+			peer.setLastSentPacketNumber(i);
+			packet = MessageWrapper.wrapMessage(alive, peer);
+			connectionManagerImpl.checkPackageNumberASCOrder(
+					new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), packet));
+		}
+
+		assertEquals(fromValue - 8, peer.getUnorderPacketNumber());
+	}
+
+	@Test
+	void testAssumePeerAreConnected_checkChangePeerStatus() {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 1);
+		connectionManagerImpl.setPeerList(peerList);
+
+		connectionManagerImpl.assumePeerAreConnected(peerList.get(3));
+		connectionManagerImpl.assumePeerAreConnected(peerList.get(4));
+
+		assertEquals(peerList.get(4).getPeerStatus(), PeerStatus.UPLOAD_CONNECTION);
+		assertEquals(peerList.get(3).getPeerStatus(), PeerStatus.DOWNLOAD_CONNECTION);
+	}
+
+	@Test
+	void testUpdateLastTimeReciveMessage_checkTimeChange() {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(3, 3, 6);
+		connectionManagerImpl.setPeerList(peerList);
+		PeerInformation peer = peerList.get(0);
+		KeepAliveMessage alive = KeepAliveMessage.newBuilder().setMessageId(0).build();
+		PacketWrapper packet = MessageWrapper.wrapMessage(alive, peer);
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()),
+				packet);
+
+		connectionManagerImpl.updateLastTimeReciveMessage(packetPair);
+
+		assertTrue(peer.getLastReceivedMessageTimeMilliseconds() > 1000);
+	}
+
+	@Test
+	void testRemoveConnection_checkRemove() {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(3, 3, 6);
+		connectionManagerImpl.setPeerList(peerList);
+		PeerInformation peer = peerList.get(0);
+		KeepAliveMessage alive = KeepAliveMessage.newBuilder().setMessageId(0).build();
+		PacketWrapper packet = MessageWrapper.wrapMessage(alive, peer);
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()),
+				packet);
+
+		connectionManagerImpl.removeConnection(packetPair);
+
+		assertFalse(peerList.contains(peer));
+	}
 }

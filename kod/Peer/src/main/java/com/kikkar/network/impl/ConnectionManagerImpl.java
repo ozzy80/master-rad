@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -28,9 +29,7 @@ import com.kikkar.packet.ConnectionType;
 import com.kikkar.packet.PacketWrapper;
 import com.kikkar.packet.Pair;
 import com.kikkar.packet.PongMessage;
-import com.kikkar.packet.RequestMessage;
 import com.kikkar.packet.TerminatedReason;
-import com.mchange.v2.sql.filter.SynchronizedFilterDataSource;
 
 import fr.bmartel.speedtest.SpeedTestSocket;
 
@@ -43,10 +42,12 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	private Map<String, PongMessage> pongMessageMap;
 	private ClockSingleton clock;
 	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+	private BlockingQueue<Pair<String, PacketWrapper>> packetsForHigherLevel;
+
 	private int NUMBER_OF_CLUB = 6;
 	private long WAIT_SECOND = 1;
 	private long WAIT_NEIGHBOUR_PACKETS_MILLISECOND = 1000;
-	private short MAX_NUMBER_OF_UNORDER_PACKET = 5;
+	private short MAX_NUMBER_OF_UNORDER_PACKET = 15;
 
 	@Override
 	public void loadJson(String rawJson) {
@@ -81,8 +82,6 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 			packetPair = peerConnector.getPacketsWaitingForProcessing();
 
-			// ------------------------------ TESTIRANO
-
 			if (packetPair == null) {
 				System.err.println("null packet");
 			} else if (!checkPackageNumberASCOrder(packetPair)) {
@@ -101,31 +100,18 @@ public class ConnectionManagerImpl implements ConnectionManager {
 				PeerInformation peer = getPeer(packetPair.getLeft());
 				assumePeerAreConnected(peer);
 				updateLastTimeReciveMessage(packetPair);
-			} else if (packetPair.getRight().hasControlMessage()) {
-				// prosledi
-				updateLastTimeReciveMessage(packetPair);
-			} else if (packetPair.getRight().hasHaveMessage()) {
-				// prosledi (dodaj vreme slanja ako odgovaram da imam)
-				updateLastTimeReciveMessage(packetPair);
 			} else if (packetPair.getRight().hasKeepAliveMessage()) {
-				updateLastTimeReciveMessage(packetPair);
-			} else if (packetPair.getRight().hasNotInterestedMessage()) {
-				// prosledi
-				updateLastTimeReciveMessage(packetPair);
-			} else if (packetPair.getRight().hasRequestVideoMessage()) {
-				// prosledi (dodaj vreme slanja ako odgovaram da imam)
-				updateLastTimeReciveMessage(packetPair);
-			} else if (packetPair.getRight().hasResponseVideoMessage()) {
-				// prosledi
 				updateLastTimeReciveMessage(packetPair);
 			} else if (packetPair.getRight().hasTerminatedMessage()) {
 				removeConnection(packetPair);
-			} else if (packetPair.getRight().hasVideoPacket()) {
-				// prosledi (dodaj vreme slanja kad prosledjujem)
+			} else {
+				// (dodaj vreme slanja ako odgovaram da imam)
+				packetsForHigherLevel.add(packetPair); // hasControlMessage, hasHaveMessage, hasNotInterestedMessage,
+														// hasRequestVideoMessage, hasResponseVideoMessage,
+														// hasVideoPacket
 				updateLastTimeReciveMessage(packetPair);
 			}
 		}
-
 	}
 
 	private Short initialServerConnection(SpeedTest speedTest) throws MalformedURLException, Exception {
@@ -371,13 +357,12 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		terminateConnections(peer, TerminatedReason.NEW_CONNECTION);
 	}
 
-	// ---------------------------------------------------------------------------------------------------------------
-
 	public boolean checkPackageNumberASCOrder(Pair<String, PacketWrapper> packetPair) {
 		PeerInformation peer = getPeer(packetPair.getLeft());
 		int receivedPacketNumber = packetPair.getRight().getPacketId();
 		if (peer.getLastReceivedPacketNumber() + 1 == receivedPacketNumber) {
 			peer.setLastReceivedPacketNumber(receivedPacketNumber);
+			peer.decrementUnorderPacketNumber();
 			return true;
 		} else if (peer.getLastReceivedPacketNumber() > receivedPacketNumber) {
 			peer.setLastReceivedPacketNumber(receivedPacketNumber);
@@ -399,25 +384,36 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		});
 	}
 
+	public void updateLastTimeReciveMessage(Pair<String, PacketWrapper> packetPair) {
+		PeerInformation peer = getPeer(packetPair.getLeft());
+		peer.setLastReceivedMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds());
+	}
+
 	private PeerInformation getPeer(String ipAddress) {
 		PeerInformation peerInformation = peerList.stream().filter(p -> new String(p.getIpAddress()).equals(ipAddress))
 				.findFirst().get();
 		return peerInformation;
 	}
 
-	private void removeConnection(Pair<String, PacketWrapper> packetPair) {
+	public void removeConnection(Pair<String, PacketWrapper> packetPair) {
 		PeerInformation peerInformation = peerList.stream()
 				.filter(p -> new String(p.getIpAddress()).equals(packetPair.getLeft())).findFirst().get();
 		peerList.remove(peerInformation);
 	}
 
-	public void shutDownConnectionManager() {
-		executor.shutdown();
+	public void send(DatagramPacket packet, OutputStream outError) {
+		try {
+			peerConnector.send(packet, socket);
+		} catch (IOException e) {
+			try {
+				outError.write(e.getMessage().getBytes());
+			} catch (IOException e1) {
+			}
+		}
 	}
 
-	public void updateLastTimeReciveMessage(Pair<String, PacketWrapper> packetPair) {
-		PeerInformation peer = getPeer(packetPair.getLeft());
-		peer.setLastReceivedMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds());
+	public void shutDownConnectionManager() {
+		executor.shutdown();
 	}
 
 	public ServerConnector getServerConnector() {
@@ -478,6 +474,10 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	public void setWAIT_SECOND(long wAIT_SECOND) {
 		WAIT_SECOND = wAIT_SECOND;
+	}
+
+	public Pair<String, PacketWrapper> getWaitingPackets() throws InterruptedException {
+		return packetsForHigherLevel.take();
 	}
 
 }
