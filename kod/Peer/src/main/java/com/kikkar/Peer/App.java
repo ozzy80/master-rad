@@ -47,8 +47,8 @@ public class App {
 			List<PeerInformation> peerInformations = serverConnector.getPeerInfoList(url);
 			peerInformations.stream().map(s -> new String(s.getIpAddress(), StandardCharsets.UTF_8)).forEach(System.out::println);
 
-			url = new URL(channel.getIpAddress() + "/connect/stayAlive");
-			serverConnector.sendStayAliveMessage(url);
+			//url = new URL(channel.getIpAddress() + "/connect/stayAlive");
+			//serverConnector.sendStayAliveMessage(url);
 			
 			//url = new URL(channel.getIpAddress() + "/connect/leave");
 			//serverConnector.sendLeaveMessage();

@@ -5,12 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -20,6 +23,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.kikkar.packet.ConnectionType;
 import com.kikkar.packet.KeepAliveMessage;
 import com.kikkar.packet.PacketWrapper;
+import com.kikkar.packet.Pair;
 import com.kikkar.packet.PingMessage;
 import com.kikkar.packet.PongMessage;
 import com.kikkar.packet.RequestMessage;
@@ -39,6 +43,7 @@ class PeerConnectorImplTest {
 	void setup() {
 		peerConnectorImpl = new PeerConnectorImpl();
 		peerInformation = new PeerInformation(ipAddress, portNum, clubNum);
+		peerConnectorImpl.setThisPeer(new PeerInformation("172.168.0.1".getBytes(), portNum, clubNum));
 	}
 
 	void assertPacket(PacketWrapper packet, DatagramPacket datagramPacket) throws InvalidProtocolBufferException {
@@ -204,4 +209,59 @@ class PeerConnectorImplTest {
 		assertPacket(packet, peerConnectorImpl.createKeepAliveMessage(peerInformation));
 	}
 
+	@ParameterizedTest
+	@EnumSource(value = ConnectionType.class,
+			names = {"DOWNLOAD", "UPLOAD"})
+	void testSendRequestMessage_checkChangingPeerStatus(ConnectionType connectionType) throws SocketException {
+		int expectedNum = 3 + 1 + 2*5;
+		List<PeerInformation> peerInformations = DummyObjectCreator.createDummyPeers(3, 1, 2);
+		DatagramSocket socket = new DatagramSocket();
+		
+		peerConnectorImpl.sendRequestMessage(peerInformations, socket, connectionType, System.err);
+		
+		if(connectionType.equals(ConnectionType.DOWNLOAD)) {
+			assertEquals(expectedNum, peerInformations.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.RESPONSE_WAIT_DOWNLOAD)).count());
+		}
+		if(connectionType.equals(ConnectionType.UPLOAD)) {
+			assertEquals(expectedNum, peerInformations.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.RESPONSE_WAIT_UPLOAD)).count());
+		}
+	}
+	
+	@ParameterizedTest
+	@EnumSource(value = ConnectionType.class,
+			names = {"DOWNLOAD", "UPLOAD"})
+	void testSendPingMessages_checkChangingPeerStatus(ConnectionType connectionType) throws SocketException {
+		 int expectedNum = 6 + 6;
+		 List<PeerInformation> peerInformations = DummyObjectCreator.createDummyPeers(3, 1, 6);
+		 DatagramSocket socket = new DatagramSocket();
+		 
+		 peerConnectorImpl.sendPingMessages(peerInformations, connectionType, socket);
+		 
+	    if(connectionType.equals(ConnectionType.DOWNLOAD)) {
+			assertEquals(expectedNum, peerInformations.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.PONG_WAIT_DOWNLOAD)).count());
+		}
+		if(connectionType.equals(ConnectionType.UPLOAD)) {
+			assertEquals(expectedNum, peerInformations.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.PONG_WAIT_UPLOAD)).count());
+		}
+	}
+	
+	@ParameterizedTest
+	@EnumSource(value = ConnectionType.class,
+			names = {"DOWNLOAD", "UPLOAD"})
+	void testSendResponseMessage_checkChangingPeerStatus(ConnectionType connectionType) throws SocketException {
+		 PeerInformation peer = new PeerInformation(ipAddress, portNum, clubNum);
+		 RequestMessage request = RequestMessage.newBuilder().setConnectionType(connectionType).build();
+		 PacketWrapper packet = MessageWrapper.wrapMessage(request, peer);
+		 DatagramSocket socket = new DatagramSocket();
+		 
+		 peerConnectorImpl.sendResponseMessage(peer, packet, socket);
+		 
+	    if(connectionType.equals(ConnectionType.DOWNLOAD)) {
+			assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
+		}
+		if(connectionType.equals(ConnectionType.UPLOAD)) {
+			assertEquals(PeerStatus.UPLOAD_CONNECTION, peer.getPeerStatus());
+		}
+	}
+	
 }

@@ -16,6 +16,8 @@ public class PeerInformation {
 
 	private long lastReceivedMessageTimeMilliseconds;
 
+	private long lastSentMessageTimeMilliseconds;
+
 	private int lastSentPacketNumber;
 
 	private int lastReceivedPacketNumber;
@@ -162,6 +164,24 @@ public class PeerInformation {
 	
 	public void incrementLastSentPacketNumber() {
 		lastSentPacketNumber++;
+	}
+	
+	public void incrementUnorderPacketNumber( ) {
+		unorderPacketNumber++;
+	}
+	
+	public void decrementUnorderPacketNumber( ) {
+		if(unorderPacketNumber > 0) {
+			unorderPacketNumber--;
+		}
+	}
+
+	public long getLastSentMessageTimeMilliseconds() {
+		return lastSentMessageTimeMilliseconds;
+	}
+
+	public void setLastSentMessageTimeMilliseconds(long lastSentMessageTimeMilliseconds) {
+		this.lastSentMessageTimeMilliseconds = lastSentMessageTimeMilliseconds;
 	}
 	
 }
