@@ -13,7 +13,15 @@ public interface RequestVideoMessageOrBuilder extends
   int getMessageId();
 
   /**
-   * <code>int32 videoNum = 2;</code>
+   * <code>repeated int32 videoNum = 2 [packed = true];</code>
    */
-  int getVideoNum();
+  java.util.List<java.lang.Integer> getVideoNumList();
+  /**
+   * <code>repeated int32 videoNum = 2 [packed = true];</code>
+   */
+  int getVideoNumCount();
+  /**
+   * <code>repeated int32 videoNum = 2 [packed = true];</code>
+   */
+  int getVideoNum(int index);
 }

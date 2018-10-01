@@ -29,8 +29,9 @@ public final class RequestVideoMessageOuterClass {
   static {
     java.lang.String[] descriptorData = {
       "\n\031RequestVideoMessage.proto\022\021com.kikkar." +
-      "packet\":\n\023RequestVideoMessage\022\021\n\tmessage" +
-      "Id\030\001 \001(\005\022\020\n\010videoNum\030\002 \001(\005B\002P\001b\006proto3"
+      "packet\">\n\023RequestVideoMessage\022\021\n\tmessage" +
+      "Id\030\001 \001(\005\022\024\n\010videoNum\030\002 \003(\005B\002\020\001B\002P\001b\006prot" +
+      "o3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

@@ -8,20 +8,17 @@ public interface ResponseVideoMessageOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>int32 requestMessageId = 1;</code>
+   * <code>int32 videoNum = 1;</code>
    */
-  int getRequestMessageId();
+  int getVideoNum();
 
   /**
-   * <code>repeated int32 videoNum = 2 [packed = true];</code>
+   * <code>int32 chunkNum = 2;</code>
    */
-  java.util.List<java.lang.Integer> getVideoNumList();
+  int getChunkNum();
+
   /**
-   * <code>repeated int32 videoNum = 2 [packed = true];</code>
+   * <code>bytes video = 3;</code>
    */
-  int getVideoNumCount();
-  /**
-   * <code>repeated int32 videoNum = 2 [packed = true];</code>
-   */
-  int getVideoNum(int index);
+  com.google.protobuf.ByteString getVideo();
 }

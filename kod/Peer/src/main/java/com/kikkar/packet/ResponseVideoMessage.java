@@ -16,8 +16,9 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private ResponseVideoMessage() {
-    requestMessageId_ = 0;
-    videoNum_ = java.util.Collections.emptyList();
+    videoNum_ = 0;
+    chunkNum_ = 0;
+    video_ = com.google.protobuf.ByteString.EMPTY;
   }
 
   @java.lang.Override
@@ -46,28 +47,17 @@ private static final long serialVersionUID = 0L;
             break;
           case 8: {
 
-            requestMessageId_ = input.readInt32();
+            videoNum_ = input.readInt32();
             break;
           }
           case 16: {
-            if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-              videoNum_ = new java.util.ArrayList<java.lang.Integer>();
-              mutable_bitField0_ |= 0x00000002;
-            }
-            videoNum_.add(input.readInt32());
+
+            chunkNum_ = input.readInt32();
             break;
           }
-          case 18: {
-            int length = input.readRawVarint32();
-            int limit = input.pushLimit(length);
-            if (!((mutable_bitField0_ & 0x00000002) == 0x00000002) && input.getBytesUntilLimit() > 0) {
-              videoNum_ = new java.util.ArrayList<java.lang.Integer>();
-              mutable_bitField0_ |= 0x00000002;
-            }
-            while (input.getBytesUntilLimit() > 0) {
-              videoNum_.add(input.readInt32());
-            }
-            input.popLimit(limit);
+          case 26: {
+
+            video_ = input.readBytes();
             break;
           }
           default: {
@@ -85,9 +75,6 @@ private static final long serialVersionUID = 0L;
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
-      if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-        videoNum_ = java.util.Collections.unmodifiableList(videoNum_);
-      }
       this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
@@ -105,38 +92,32 @@ private static final long serialVersionUID = 0L;
             com.kikkar.packet.ResponseVideoMessage.class, com.kikkar.packet.ResponseVideoMessage.Builder.class);
   }
 
-  private int bitField0_;
-  public static final int REQUESTMESSAGEID_FIELD_NUMBER = 1;
-  private int requestMessageId_;
+  public static final int VIDEONUM_FIELD_NUMBER = 1;
+  private int videoNum_;
   /**
-   * <code>int32 requestMessageId = 1;</code>
+   * <code>int32 videoNum = 1;</code>
    */
-  public int getRequestMessageId() {
-    return requestMessageId_;
-  }
-
-  public static final int VIDEONUM_FIELD_NUMBER = 2;
-  private java.util.List<java.lang.Integer> videoNum_;
-  /**
-   * <code>repeated int32 videoNum = 2 [packed = true];</code>
-   */
-  public java.util.List<java.lang.Integer>
-      getVideoNumList() {
+  public int getVideoNum() {
     return videoNum_;
   }
+
+  public static final int CHUNKNUM_FIELD_NUMBER = 2;
+  private int chunkNum_;
   /**
-   * <code>repeated int32 videoNum = 2 [packed = true];</code>
+   * <code>int32 chunkNum = 2;</code>
    */
-  public int getVideoNumCount() {
-    return videoNum_.size();
+  public int getChunkNum() {
+    return chunkNum_;
   }
+
+  public static final int VIDEO_FIELD_NUMBER = 3;
+  private com.google.protobuf.ByteString video_;
   /**
-   * <code>repeated int32 videoNum = 2 [packed = true];</code>
+   * <code>bytes video = 3;</code>
    */
-  public int getVideoNum(int index) {
-    return videoNum_.get(index);
+  public com.google.protobuf.ByteString getVideo() {
+    return video_;
   }
-  private int videoNumMemoizedSerializedSize = -1;
 
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
@@ -152,16 +133,14 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    getSerializedSize();
-    if (requestMessageId_ != 0) {
-      output.writeInt32(1, requestMessageId_);
+    if (videoNum_ != 0) {
+      output.writeInt32(1, videoNum_);
     }
-    if (getVideoNumList().size() > 0) {
-      output.writeUInt32NoTag(18);
-      output.writeUInt32NoTag(videoNumMemoizedSerializedSize);
+    if (chunkNum_ != 0) {
+      output.writeInt32(2, chunkNum_);
     }
-    for (int i = 0; i < videoNum_.size(); i++) {
-      output.writeInt32NoTag(videoNum_.get(i));
+    if (!video_.isEmpty()) {
+      output.writeBytes(3, video_);
     }
     unknownFields.writeTo(output);
   }
@@ -172,23 +151,17 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (requestMessageId_ != 0) {
+    if (videoNum_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(1, requestMessageId_);
+        .computeInt32Size(1, videoNum_);
     }
-    {
-      int dataSize = 0;
-      for (int i = 0; i < videoNum_.size(); i++) {
-        dataSize += com.google.protobuf.CodedOutputStream
-          .computeInt32SizeNoTag(videoNum_.get(i));
-      }
-      size += dataSize;
-      if (!getVideoNumList().isEmpty()) {
-        size += 1;
-        size += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(dataSize);
-      }
-      videoNumMemoizedSerializedSize = dataSize;
+    if (chunkNum_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(2, chunkNum_);
+    }
+    if (!video_.isEmpty()) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBytesSize(3, video_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -206,10 +179,12 @@ private static final long serialVersionUID = 0L;
     com.kikkar.packet.ResponseVideoMessage other = (com.kikkar.packet.ResponseVideoMessage) obj;
 
     boolean result = true;
-    result = result && (getRequestMessageId()
-        == other.getRequestMessageId());
-    result = result && getVideoNumList()
-        .equals(other.getVideoNumList());
+    result = result && (getVideoNum()
+        == other.getVideoNum());
+    result = result && (getChunkNum()
+        == other.getChunkNum());
+    result = result && getVideo()
+        .equals(other.getVideo());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -221,12 +196,12 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + REQUESTMESSAGEID_FIELD_NUMBER;
-    hash = (53 * hash) + getRequestMessageId();
-    if (getVideoNumCount() > 0) {
-      hash = (37 * hash) + VIDEONUM_FIELD_NUMBER;
-      hash = (53 * hash) + getVideoNumList().hashCode();
-    }
+    hash = (37 * hash) + VIDEONUM_FIELD_NUMBER;
+    hash = (53 * hash) + getVideoNum();
+    hash = (37 * hash) + CHUNKNUM_FIELD_NUMBER;
+    hash = (53 * hash) + getChunkNum();
+    hash = (37 * hash) + VIDEO_FIELD_NUMBER;
+    hash = (53 * hash) + getVideo().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -360,10 +335,12 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      requestMessageId_ = 0;
+      videoNum_ = 0;
 
-      videoNum_ = java.util.Collections.emptyList();
-      bitField0_ = (bitField0_ & ~0x00000002);
+      chunkNum_ = 0;
+
+      video_ = com.google.protobuf.ByteString.EMPTY;
+
       return this;
     }
 
@@ -390,15 +367,9 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.kikkar.packet.ResponseVideoMessage buildPartial() {
       com.kikkar.packet.ResponseVideoMessage result = new com.kikkar.packet.ResponseVideoMessage(this);
-      int from_bitField0_ = bitField0_;
-      int to_bitField0_ = 0;
-      result.requestMessageId_ = requestMessageId_;
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        videoNum_ = java.util.Collections.unmodifiableList(videoNum_);
-        bitField0_ = (bitField0_ & ~0x00000002);
-      }
       result.videoNum_ = videoNum_;
-      result.bitField0_ = to_bitField0_;
+      result.chunkNum_ = chunkNum_;
+      result.video_ = video_;
       onBuilt();
       return result;
     }
@@ -447,18 +418,14 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(com.kikkar.packet.ResponseVideoMessage other) {
       if (other == com.kikkar.packet.ResponseVideoMessage.getDefaultInstance()) return this;
-      if (other.getRequestMessageId() != 0) {
-        setRequestMessageId(other.getRequestMessageId());
+      if (other.getVideoNum() != 0) {
+        setVideoNum(other.getVideoNum());
       }
-      if (!other.videoNum_.isEmpty()) {
-        if (videoNum_.isEmpty()) {
-          videoNum_ = other.videoNum_;
-          bitField0_ = (bitField0_ & ~0x00000002);
-        } else {
-          ensureVideoNumIsMutable();
-          videoNum_.addAll(other.videoNum_);
-        }
-        onChanged();
+      if (other.getChunkNum() != 0) {
+        setChunkNum(other.getChunkNum());
+      }
+      if (other.getVideo() != com.google.protobuf.ByteString.EMPTY) {
+        setVideo(other.getVideo());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -488,96 +455,84 @@ private static final long serialVersionUID = 0L;
       }
       return this;
     }
-    private int bitField0_;
 
-    private int requestMessageId_ ;
+    private int videoNum_ ;
     /**
-     * <code>int32 requestMessageId = 1;</code>
+     * <code>int32 videoNum = 1;</code>
      */
-    public int getRequestMessageId() {
-      return requestMessageId_;
+    public int getVideoNum() {
+      return videoNum_;
     }
     /**
-     * <code>int32 requestMessageId = 1;</code>
+     * <code>int32 videoNum = 1;</code>
      */
-    public Builder setRequestMessageId(int value) {
+    public Builder setVideoNum(int value) {
       
-      requestMessageId_ = value;
+      videoNum_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>int32 requestMessageId = 1;</code>
-     */
-    public Builder clearRequestMessageId() {
-      
-      requestMessageId_ = 0;
-      onChanged();
-      return this;
-    }
-
-    private java.util.List<java.lang.Integer> videoNum_ = java.util.Collections.emptyList();
-    private void ensureVideoNumIsMutable() {
-      if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-        videoNum_ = new java.util.ArrayList<java.lang.Integer>(videoNum_);
-        bitField0_ |= 0x00000002;
-       }
-    }
-    /**
-     * <code>repeated int32 videoNum = 2 [packed = true];</code>
-     */
-    public java.util.List<java.lang.Integer>
-        getVideoNumList() {
-      return java.util.Collections.unmodifiableList(videoNum_);
-    }
-    /**
-     * <code>repeated int32 videoNum = 2 [packed = true];</code>
-     */
-    public int getVideoNumCount() {
-      return videoNum_.size();
-    }
-    /**
-     * <code>repeated int32 videoNum = 2 [packed = true];</code>
-     */
-    public int getVideoNum(int index) {
-      return videoNum_.get(index);
-    }
-    /**
-     * <code>repeated int32 videoNum = 2 [packed = true];</code>
-     */
-    public Builder setVideoNum(
-        int index, int value) {
-      ensureVideoNumIsMutable();
-      videoNum_.set(index, value);
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>repeated int32 videoNum = 2 [packed = true];</code>
-     */
-    public Builder addVideoNum(int value) {
-      ensureVideoNumIsMutable();
-      videoNum_.add(value);
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>repeated int32 videoNum = 2 [packed = true];</code>
-     */
-    public Builder addAllVideoNum(
-        java.lang.Iterable<? extends java.lang.Integer> values) {
-      ensureVideoNumIsMutable();
-      com.google.protobuf.AbstractMessageLite.Builder.addAll(
-          values, videoNum_);
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>repeated int32 videoNum = 2 [packed = true];</code>
+     * <code>int32 videoNum = 1;</code>
      */
     public Builder clearVideoNum() {
-      videoNum_ = java.util.Collections.emptyList();
-      bitField0_ = (bitField0_ & ~0x00000002);
+      
+      videoNum_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int chunkNum_ ;
+    /**
+     * <code>int32 chunkNum = 2;</code>
+     */
+    public int getChunkNum() {
+      return chunkNum_;
+    }
+    /**
+     * <code>int32 chunkNum = 2;</code>
+     */
+    public Builder setChunkNum(int value) {
+      
+      chunkNum_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 chunkNum = 2;</code>
+     */
+    public Builder clearChunkNum() {
+      
+      chunkNum_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private com.google.protobuf.ByteString video_ = com.google.protobuf.ByteString.EMPTY;
+    /**
+     * <code>bytes video = 3;</code>
+     */
+    public com.google.protobuf.ByteString getVideo() {
+      return video_;
+    }
+    /**
+     * <code>bytes video = 3;</code>
+     */
+    public Builder setVideo(com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      video_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bytes video = 3;</code>
+     */
+    public Builder clearVideo() {
+      
+      video_ = getDefaultInstance().getVideo();
       onChanged();
       return this;
     }

@@ -28,9 +28,10 @@ public final class VideoPacketOuterClass {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\021VideoPacket.proto\022\021com.kikkar.packet\"." +
-      "\n\013VideoPacket\022\020\n\010videoNum\030\001 \001(\005\022\r\n\005video" +
-      "\030\002 \001(\014B\002P\001b\006proto3"
+      "\n\021VideoPacket.proto\022\021com.kikkar.packet\"T" +
+      "\n\013VideoPacket\022\020\n\010videoNum\030\001 \001(\005\022\020\n\010chunk" +
+      "Num\030\002 \001(\005\022\022\n\nfirstFrame\030\003 \001(\010\022\r\n\005video\030\004" +
+      " \001(\014B\002P\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -49,7 +50,7 @@ public final class VideoPacketOuterClass {
     internal_static_com_kikkar_packet_VideoPacket_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_kikkar_packet_VideoPacket_descriptor,
-        new java.lang.String[] { "VideoNum", "Video", });
+        new java.lang.String[] { "VideoNum", "ChunkNum", "FirstFrame", "Video", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

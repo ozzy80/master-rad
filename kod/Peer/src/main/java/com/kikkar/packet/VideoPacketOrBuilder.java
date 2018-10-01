@@ -13,7 +13,17 @@ public interface VideoPacketOrBuilder extends
   int getVideoNum();
 
   /**
-   * <code>bytes video = 2;</code>
+   * <code>int32 chunkNum = 2;</code>
+   */
+  int getChunkNum();
+
+  /**
+   * <code>bool firstFrame = 3;</code>
+   */
+  boolean getFirstFrame();
+
+  /**
+   * <code>bytes video = 4;</code>
    */
   com.google.protobuf.ByteString getVideo();
 }

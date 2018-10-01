@@ -17,6 +17,8 @@ private static final long serialVersionUID = 0L;
   }
   private VideoPacket() {
     videoNum_ = 0;
+    chunkNum_ = 0;
+    firstFrame_ = false;
     video_ = com.google.protobuf.ByteString.EMPTY;
   }
 
@@ -49,7 +51,17 @@ private static final long serialVersionUID = 0L;
             videoNum_ = input.readInt32();
             break;
           }
-          case 18: {
+          case 16: {
+
+            chunkNum_ = input.readInt32();
+            break;
+          }
+          case 24: {
+
+            firstFrame_ = input.readBool();
+            break;
+          }
+          case 34: {
 
             video_ = input.readBytes();
             break;
@@ -95,10 +107,28 @@ private static final long serialVersionUID = 0L;
     return videoNum_;
   }
 
-  public static final int VIDEO_FIELD_NUMBER = 2;
+  public static final int CHUNKNUM_FIELD_NUMBER = 2;
+  private int chunkNum_;
+  /**
+   * <code>int32 chunkNum = 2;</code>
+   */
+  public int getChunkNum() {
+    return chunkNum_;
+  }
+
+  public static final int FIRSTFRAME_FIELD_NUMBER = 3;
+  private boolean firstFrame_;
+  /**
+   * <code>bool firstFrame = 3;</code>
+   */
+  public boolean getFirstFrame() {
+    return firstFrame_;
+  }
+
+  public static final int VIDEO_FIELD_NUMBER = 4;
   private com.google.protobuf.ByteString video_;
   /**
-   * <code>bytes video = 2;</code>
+   * <code>bytes video = 4;</code>
    */
   public com.google.protobuf.ByteString getVideo() {
     return video_;
@@ -121,8 +151,14 @@ private static final long serialVersionUID = 0L;
     if (videoNum_ != 0) {
       output.writeInt32(1, videoNum_);
     }
+    if (chunkNum_ != 0) {
+      output.writeInt32(2, chunkNum_);
+    }
+    if (firstFrame_ != false) {
+      output.writeBool(3, firstFrame_);
+    }
     if (!video_.isEmpty()) {
-      output.writeBytes(2, video_);
+      output.writeBytes(4, video_);
     }
     unknownFields.writeTo(output);
   }
@@ -137,9 +173,17 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(1, videoNum_);
     }
+    if (chunkNum_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(2, chunkNum_);
+    }
+    if (firstFrame_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(3, firstFrame_);
+    }
     if (!video_.isEmpty()) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBytesSize(2, video_);
+        .computeBytesSize(4, video_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -159,6 +203,10 @@ private static final long serialVersionUID = 0L;
     boolean result = true;
     result = result && (getVideoNum()
         == other.getVideoNum());
+    result = result && (getChunkNum()
+        == other.getChunkNum());
+    result = result && (getFirstFrame()
+        == other.getFirstFrame());
     result = result && getVideo()
         .equals(other.getVideo());
     result = result && unknownFields.equals(other.unknownFields);
@@ -174,6 +222,11 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + VIDEONUM_FIELD_NUMBER;
     hash = (53 * hash) + getVideoNum();
+    hash = (37 * hash) + CHUNKNUM_FIELD_NUMBER;
+    hash = (53 * hash) + getChunkNum();
+    hash = (37 * hash) + FIRSTFRAME_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getFirstFrame());
     hash = (37 * hash) + VIDEO_FIELD_NUMBER;
     hash = (53 * hash) + getVideo().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -311,6 +364,10 @@ private static final long serialVersionUID = 0L;
       super.clear();
       videoNum_ = 0;
 
+      chunkNum_ = 0;
+
+      firstFrame_ = false;
+
       video_ = com.google.protobuf.ByteString.EMPTY;
 
       return this;
@@ -340,6 +397,8 @@ private static final long serialVersionUID = 0L;
     public com.kikkar.packet.VideoPacket buildPartial() {
       com.kikkar.packet.VideoPacket result = new com.kikkar.packet.VideoPacket(this);
       result.videoNum_ = videoNum_;
+      result.chunkNum_ = chunkNum_;
+      result.firstFrame_ = firstFrame_;
       result.video_ = video_;
       onBuilt();
       return result;
@@ -391,6 +450,12 @@ private static final long serialVersionUID = 0L;
       if (other == com.kikkar.packet.VideoPacket.getDefaultInstance()) return this;
       if (other.getVideoNum() != 0) {
         setVideoNum(other.getVideoNum());
+      }
+      if (other.getChunkNum() != 0) {
+        setChunkNum(other.getChunkNum());
+      }
+      if (other.getFirstFrame() != false) {
+        setFirstFrame(other.getFirstFrame());
       }
       if (other.getVideo() != com.google.protobuf.ByteString.EMPTY) {
         setVideo(other.getVideo());
@@ -450,15 +515,67 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private int chunkNum_ ;
+    /**
+     * <code>int32 chunkNum = 2;</code>
+     */
+    public int getChunkNum() {
+      return chunkNum_;
+    }
+    /**
+     * <code>int32 chunkNum = 2;</code>
+     */
+    public Builder setChunkNum(int value) {
+      
+      chunkNum_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 chunkNum = 2;</code>
+     */
+    public Builder clearChunkNum() {
+      
+      chunkNum_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private boolean firstFrame_ ;
+    /**
+     * <code>bool firstFrame = 3;</code>
+     */
+    public boolean getFirstFrame() {
+      return firstFrame_;
+    }
+    /**
+     * <code>bool firstFrame = 3;</code>
+     */
+    public Builder setFirstFrame(boolean value) {
+      
+      firstFrame_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool firstFrame = 3;</code>
+     */
+    public Builder clearFirstFrame() {
+      
+      firstFrame_ = false;
+      onChanged();
+      return this;
+    }
+
     private com.google.protobuf.ByteString video_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>bytes video = 2;</code>
+     * <code>bytes video = 4;</code>
      */
     public com.google.protobuf.ByteString getVideo() {
       return video_;
     }
     /**
-     * <code>bytes video = 2;</code>
+     * <code>bytes video = 4;</code>
      */
     public Builder setVideo(com.google.protobuf.ByteString value) {
       if (value == null) {
@@ -470,7 +587,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bytes video = 2;</code>
+     * <code>bytes video = 4;</code>
      */
     public Builder clearVideo() {
       

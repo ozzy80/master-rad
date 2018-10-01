@@ -29,9 +29,9 @@ public final class ResponseVideoMessageOuterClass {
   static {
     java.lang.String[] descriptorData = {
       "\n\032ResponseVideoMessage.proto\022\021com.kikkar" +
-      ".packet\"F\n\024ResponseVideoMessage\022\030\n\020reque" +
-      "stMessageId\030\001 \001(\005\022\024\n\010videoNum\030\002 \003(\005B\002\020\001B" +
-      "\002P\001b\006proto3"
+      ".packet\"I\n\024ResponseVideoMessage\022\020\n\010video" +
+      "Num\030\001 \001(\005\022\020\n\010chunkNum\030\002 \001(\005\022\r\n\005video\030\003 \001" +
+      "(\014B\002P\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -50,7 +50,7 @@ public final class ResponseVideoMessageOuterClass {
     internal_static_com_kikkar_packet_ResponseVideoMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_kikkar_packet_ResponseVideoMessage_descriptor,
-        new java.lang.String[] { "RequestMessageId", "VideoNum", });
+        new java.lang.String[] { "VideoNum", "ChunkNum", "Video", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
