@@ -86,32 +86,41 @@ public class ConnectionManagerImpl implements ConnectionManager {
 				System.err.println("null packet");
 			} else if (!checkPackageNumberASCOrder(packetPair)) {
 				continue;
-			} else if (packetPair.getRight().hasPingMessage()) {
-				PeerInformation peer = getPeer(packetPair.getLeft());
-				peerConnector.sendPongMessage(peerList, peer, packetPair.getRight().getPingMessage(), socket);
-			} else if (packetPair.getRight().hasPongMessage()) {
-				pongMessageMap.put(packetPair.getLeft(), packetPair.getRight().getPongMessage());
-			} else if (packetPair.getRight().hasRequestMessage()) {
-				PeerInformation peer = getPeer(packetPair.getLeft());
-				peerConnector.sendResponseMessage(peer, packetPair.getRight(), socket);
-				peer.setLastSentMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds());
-				updateLastTimeReciveMessage(packetPair);
-			} else if (packetPair.getRight().hasResponseMessage()) {
-				PeerInformation peer = getPeer(packetPair.getLeft());
-				assumePeerAreConnected(peer);
-				updateLastTimeReciveMessage(packetPair);
-			} else if (packetPair.getRight().hasKeepAliveMessage()) {
-				updateLastTimeReciveMessage(packetPair);
-			} else if (packetPair.getRight().hasTerminatedMessage()) {
-				removeConnection(packetPair);
 			} else {
-				// (dodaj vreme slanja ako odgovaram da imam)
-				packetsForHigherLevel.add(packetPair); // hasControlMessage, hasHaveMessage, hasNotInterestedMessage,
-														// hasRequestVideoMessage, hasResponseVideoMessage,
-														// hasVideoPacket
-				updateLastTimeReciveMessage(packetPair);
+				processPacket(packetPair);
 			}
 		}
+	}
+
+	public void processPacket(Pair<String, PacketWrapper> packetPair) {
+		
+		updateLastTimeReciveMessage(packetPair);
+		updateLastReceivedPacketNumber(packetPair);
+
+		if (packetPair.getRight().hasPingMessage()) {
+			PeerInformation peer = getPeer(packetPair.getLeft());
+			if (peer != null) {
+				peerConnector.sendPongMessage(peerList, peer, packetPair.getRight().getPingMessage(), socket);
+			}
+		} else if (packetPair.getRight().hasPongMessage()) {
+			pongMessageMap.put(packetPair.getLeft(), packetPair.getRight().getPongMessage());
+		} else if (packetPair.getRight().hasRequestMessage()) {
+			PeerInformation peer = getPeer(packetPair.getLeft());
+			if (peer != null) {
+				peerConnector.sendResponseMessage(peer, packetPair.getRight(), socket);
+				updateLastTimeSentMessage(peer);
+			}
+		} else if (packetPair.getRight().hasResponseMessage()) {
+			PeerInformation peer = getPeer(packetPair.getLeft());
+			if (peer != null) {
+				assumePeerAreConnected(peer);
+			}
+		} else if (packetPair.getRight().hasTerminatedMessage()) {
+			removeConnection(packetPair);
+		} else if (packetPair.getRight().hasKeepAliveMessage()) {
+		} else {
+			packetsForHigherLevel.add(packetPair);
+		} 
 	}
 
 	private Short initialServerConnection(SpeedTest speedTest) throws MalformedURLException, Exception {
@@ -212,7 +221,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		connectedPeers.stream().filter(p -> p.getLastSentMessageTimeMilliseconds()
 				+ WAIT_NEIGHBOUR_PACKETS_MILLISECOND / 2 < clock.getcurrentTimeMilliseconds()).forEach(p -> {
 					peerConnector.sendKeepAliveMessage(p, socket);
-					p.setLastSentMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds());
+					updateLastTimeSentMessage(p);
 				});
 	}
 
@@ -359,6 +368,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	public boolean checkPackageNumberASCOrder(Pair<String, PacketWrapper> packetPair) {
 		PeerInformation peer = getPeer(packetPair.getLeft());
+		if (peer == null) {
+			return false;
+		}
 		int receivedPacketNumber = packetPair.getRight().getPacketId();
 		if (peer.getLastReceivedPacketNumber() + 1 == receivedPacketNumber) {
 			peer.setLastReceivedPacketNumber(receivedPacketNumber);
@@ -386,13 +398,30 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	public void updateLastTimeReciveMessage(Pair<String, PacketWrapper> packetPair) {
 		PeerInformation peer = getPeer(packetPair.getLeft());
-		peer.setLastReceivedMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds());
+		if (peer != null) {
+			peer.setLastReceivedMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds());
+		}
 	}
 
+	private void updateLastTimeSentMessage(PeerInformation peer) {
+		peer.setLastSentMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds());
+	}
+
+	private void updateLastReceivedPacketNumber(Pair<String, PacketWrapper> packetPair) {
+		PeerInformation peer = getPeer(packetPair.getLeft());
+		if (peer != null) {
+			peer.setLastReceivedPacketNumber(packetPair.getRight().getPacketId());
+		}
+	}
+	
 	private PeerInformation getPeer(String ipAddress) {
-		PeerInformation peerInformation = peerList.stream().filter(p -> new String(p.getIpAddress()).equals(ipAddress))
-				.findFirst().get();
-		return peerInformation;
+		try {
+			PeerInformation peerInformation = peerList.stream()
+					.filter(p -> new String(p.getIpAddress()).equals(ipAddress)).findFirst().orElse(null);
+			return peerInformation;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public void removeConnection(Pair<String, PacketWrapper> packetPair) {
@@ -409,6 +438,36 @@ public class ConnectionManagerImpl implements ConnectionManager {
 				outError.write(e.getMessage().getBytes());
 			} catch (IOException e1) {
 			}
+		}
+	}
+
+	@Override
+	public void sendAll(PacketWrapper.Builder wrap, List<String> uninterestedPeerIp) {
+		List<PeerInformation> connectedPeers = peerList.stream()
+				.filter(p -> p.getPeerStatus().equals(PeerStatus.DOWNLOAD_CONNECTION)).collect(Collectors.toList());
+
+		connectedPeers.stream().filter(p -> !uninterestedPeerIp.contains(new String(p.getIpAddress()))).forEach(p -> {
+			sendWrap(p, wrap);
+		});
+	}
+
+	@Override
+	public void sendOne(PacketWrapper.Builder wrap, String IpAddress) {
+		PeerInformation peer = getPeer(IpAddress);
+		if (peer != null) {
+			sendWrap(peer, wrap);
+		}
+	}
+
+	private void sendWrap(PeerInformation peer, PacketWrapper.Builder wrap) {
+		DatagramPacket packet;
+		try {
+			wrap.setPacketId(peer.getLastSentPacketNumber());
+			peer.incrementLastSentPacketNumber();
+			packet = MessageWrapper.createSendDatagramPacket(wrap.build(), peer);
+			send(packet, System.err);
+			updateLastTimeSentMessage(peer);
+		} catch (IOException e) {
 		}
 	}
 
@@ -476,8 +535,22 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		WAIT_SECOND = wAIT_SECOND;
 	}
 
-	public Pair<String, PacketWrapper> getWaitingPackets() throws InterruptedException {
-		return packetsForHigherLevel.take();
+	@Override
+	public Pair<String, PacketWrapper> getWaitingPackets() {
+		try {
+			return packetsForHigherLevel.take();
+		} catch (InterruptedException e) {
+			System.out.println("thread error");
+		}
+		return null;
 	}
 
+	public BlockingQueue<Pair<String, PacketWrapper>> getPacketsForHigherLevel() {
+		return packetsForHigherLevel;
+	}
+
+	public void setPacketsForHigherLevel(BlockingQueue<Pair<String, PacketWrapper>> packetsForHigherLevel) {
+		this.packetsForHigherLevel = packetsForHigherLevel;
+	}
+	
 }

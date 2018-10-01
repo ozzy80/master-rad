@@ -1,11 +1,9 @@
 package com.kikkar.network.impl;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
@@ -27,16 +25,16 @@ public class PeerConnectorImpl implements PeerConnector {
 	private PeerInformation thisPeer;
 
 	@Override
-	public DatagramPacket createPingMessage(PeerInformation peerInformation, short personalClubNum,
-			ConnectionType connectionType) throws IOException {
+	public DatagramPacket createPingMessage(PeerInformation peerInformation, ConnectionType connectionType)
+			throws IOException {
 		PingMessage.Builder ping = PingMessage.newBuilder();
-		ping.setClubNumber(personalClubNum);
+		ping.setClubNumber(thisPeer.getClubNumber());
 		ping.setPingId(peerInformation.getPingMessageNumber());
 		ping.setConnectionType(connectionType);
 		peerInformation.incrementPingMessageNumber();
 
 		PacketWrapper packet = MessageWrapper.wrapMessage(ping.build(), peerInformation);
-		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
+		DatagramPacket datagramPacket = MessageWrapper.createSendDatagramPacket(packet, peerInformation);
 
 		return datagramPacket;
 	}
@@ -51,22 +49,22 @@ public class PeerConnectorImpl implements PeerConnector {
 		pong.setBufferVideoNum(bufferVideoNum);
 
 		PacketWrapper packet = MessageWrapper.wrapMessage(pong.build(), peerInformation);
-		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
+		DatagramPacket datagramPacket = MessageWrapper.createSendDatagramPacket(packet, peerInformation);
 
 		return datagramPacket;
 	}
 
 	@Override
-	public DatagramPacket createRequestMessage(PeerInformation peerInformation, short personalClubNum,
-			ConnectionType connectionType) throws IOException {
+	public DatagramPacket createRequestMessage(PeerInformation peerInformation, ConnectionType connectionType)
+			throws IOException {
 		RequestMessage.Builder request = RequestMessage.newBuilder();
 		request.setRequestId(peerInformation.getRequestMessageNumber());
-		request.setClubNumber(personalClubNum);
+		request.setClubNumber(thisPeer.getClubNumber());
 		request.setConnectionType(connectionType);
 		peerInformation.incrementRequestMessageNumber();
 
 		PacketWrapper packet = MessageWrapper.wrapMessage(request.build(), peerInformation);
-		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
+		DatagramPacket datagramPacket = MessageWrapper.createSendDatagramPacket(packet, peerInformation);
 
 		return datagramPacket;
 	}
@@ -78,22 +76,9 @@ public class PeerConnectorImpl implements PeerConnector {
 		response.setResponseRequestId(requestMessage.getRequestId());
 
 		PacketWrapper packet = MessageWrapper.wrapMessage(response.build(), peerInformation);
-		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
+		DatagramPacket datagramPacket = MessageWrapper.createSendDatagramPacket(packet, peerInformation);
 
 		return datagramPacket;
-	}
-
-	private DatagramPacket createSendDatagramPacket(PacketWrapper packet, PeerInformation peerInformation)
-			throws IOException {
-		ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-		packet.writeTo(byteOutStream);
-		byte[] sendData = byteOutStream.toByteArray();
-		InetAddress serverAddress = InetAddress.getByName(new String(peerInformation.getIpAddress()));
-
-		DatagramPacket sendDataPacket = new DatagramPacket(sendData, sendData.length, serverAddress,
-				peerInformation.getPortNumber());
-
-		return sendDataPacket;
 	}
 
 	@Override
@@ -126,7 +111,7 @@ public class PeerConnectorImpl implements PeerConnector {
 		terminate.setTerminatedReason(terminatedReason);
 
 		PacketWrapper packet = MessageWrapper.wrapMessage(terminate.build(), peerInformation);
-		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
+		DatagramPacket datagramPacket = MessageWrapper.createSendDatagramPacket(packet, peerInformation);
 
 		return datagramPacket;
 	}
@@ -137,7 +122,7 @@ public class PeerConnectorImpl implements PeerConnector {
 		alive.setMessageId(0);
 
 		PacketWrapper packet = MessageWrapper.wrapMessage(alive.build(), peerInformation);
-		DatagramPacket datagramPacket = createSendDatagramPacket(packet, peerInformation);
+		DatagramPacket datagramPacket = MessageWrapper.createSendDatagramPacket(packet, peerInformation);
 
 		return datagramPacket;
 	}
@@ -171,7 +156,7 @@ public class PeerConnectorImpl implements PeerConnector {
 			ConnectionType connectionType, OutputStream errorOutput) {
 		neighbourPeers.stream().forEach(peer -> {
 			try {
-				DatagramPacket packet = createRequestMessage(peer, thisPeer.getClubNumber(), connectionType);
+				DatagramPacket packet = createRequestMessage(peer, connectionType);
 				send(packet, socket);
 				if (connectionType.equals(ConnectionType.DOWNLOAD)) {
 					peer.setPeerStatus(PeerStatus.RESPONSE_WAIT_DOWNLOAD);
@@ -192,7 +177,7 @@ public class PeerConnectorImpl implements PeerConnector {
 			DatagramSocket socket) {
 		neighbourPeers.stream().filter(peer -> peer.getPeerStatus().equals(PeerStatus.NOT_CONTACTED)).forEach(peer -> {
 			try {
-				DatagramPacket packet = createPingMessage(peer, thisPeer.getClubNumber(), connectionType);
+				DatagramPacket packet = createPingMessage(peer, connectionType);
 				send(packet, socket);
 				if (connectionType.equals(ConnectionType.DOWNLOAD)) {
 					peer.setPeerStatus(PeerStatus.PONG_WAIT_DOWNLOAD);
@@ -248,7 +233,7 @@ public class PeerConnectorImpl implements PeerConnector {
 			System.err.println(e.getMessage());
 		}
 	}
-	
+
 	public PeerInformation getThisPeer() {
 		return thisPeer;
 	}

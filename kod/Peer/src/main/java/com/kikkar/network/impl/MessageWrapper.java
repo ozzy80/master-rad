@@ -1,5 +1,10 @@
 package com.kikkar.network.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+
 import com.kikkar.packet.ControlMessage;
 import com.kikkar.packet.HaveMessage;
 import com.kikkar.packet.KeepAliveMessage;
@@ -106,6 +111,19 @@ public class MessageWrapper {
 		wrap.setVideoPacket(message);
 
 		return wrap.build();
+	}
+	
+	public static DatagramPacket createSendDatagramPacket(PacketWrapper packet, PeerInformation peerInformation)
+			throws IOException {
+		ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+		packet.writeTo(byteOutStream);
+		byte[] sendData = byteOutStream.toByteArray();
+		InetAddress serverAddress = InetAddress.getByName(new String(peerInformation.getIpAddress()));
+
+		DatagramPacket sendDataPacket = new DatagramPacket(sendData, sendData.length, serverAddress,
+				peerInformation.getPortNumber());
+
+		return sendDataPacket;
 	}
 
 }

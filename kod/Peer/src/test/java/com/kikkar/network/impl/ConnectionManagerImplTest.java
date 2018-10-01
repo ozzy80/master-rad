@@ -9,8 +9,10 @@ import java.net.DatagramSocket;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,14 +26,20 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.kikkar.global.ClockSingleton;
 import com.kikkar.network.ServerConnector;
 import com.kikkar.network.SpeedTest;
 import com.kikkar.packet.ConnectionType;
+import com.kikkar.packet.HaveMessage;
 import com.kikkar.packet.KeepAliveMessage;
 import com.kikkar.packet.PacketWrapper;
 import com.kikkar.packet.Pair;
+import com.kikkar.packet.PingMessage;
 import com.kikkar.packet.PongMessage;
+import com.kikkar.packet.RequestMessage;
+import com.kikkar.packet.TerminatedReason;
+import com.kikkar.packet.VideoPacket;
 
 import fr.bmartel.speedtest.SpeedTestSocket;
 
@@ -439,5 +447,126 @@ class ConnectionManagerImplTest {
 		connectionManagerImpl.removeConnection(packetPair);
 
 		assertFalse(peerList.contains(peer));
+	}
+	
+	@Test
+	void testSendAll_checkIncrementMessageNumber() {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(3, 3, 6);
+		connectionManagerImpl.setPeerList(peerList);
+		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
+		
+		connectionManagerImpl.sendAll(wrap, peerList.subList(0, 1).stream().map(PeerInformation::getIpAddress).map(String::new).collect(Collectors.toList()));
+		
+		assertEquals(2, peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
+		assertEquals(2, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count());
+	}
+	
+	@Test
+	void testSendOne_checkIncrementMessageNumber() {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(3, 3, 6);
+		connectionManagerImpl.setPeerList(peerList);
+		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
+		
+		connectionManagerImpl.sendOne(wrap, new String(peerList.get(0).getIpAddress()));
+		
+		assertTrue(peerList.get(0).getLastSentMessageTimeMilliseconds() > 1000);
+		assertTrue(peerList.get(0).getLastSentPacketNumber() == 1);
+	}
+	
+	@Test
+	void testProcessPacket_checkPongMessage() throws InvalidProtocolBufferException, IOException {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2, 3, 6);
+		PeerInformation peer = peerList.get(4);
+		connectionManagerImpl.setPeerList(peerList);
+		connectionManagerImpl.setPongMessageMap(new HashMap<>());
+		PacketWrapper wrap = PacketWrapper.parseFrom(peerConnectorImpl.createPongMessage(peer, 1, 1, 50, PingMessage.newBuilder().setPingId(0).build()).getData());
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
+		
+		connectionManagerImpl.processPacket(packetPair);
+		
+		assertEquals(1, connectionManagerImpl.getPongMessageMap().size());
+		assertEquals(0, peer.getUnorderPacketNumber());
+	}
+	
+	@Test
+	void testProcessPacket_checkRequestMessage() throws InvalidProtocolBufferException, IOException {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 6);
+		PeerInformation peer = peerList.get(4);
+		connectionManagerImpl.setPeerList(peerList);
+		connectionManagerImpl.setPongMessageMap(new HashMap<>());
+		PacketWrapper wrap = PacketWrapper.parseFrom(peerConnectorImpl.createRequestMessage(peer, ConnectionType.DOWNLOAD).getData());
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
+		
+		connectionManagerImpl.processPacket(packetPair);
+		
+		assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
+		assertTrue(peer.getLastReceivedMessageTimeMilliseconds() > 1000);
+		assertEquals(1, peer.getRequestMessageNumber());
+		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
+		assertEquals(2, peer.getLastSentPacketNumber());
+		assertEquals(0, peer.getUnorderPacketNumber());
+	}
+	
+	@Test
+	void testProcessPacket_checkResponseMessage() throws InvalidProtocolBufferException, IOException {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 6);
+		PeerInformation peer = peerList.get(4);
+		connectionManagerImpl.setPeerList(peerList);
+		PacketWrapper wrap = PacketWrapper.parseFrom(peerConnectorImpl.createResponseMessage(peer, RequestMessage.newBuilder().setRequestId(0).setConnectionType(ConnectionType.UPLOAD).build()).getData());
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
+		
+		connectionManagerImpl.processPacket(packetPair);
+		
+		assertEquals(PeerStatus.UPLOAD_CONNECTION, peer.getPeerStatus());
+		assertTrue(peer.getLastReceivedMessageTimeMilliseconds() > 1000);
+		assertEquals(1, peer.getLastSentPacketNumber());
+		assertEquals(0, peer.getUnorderPacketNumber());
+	}
+	
+	@Test
+	void testProcessPacket_checkKeepAliveMessage() throws InvalidProtocolBufferException, IOException {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 6);
+		PeerInformation peer = peerList.get(4);
+		connectionManagerImpl.setPeerList(peerList);
+		
+		PacketWrapper wrap = PacketWrapper.parseFrom(peerConnectorImpl.createKeepAliveMessage(peer).getData());
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
+		
+		connectionManagerImpl.processPacket(packetPair);
+		
+		assertTrue(peer.getLastReceivedMessageTimeMilliseconds() > 1000);
+		assertEquals(0, peer.getLastReceivedPacketNumber());
+		assertEquals(0, peer.getUnorderPacketNumber());
+	}
+	
+	@Test
+	void testProcessPacket_checkTerminatedMessage() throws InvalidProtocolBufferException, IOException {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 6);
+		PeerInformation peer = peerList.get(4);
+		connectionManagerImpl.setPeerList(peerList);
+		
+		PacketWrapper wrap = PacketWrapper.parseFrom(peerConnectorImpl.createTerminateConnectionMessage(peer, TerminatedReason.DEAD_PEER).getData());
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
+		
+		connectionManagerImpl.processPacket(packetPair);
+		
+		assertFalse(peerList.contains(peer));
+		assertEquals(0, peer.getUnorderPacketNumber());	
+		}
+	
+	@Test
+	void testProcessPacket_checkPacketsForHigherLevel() throws InvalidProtocolBufferException, IOException {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 6);
+		PeerInformation peer = peerList.get(4);
+		connectionManagerImpl.setPeerList(peerList);
+		
+		PacketWrapper wrap = MessageWrapper.wrapMessage(VideoPacket.newBuilder().setVideoNum(1).build(), peer);
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
+		
+		connectionManagerImpl.setPacketsForHigherLevel(new ArrayBlockingQueue<>(30));
+		connectionManagerImpl.processPacket(packetPair);
+		
+		assertEquals(1, connectionManagerImpl.getPacketsForHigherLevel().size());
+		assertEquals(0, peer.getUnorderPacketNumber());
 	}
 }

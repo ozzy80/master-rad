@@ -62,13 +62,13 @@ class PeerConnectorImplTest {
 	void testCreatePingMessage_checkDefaultBehaviour() throws InvalidProtocolBufferException, IOException {
 		short pingNum = 0;
 		ConnectionType connectionType = ConnectionType.BOTH;
-
+		
 		PingMessage ping = PingMessage.newBuilder().setClubNumber(clubNum).setPingId(pingNum)
 				.setConnectionType(connectionType).build();
 		PacketWrapper packet = MessageWrapper.wrapMessage(ping, peerInformation);
 		resetCounters(peerInformation);
 
-		assertPacket(packet, peerConnectorImpl.createPingMessage(peerInformation, clubNum, connectionType));
+		assertPacket(packet, peerConnectorImpl.createPingMessage(peerInformation, connectionType));
 	}
 
 	private static Stream<Arguments> createDifferentShortNumberWithBoundaries() {
@@ -84,7 +84,7 @@ class PeerConnectorImplTest {
 
 		PeerInformation peerInformation = new PeerInformation(ipAddress, portNum, clubNum);
 		peerInformation.setPingMessageNumber(pingNum);
-		peerConnectorImpl.createPingMessage(peerInformation, clubNum, connectionType);
+		peerConnectorImpl.createPingMessage(peerInformation, connectionType);
 
 		assertEquals(pingNumExpected, peerInformation.getPingMessageNumber());
 	}
@@ -115,7 +115,7 @@ class PeerConnectorImplTest {
 		PacketWrapper packet = MessageWrapper.wrapMessage(request, peerInformation);
 		resetCounters(peerInformation);
 
-		assertPacket(packet, peerConnectorImpl.createRequestMessage(peerInformation, clubNum, connectionType));
+		assertPacket(packet, peerConnectorImpl.createRequestMessage(peerInformation, connectionType));
 	}
 
 	@ParameterizedTest
@@ -126,7 +126,7 @@ class PeerConnectorImplTest {
 
 		PeerInformation peerInformation = new PeerInformation(ipAddress, portNum, clubNum);
 		peerInformation.setRequestMessageNumber(requestNum);
-		peerConnectorImpl.createRequestMessage(peerInformation, clubNum, connectionType);
+		peerConnectorImpl.createRequestMessage(peerInformation, connectionType);
 
 		assertEquals(requestNumExpected, peerInformation.getRequestMessageNumber());
 	}
@@ -148,7 +148,7 @@ class PeerConnectorImplTest {
 		ConnectionType connectionType = ConnectionType.DOWNLOAD;
 		DatagramSocket mockSocket = Mockito.mock(DatagramSocket.class);
 
-		DatagramPacket packet = peerConnectorImpl.createRequestMessage(peerInformation, clubNum, connectionType);
+		DatagramPacket packet = peerConnectorImpl.createRequestMessage(peerInformation, connectionType);
 		peerConnectorImpl.send(packet, mockSocket);
 
 		Mockito.verify(mockSocket).send(packet);

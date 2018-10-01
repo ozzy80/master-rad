@@ -83,11 +83,12 @@ public class DummyObjectCreator {
 		DatagramPacket packet;
 		DatagramPacket pong;
 		for (int i = 0; i < peerInformations.size() - 1; i += 2) { 
-			packet = peerConnectorImpl.createPingMessage(peerInformations.get(0), peerInformations.get(0).getClubNumber(), ConnectionType.DOWNLOAD); 
+			peerConnectorImpl.setThisPeer(peerInformations.get(0));
+			packet = peerConnectorImpl.createPingMessage(peerInformations.get(0), ConnectionType.DOWNLOAD); 
 			pong = peerConnectorImpl.createPongMessage(peerInformations.get(i), uploadLinkNum.get(i), downloadLinkNum.get(i), bufferVideoNum.get(i), PacketWrapper.parseFrom(packet.getData()).getPingMessage()); 
 			result.put(new String(peerInformations.get(i).getIpAddress()), PacketWrapper.parseFrom(pong.getData()).getPongMessage());
 	 
-			packet = peerConnectorImpl.createPingMessage(peerInformations.get(0), peerInformations.get(0).getClubNumber(), ConnectionType.UPLOAD); 
+			packet = peerConnectorImpl.createPingMessage(peerInformations.get(0), ConnectionType.UPLOAD); 
 			pong = peerConnectorImpl.createPongMessage(peerInformations.get(i + 1), uploadLinkNum.get(i + 1), downloadLinkNum.get(i + 1), bufferVideoNum.get(i + 1), PacketWrapper.parseFrom(packet.getData()).getPingMessage());
 			result.put(new String(peerInformations.get(i + 1).getIpAddress()), PacketWrapper.parseFrom(pong.getData()).getPongMessage());
 		}

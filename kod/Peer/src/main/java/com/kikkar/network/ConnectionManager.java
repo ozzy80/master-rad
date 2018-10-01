@@ -5,6 +5,8 @@ import java.net.DatagramPacket;
 import java.util.List;
 
 import com.kikkar.network.impl.PeerInformation;
+import com.kikkar.packet.PacketWrapper;
+import com.kikkar.packet.Pair;
 import com.kikkar.packet.TerminatedReason;
 
 public interface ConnectionManager {
@@ -20,4 +22,10 @@ public interface ConnectionManager {
 	void terminateConnections(List<PeerInformation> peerInformations, TerminatedReason terminatedReason);
 	
 	void keepAliveUploadConnection();
+	
+	Pair<String, PacketWrapper> getWaitingPackets();
+	
+	void sendAll(PacketWrapper.Builder wrap, List<String> uninterestedPeerIp);
+	
+	void sendOne(PacketWrapper.Builder wrap, String IpAddress);
 }

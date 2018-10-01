@@ -18,14 +18,13 @@ import com.kikkar.packet.RequestMessage;
 import com.kikkar.packet.TerminatedReason;
 
 public interface PeerConnector {
-	DatagramPacket createPingMessage(PeerInformation peerInformation, short personalClubNum,
-			ConnectionType connectionType) throws IOException;
+	DatagramPacket createPingMessage(PeerInformation peerInformation, ConnectionType connectionType) throws IOException;
 
 	DatagramPacket createPongMessage(PeerInformation peerInformation, int uploadLinkNum, int downloadLinkNum,
 			int bufferVideoNum, PingMessage ping) throws IOException;
 
-	DatagramPacket createRequestMessage(PeerInformation peerInformation, short personalClubNum,
-			ConnectionType connectionType) throws IOException;
+	DatagramPacket createRequestMessage(PeerInformation peerInformation, ConnectionType connectionType)
+			throws IOException;
 
 	DatagramPacket createResponseMessage(PeerInformation peerInformation, RequestMessage requestMessage)
 			throws IOException;
@@ -60,6 +59,6 @@ public interface PeerConnector {
 	void setThisPeer(PeerInformation thisPeer);
 
 	void setPacketsWaitingForProcessing(BlockingQueue<Pair<String, PacketWrapper>> packetsWaitingForProcessing);
-	
+
 	void sendKeepAliveMessage(PeerInformation peer, DatagramSocket socket);
 }
