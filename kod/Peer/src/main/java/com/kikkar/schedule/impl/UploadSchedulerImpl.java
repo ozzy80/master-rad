@@ -19,6 +19,7 @@ import com.kikkar.schedule.UploadScheduler;
 public class UploadSchedulerImpl implements UploadScheduler {
 	private ConnectionManager connectionManager;
 	private SharingBufferSingleton sharingBufferSingleton;
+	private int MAX_REUQEST_VIDEO_SIZE = 20;
 	
 	private int MAX_ELEMENT_NUMBER = sharingBufferSingleton.getMAX_ELEMENT_NUMBER();
 	
@@ -71,7 +72,8 @@ public class UploadSchedulerImpl implements UploadScheduler {
 			connectionManager.sendOne(wrap, packetPair.getLeft());
 		});
 	}
-
+	
+	// Automatski pokretati na 5s
 	public void getMissingVideoNum() {
 		int[] videoNum = getMissingVideos();
 		RequestVideoMessage.Builder request = RequestVideoMessage.newBuilder();
@@ -102,7 +104,7 @@ public class UploadSchedulerImpl implements UploadScheduler {
 				previousChunkNum = video.getChunkNum();
 			}
 			
-			if(iterationNUm > MAX_ELEMENT_NUMBER) {
+			if(iterationNUm > MAX_ELEMENT_NUMBER || videoNum.size() > MAX_REUQEST_VIDEO_SIZE) {
 				break;
 			}
 			

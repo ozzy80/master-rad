@@ -7,6 +7,7 @@ import java.net.DatagramSocket;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+import com.kikkar.global.SharingBufferSingleton;
 import com.kikkar.network.PeerConnector;
 import com.kikkar.packet.ConnectionType;
 import com.kikkar.packet.KeepAliveMessage;
@@ -23,6 +24,7 @@ public class PeerConnectorImpl implements PeerConnector {
 
 	private BlockingQueue<Pair<String, PacketWrapper>> packetsWaitingForProcessing;
 	private PeerInformation thisPeer;
+	private SharingBufferSingleton sharingBufferSingleton = SharingBufferSingleton.getInstance();
 
 	@Override
 	public DatagramPacket createPingMessage(PeerInformation peerInformation, ConnectionType connectionType)
@@ -197,8 +199,7 @@ public class PeerConnectorImpl implements PeerConnector {
 				.filter(p -> p.getPeerStatus().equals(PeerStatus.UPLOAD_CONNECTION)).count();
 		int downloadLinkNum = (int) neighbourPeers.stream()
 				.filter(p -> p.getPeerStatus().equals(PeerStatus.DOWNLOAD_CONNECTION)).count();
-		// TODO dodati pravi buffer
-		int bufferVideoNum = 30;
+		int bufferVideoNum = sharingBufferSingleton.getNumberOfBufferedVideoContent();
 		try {
 			DatagramPacket packet = createPongMessage(peer, uploadLinkNum, downloadLinkNum, bufferVideoNum,
 					pingMessage);

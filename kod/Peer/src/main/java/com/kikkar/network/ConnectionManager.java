@@ -15,7 +15,7 @@ public interface ConnectionManager {
 	
 	void start(DatagramPacket reciveDatagramPacket) throws Exception;
 	
-	void contactServerForMorePeers(SpeedTest speedTest, OutputStream errorOutput);
+	void contactServerForMorePeers(OutputStream errorOutput);
 	
 	void congestionControl();
 	

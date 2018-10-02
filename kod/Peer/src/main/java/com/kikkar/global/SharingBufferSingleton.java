@@ -113,6 +113,18 @@ public class SharingBufferSingleton {
 		}
 		return previousVideoNum;
 	}
+	
+	public int getNumberOfBufferedVideoContent() {
+		int start = minVideoNum;
+		int presentVideoNum = 0;
+		for (int i = 0; i < videoArray.length; i++) {
+			if(isVideoPresent(start)) {
+				presentVideoNum++;
+			}
+			start = (start + 1) % MAX_ELEMENT_NUMBER;
+		}
+		return presentVideoNum;
+	}
 
 	@Override
 	public int hashCode() {
