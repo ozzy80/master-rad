@@ -112,7 +112,7 @@ public class MessageWrapper {
 
 		return wrap.build();
 	}
-	
+
 	public static DatagramPacket createSendDatagramPacket(PacketWrapper packet, PeerInformation peerInformation)
 			throws IOException {
 		ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();

@@ -5,11 +5,9 @@ import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 import com.kikkar.network.impl.PeerInformation;
-import com.kikkar.network.impl.PeerStatus;
 import com.kikkar.packet.ConnectionType;
 import com.kikkar.packet.PacketWrapper;
 import com.kikkar.packet.Pair;

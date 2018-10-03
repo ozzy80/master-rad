@@ -7,6 +7,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import com.kikkar.global.Constants;
 import com.kikkar.global.SharingBufferSingleton;
 import com.kikkar.network.ConnectionManager;
 import com.kikkar.network.impl.PeerStatus;
@@ -24,11 +25,6 @@ public class UploadSchedulerImpl implements UploadScheduler {
 	private ConnectionManager connectionManager;
 	private SharingBufferSingleton sharingBufferSingleton = SharingBufferSingleton.getInstance();
 	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
-	private int MAX_REUQEST_VIDEO_SIZE = 20;
-	private int MAX_ELEMENT_NUMBER = sharingBufferSingleton.getMAX_ELEMENT_NUMBER();
-	private long INITIA_MISSING_VIDEO_COLLECT_DELAY_SECOND = 5;
-	private long VIDEO_DURATION_SECOND = 6;
 
 	@Override
 	public void sendControlMessage(ControlMessage message) {
@@ -85,8 +81,8 @@ public class UploadSchedulerImpl implements UploadScheduler {
 	}
 
 	public void scheduleCollectMissingVideo() {
-		executor.scheduleAtFixedRate(() -> getMissingVideoNum(), INITIA_MISSING_VIDEO_COLLECT_DELAY_SECOND,
-				VIDEO_DURATION_SECOND / 2, TimeUnit.SECONDS);
+		executor.scheduleAtFixedRate(() -> getMissingVideoNum(), Constants.INITIA_MISSING_VIDEO_COLLECT_DELAY_SECOND,
+				Constants.VIDEO_DURATION_SECOND / 2, TimeUnit.SECONDS);
 	}
 
 	public void getMissingVideoNum() {
@@ -114,11 +110,11 @@ public class UploadSchedulerImpl implements UploadScheduler {
 				previousChunkNum = video.getChunkNum();
 			}
 
-			if (iterationNUm > MAX_ELEMENT_NUMBER || videoNum.size() > MAX_REUQEST_VIDEO_SIZE) {
+			if (iterationNUm > Constants.BUFFER_SIZE || videoNum.size() > Constants.MAX_REUQEST_VIDEO_SIZE) {
 				break;
 			}
 
-			currentPos = (currentPos + 1) % MAX_ELEMENT_NUMBER;
+			currentPos = (currentPos + 1) % Constants.BUFFER_SIZE;
 			iterationNUm++;
 		}
 
@@ -139,22 +135,6 @@ public class UploadSchedulerImpl implements UploadScheduler {
 
 	public void setSharingBufferSingleton(SharingBufferSingleton sharingBufferSingleton) {
 		this.sharingBufferSingleton = sharingBufferSingleton;
-	}
-
-	public int getMAX_REUQEST_VIDEO_SIZE() {
-		return MAX_REUQEST_VIDEO_SIZE;
-	}
-
-	public void setMAX_REUQEST_VIDEO_SIZE(int mAX_REUQEST_VIDEO_SIZE) {
-		MAX_REUQEST_VIDEO_SIZE = mAX_REUQEST_VIDEO_SIZE;
-	}
-
-	public int getMAX_ELEMENT_NUMBER() {
-		return MAX_ELEMENT_NUMBER;
-	}
-
-	public void setMAX_ELEMENT_NUMBER(int mAX_ELEMENT_NUMBER) {
-		MAX_ELEMENT_NUMBER = mAX_ELEMENT_NUMBER;
 	}
 
 }

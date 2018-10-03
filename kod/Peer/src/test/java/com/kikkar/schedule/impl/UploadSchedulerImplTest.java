@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.kikkar.global.ClockSingleton;
+import com.kikkar.global.Constants;
 import com.kikkar.global.SharingBufferSingleton;
 import com.kikkar.network.impl.ConnectionManagerImpl;
 import com.kikkar.network.impl.DummyObjectCreator;
@@ -23,7 +24,6 @@ class UploadSchedulerImplTest {
 	private UploadSchedulerImpl uploadSchedulerImpl;
 	private SharingBufferSingleton sharingBufferSingleton;
 	private ConnectionManagerImpl connectionManagerImpl;
-	private int MAX_ELEMENT_NUMBER = 6_000; 
 
 	@BeforeEach
 	void setup() throws SocketException {
@@ -34,7 +34,7 @@ class UploadSchedulerImplTest {
 		connectionManagerImpl.setClock(ClockSingleton.getInstance());
 		connectionManagerImpl.setSocket(new DatagramSocket());
 		sharingBufferSingleton = SharingBufferSingleton.getInstance();
-		sharingBufferSingleton.setVideoArray(new VideoPacket[MAX_ELEMENT_NUMBER]);
+		sharingBufferSingleton.setVideoArray(new VideoPacket[Constants.BUFFER_SIZE]);
 	}
 
 	@Test

@@ -11,17 +11,11 @@ import com.kikkar.packet.ControlMessage;
 import com.kikkar.packet.VideoPacket;
 
 public class SharingBufferSingleton {
-
 	private ClockSingleton clock = ClockSingleton.getInstance();
-	private int MAX_ELEMENT_NUMBER = 6_000; // 6s je max 4_000 delova + jos malo preko
-	private int VIDEO_DURATION_SECOND = 6;
-	private int INITIA_VIDEO_DELAY_SECOND = 8;
 	private long sourcePlayerPastTime;
-	// private String videoFile = "output.mxf";
-	private String videoFile = "output.mov";
 
 	private OutputStream os;
-	private VideoPacket[] videoArray = new VideoPacket[MAX_ELEMENT_NUMBER];
+	private VideoPacket[] videoArray = new VideoPacket[Constants.BUFFER_SIZE];
 	private int minVideoNum;
 	private static SharingBufferSingleton firstInstance;
 
@@ -39,14 +33,14 @@ public class SharingBufferSingleton {
 		if (i < 0) {
 			throw new ArrayIndexOutOfBoundsException(i);
 		}
-		videoArray[i % MAX_ELEMENT_NUMBER] = videoContent;
+		videoArray[i % Constants.BUFFER_SIZE] = videoContent;
 	}
 
 	public boolean isVideoPresent(int i) {
 		if (i < 0) {
 			throw new ArrayIndexOutOfBoundsException(i);
 		}
-		if (videoArray[i % MAX_ELEMENT_NUMBER] == null || videoArray[i % MAX_ELEMENT_NUMBER].getVideoNum() != i) {
+		if (videoArray[i % Constants.BUFFER_SIZE] == null || videoArray[i % Constants.BUFFER_SIZE].getVideoNum() != i) {
 			return false;
 		}
 		return true;
@@ -60,14 +54,6 @@ public class SharingBufferSingleton {
 		this.clock = clock;
 	}
 
-	public long getSourcePlayerPastTime() {
-		return sourcePlayerPastTime;
-	}
-
-	public void setSourcePlayerPastTime(long sourcePlayerPastTime) {
-		this.sourcePlayerPastTime = sourcePlayerPastTime;
-	}
-
 	public boolean isHeadAtChunkStart() {
 		if (isVideoPresent(minVideoNum)) {
 			return videoArray[minVideoNum].getFirstFrame();
@@ -79,7 +65,7 @@ public class SharingBufferSingleton {
 		if (i < 0) {
 			throw new ArrayIndexOutOfBoundsException(i);
 		}
-		return videoArray[i % MAX_ELEMENT_NUMBER];
+		return videoArray[i % Constants.BUFFER_SIZE];
 	}
 
 	public void saveVideoPack(OutputStream os) throws IOException {
@@ -97,7 +83,7 @@ public class SharingBufferSingleton {
 
 			cleanPreviousValue();
 			previousChunkNum = videoArray[minVideoNum].getChunkNum();
-			minVideoNum = (minVideoNum + 1) % MAX_ELEMENT_NUMBER;
+			minVideoNum = (minVideoNum + 1) % Constants.BUFFER_SIZE;
 			i++;
 		}
 	}
@@ -107,7 +93,7 @@ public class SharingBufferSingleton {
 			return true;
 		} else if (videoArray[minVideoNum].getChunkNum() > previousChunkNum) {
 			return true;
-		} else if (i > MAX_ELEMENT_NUMBER) {
+		} else if (i > Constants.BUFFER_SIZE) {
 			return true;
 		}
 		return false;
@@ -130,7 +116,7 @@ public class SharingBufferSingleton {
 	}
 
 	private int getPreviousIndex() {
-		int previousVideoNum = minVideoNum - 1 < 0 ? MAX_ELEMENT_NUMBER - 1 : minVideoNum - 1;
+		int previousVideoNum = minVideoNum - 1 < 0 ? Constants.BUFFER_SIZE - 1 : minVideoNum - 1;
 		if (videoArray[previousVideoNum] == null) {
 			return -1;
 		}
@@ -144,7 +130,7 @@ public class SharingBufferSingleton {
 			if (isVideoPresent(start)) {
 				presentVideoNum++;
 			}
-			start = (start + 1) % MAX_ELEMENT_NUMBER;
+			start = (start + 1) % Constants.BUFFER_SIZE;
 		}
 		return presentVideoNum;
 	}
@@ -162,11 +148,8 @@ public class SharingBufferSingleton {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + MAX_ELEMENT_NUMBER;
-		result = prime * result + VIDEO_DURATION_SECOND;
 		result = prime * result + minVideoNum;
 		result = prime * result + Arrays.hashCode(videoArray);
-		result = prime * result + ((videoFile == null) ? 0 : videoFile.hashCode());
 		return result;
 	}
 
@@ -179,62 +162,21 @@ public class SharingBufferSingleton {
 		if (getClass() != obj.getClass())
 			return false;
 		SharingBufferSingleton other = (SharingBufferSingleton) obj;
-		if (MAX_ELEMENT_NUMBER != other.MAX_ELEMENT_NUMBER)
-			return false;
-		if (VIDEO_DURATION_SECOND != other.VIDEO_DURATION_SECOND)
-			return false;
 		if (minVideoNum != other.minVideoNum)
 			return false;
 		if (!Arrays.equals(videoArray, other.videoArray))
-			return false;
-		if (videoFile == null) {
-			if (other.videoFile != null)
-				return false;
-		} else if (!videoFile.equals(other.videoFile))
 			return false;
 		return true;
 	}
 
 	public void saveVideoPackIntoFile() {
-		try (OutputStream os = new FileOutputStream(new File(videoFile), true)) {
+		try (OutputStream os = new FileOutputStream(new File(Constants.VIDEO_FILE_PATH), true)) {
 			saveVideoPack(os);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public int getMAX_ELEMENT_NUMBER() {
-		return MAX_ELEMENT_NUMBER;
-	}
-
-	public void setMAX_ELEMENT_NUMBER(int MAX_ELEMENT_NUMBER) {
-		this.MAX_ELEMENT_NUMBER = MAX_ELEMENT_NUMBER;
-	}
-
-	public int getVIDEO_DURATION_SECOND() {
-		return VIDEO_DURATION_SECOND;
-	}
-
-	public void setVIDEO_DURATION_SECOND(int vIDEO_DURATION_SECOND) {
-		VIDEO_DURATION_SECOND = vIDEO_DURATION_SECOND;
-	}
-
-	public int getINITIA_VIDEO_DELAY_SECOND() {
-		return INITIA_VIDEO_DELAY_SECOND;
-	}
-
-	public void setINITIA_VIDEO_DELAY_SECOND(int iNITIA_VIDEO_DELAY_SECOND) {
-		INITIA_VIDEO_DELAY_SECOND = iNITIA_VIDEO_DELAY_SECOND;
-	}
-
-	public String getVideoFile() {
-		return videoFile;
-	}
-
-	public void setVideoFile(String videoFile) {
-		this.videoFile = videoFile;
 	}
 
 	public OutputStream getOs() {
@@ -258,7 +200,15 @@ public class SharingBufferSingleton {
 	}
 
 	public void setMinVideoNum(int minVideoNum) {
-		this.minVideoNum = minVideoNum % MAX_ELEMENT_NUMBER;
+		this.minVideoNum = minVideoNum % Constants.BUFFER_SIZE;
+	}
+
+	public long getSourcePlayerPastTime() {
+		return sourcePlayerPastTime;
+	}
+
+	public void setSourcePlayerPastTime(long sourcePlayerPastTime) {
+		this.sourcePlayerPastTime = sourcePlayerPastTime;
 	}
 
 }

@@ -25,7 +25,7 @@ public class PeerInformation {
 	private short unorderPacketNumber;
 
 	private short pingMessageNumber;
-	
+
 	private short requestMessageNumber;
 
 	public PeerInformation() {
@@ -157,21 +157,21 @@ public class PeerInformation {
 	public void setRequestMessageNumber(short requestMessageNumber) {
 		this.requestMessageNumber = requestMessageNumber;
 	}
-	
+
 	public void incrementRequestMessageNumber() {
 		requestMessageNumber++;
 	}
-	
+
 	public void incrementLastSentPacketNumber() {
 		lastSentPacketNumber++;
 	}
-	
-	public void incrementUnorderPacketNumber( ) {
+
+	public void incrementUnorderPacketNumber() {
 		unorderPacketNumber++;
 	}
-	
-	public void decrementUnorderPacketNumber( ) {
-		if(unorderPacketNumber > 0) {
+
+	public void decrementUnorderPacketNumber() {
+		if (unorderPacketNumber > 0) {
 			unorderPacketNumber--;
 		}
 	}
@@ -183,5 +183,5 @@ public class PeerInformation {
 	public void setLastSentMessageTimeMilliseconds(long lastSentMessageTimeMilliseconds) {
 		this.lastSentMessageTimeMilliseconds = lastSentMessageTimeMilliseconds;
 	}
-	
+
 }

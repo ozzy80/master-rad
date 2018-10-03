@@ -21,15 +21,13 @@ import com.kikkar.packet.VideoPacket;
 class SharingBufferSingletonTest {
 
 	private SharingBufferSingleton sharingBufferSingleton;
-	private int MAX_ELEMENT_NUMBER = 6_000;
 	private ByteString video;
 
 	@BeforeEach
 	void setup() {
 		sharingBufferSingleton = SharingBufferSingleton.getInstance();
 		sharingBufferSingleton.setMinVideoNum(0);
-		sharingBufferSingleton.setMAX_ELEMENT_NUMBER(MAX_ELEMENT_NUMBER);
-		sharingBufferSingleton.setVideoArray(new VideoPacket[MAX_ELEMENT_NUMBER]);
+		sharingBufferSingleton.setVideoArray(new VideoPacket[Constants.BUFFER_SIZE]);
 		video = ByteString.copyFrom(new String(
 				"csdiqj68ze787eu1h2flnb2n80mscgk3aerhoog7oqgxis2vrmm07acdc1jzcqahoj8mr07crrognje0lzz6ento06g8pc1fg7na9usdlm44ru\recz1pvuo2m8cq4g64ri9\r\n"
 						+ "eggud9ccvy5t61q3txpb\rshrok61mjttccoreev81lyry7syutamjm0yoqqv6wkks87p096rqn54tgcg9eq8ji4jhtn2pnzzm04g39uc3nz53k2d2io1w9i3rit9cuikqfh"

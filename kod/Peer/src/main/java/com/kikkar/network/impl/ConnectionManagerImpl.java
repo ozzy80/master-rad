@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.net.ntp.NTPUDPClient;
 
 import com.kikkar.global.ClockSingleton;
+import com.kikkar.global.Constants;
 import com.kikkar.network.ConnectionManager;
 import com.kikkar.network.PeerConnector;
 import com.kikkar.network.ServerConnector;
@@ -35,12 +36,7 @@ import com.kikkar.packet.TerminatedReason;
 import fr.bmartel.speedtest.SpeedTestSocket;
 
 public class ConnectionManagerImpl implements ConnectionManager {
-	private int NUMBER_OF_CLUB = 6;
-	private long WAIT_SECOND = 1;
-	private long WAIT_NEIGHBOUR_PACKETS_MILLISECOND = 1000;
-	private short MAX_NUMBER_OF_UNORDER_PACKET = 15;
-	private int MAX_NUMBER_OF_WAIT_PACKET = 150;
-
+	private int threadWaitSecond = 1;
 	private ServerConnector serverConnector;
 	private PeerConnector peerConnector;
 	private DatagramSocket socket;
@@ -49,7 +45,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	private Map<String, PongMessage> pongMessageMap;
 	private ClockSingleton clock;
 	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-	private BlockingQueue<Pair<String, PacketWrapper>> packetsForHigherLevel = new ArrayBlockingQueue<>(MAX_NUMBER_OF_WAIT_PACKET);
+	private BlockingQueue<Pair<String, PacketWrapper>> packetsForHigherLevel = new ArrayBlockingQueue<>(
+			Constants.MAX_NUMBER_OF_WAIT_PACKET);
 	private Short token;
 
 	@Override
@@ -99,7 +96,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 		updateLastTimeReciveMessage(packetPair);
 		updateLastReceiveMessageNum(packetPair);
-		
+
 		if (packetPair.getRight().hasPingMessage()) {
 			PeerInformation peer = getPeer(packetPair.getLeft());
 			if (peer != null) {
@@ -185,9 +182,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	}
 
 	private void deleteSlowPeer(List<PeerInformation> connectedPeers) {
-		List<PeerInformation> deadPeers = connectedPeers
-				.stream().filter(p -> p.getLastReceivedMessageTimeMilliseconds()
-						+ WAIT_NEIGHBOUR_PACKETS_MILLISECOND < clock.getcurrentTimeMilliseconds())
+		List<PeerInformation> deadPeers = connectedPeers.stream()
+				.filter(p -> p.getLastReceivedMessageTimeMilliseconds()
+						+ Constants.WAIT_NEIGHBOUR_PACKETS_MILLISECOND < clock.getcurrentTimeMilliseconds())
 				.collect(Collectors.toList());
 
 		terminateConnections(deadPeers, TerminatedReason.DEAD_PEER);
@@ -195,7 +192,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	private void deleteUnorderPacketNum(List<PeerInformation> connectedPeers) {
 		List<PeerInformation> unorderPeers = connectedPeers.stream()
-				.filter(p -> p.getUnorderPacketNumber() > MAX_NUMBER_OF_UNORDER_PACKET).collect(Collectors.toList());
+				.filter(p -> p.getUnorderPacketNumber() > Constants.MAX_NUMBER_OF_UNORDER_PACKET)
+				.collect(Collectors.toList());
 
 		terminateConnections(unorderPeers, TerminatedReason.PACKET_NUMBER_DISORDER);
 	}
@@ -218,8 +216,10 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	@Override
 	public void keepAliveUploadConnection() {
 		List<PeerInformation> connectedPeers = getConnectedPeers(peerList);
-		connectedPeers.stream().filter(p -> p.getLastSentMessageTimeMilliseconds()
-				+ WAIT_NEIGHBOUR_PACKETS_MILLISECOND / 2 < clock.getcurrentTimeMilliseconds()).forEach(p -> {
+		connectedPeers.stream()
+				.filter(p -> p.getLastSentMessageTimeMilliseconds()
+						+ Constants.WAIT_NEIGHBOUR_PACKETS_MILLISECOND / 2 < clock.getcurrentTimeMilliseconds())
+				.forEach(p -> {
 					peerConnector.sendKeepAliveMessage(p, socket);
 					updateLastTimeSentMessage(p);
 				});
@@ -229,7 +229,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		short belongClubNum = peerConnector.getThisPeer().getClubNumber();
 		int downloadConnectionNum;
 		int uploadConnectionNum;
-		for (int i = 0; i < NUMBER_OF_CLUB; i++) {
+		for (int i = 0; i < Constants.NUMBER_OF_CLUB; i++) {
 			downloadConnectionNum = peerDownloadConnectionNum(i);
 			uploadConnectionNum = peerUploadConnectionNum(i);
 			if (i == belongClubNum) {
@@ -238,7 +238,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
 			} else {
 				maintainOuterClubConnectedPeers(downloadConnectionNum, i);
 			}
-			executor.schedule(() -> deleteOldPongMessages(pongMessageMap.keySet()), WAIT_SECOND + 1, TimeUnit.SECONDS);
+			executor.schedule(() -> deleteOldPongMessages(pongMessageMap.keySet()), threadWaitSecond + 1,
+					TimeUnit.SECONDS);
 		}
 	}
 
@@ -282,12 +283,12 @@ public class ConnectionManagerImpl implements ConnectionManager {
 			executor.schedule(() -> {
 				sendRequestMessage(wantedConnections, PeerStatus.PONG_WAIT_DOWNLOAD, connectionType, clubNum);
 				deleteNotReplyPeers(pongMessageMap.keySet(), clubNum);
-			}, WAIT_SECOND, TimeUnit.SECONDS);
+			}, threadWaitSecond, TimeUnit.SECONDS);
 		} else {
 			executor.schedule(() -> {
 				sendRequestMessage(wantedConnections, PeerStatus.PONG_WAIT_UPLOAD, connectionType, clubNum);
 				deleteNotReplyPeers(pongMessageMap.keySet(), clubNum);
-			}, WAIT_SECOND, TimeUnit.SECONDS);
+			}, threadWaitSecond, TimeUnit.SECONDS);
 		}
 	}
 
@@ -410,7 +411,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 			peer.setLastReceivedPacketNumber(packetPair.getRight().getPacketId());
 		}
 	}
-	
+
 	private void updateLastTimeSentMessage(PeerInformation peer) {
 		peer.setLastSentMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds());
 	}
@@ -444,8 +445,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	@Override
 	public void sendAll(PacketWrapper.Builder wrap, List<String> uninterestedPeerIp, PeerStatus peerStatus) {
-		List<PeerInformation> connectedPeers = peerList.stream()
-				.filter(p -> p.getPeerStatus().equals(peerStatus)).collect(Collectors.toList());
+		List<PeerInformation> connectedPeers = peerList.stream().filter(p -> p.getPeerStatus().equals(peerStatus))
+				.collect(Collectors.toList());
 
 		connectedPeers.stream().filter(p -> !uninterestedPeerIp.contains(new String(p.getIpAddress()))).forEach(p -> {
 			sendWrap(p, wrap);
@@ -532,8 +533,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		this.clock = clock;
 	}
 
-	public void setWAIT_SECOND(long wAIT_SECOND) {
-		WAIT_SECOND = wAIT_SECOND;
+	public void setThreadWaitSecond(int threadWaitSecond) {
+		this.threadWaitSecond = threadWaitSecond;
 	}
 
 	@Override
@@ -561,7 +562,5 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	public void setToken(Short token) {
 		this.token = token;
 	}
-	
-	
 
 }

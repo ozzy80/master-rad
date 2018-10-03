@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.kikkar.global.ClockSingleton;
+import com.kikkar.global.Constants;
 import com.kikkar.global.SharingBufferSingleton;
 import com.kikkar.network.impl.ConnectionManagerImpl;
 import com.kikkar.network.impl.DummyObjectCreator;
@@ -110,7 +111,7 @@ class DownloadSchedulerImplTest {
 		downloadSchedulerImpl.processPacket(packetPair);
 
 		assertEquals(5, downloadSchedulerImpl.getLastControlMessageId());
-		assertEquals(displayedVideoNum % sharingBufferSingleton.getMAX_ELEMENT_NUMBER(),
+		assertEquals(displayedVideoNum % Constants.BUFFER_SIZE,
 				sharingBufferSingleton.getMinVideoNum());
 		assertEquals(2, peer.getLastSentPacketNumber());
 		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);

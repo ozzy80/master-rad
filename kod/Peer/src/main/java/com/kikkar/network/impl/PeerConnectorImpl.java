@@ -5,8 +5,10 @@ import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import com.kikkar.global.Constants;
 import com.kikkar.global.SharingBufferSingleton;
 import com.kikkar.network.PeerConnector;
 import com.kikkar.packet.ConnectionType;
@@ -22,7 +24,8 @@ import com.kikkar.packet.TerminatedReason;
 
 public class PeerConnectorImpl implements PeerConnector {
 
-	private BlockingQueue<Pair<String, PacketWrapper>> packetsWaitingForProcessing;
+	private BlockingQueue<Pair<String, PacketWrapper>> packetsWaitingForProcessing = new ArrayBlockingQueue<>(
+			Constants.MAX_NUMBER_OF_WAIT_PACKET);;
 	private PeerInformation thisPeer;
 	private SharingBufferSingleton sharingBufferSingleton = SharingBufferSingleton.getInstance();
 

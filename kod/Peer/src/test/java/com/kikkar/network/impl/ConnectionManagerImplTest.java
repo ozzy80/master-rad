@@ -326,7 +326,7 @@ class ConnectionManagerImplTest {
 	}
 
 	private void testMaintainClubsConnection_setup(int downloadConnNUm) throws IOException {
-		connectionManagerImpl.setWAIT_SECOND(0);
+		connectionManagerImpl.setThreadWaitSecond(0);
 		List<PeerInformation> peerListActual = DummyObjectCreator.createDummyPeers(0, downloadConnNUm, 6 * 3);
 		peerListActual.stream()
 				.filter(p -> p.getPeerStatus().equals(PeerStatus.RESPONSE_WAIT_DOWNLOAD)
