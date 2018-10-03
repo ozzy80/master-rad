@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -159,7 +158,7 @@ class SharingBufferSingletonTest {
 				.filter(v -> v != null).count();
 		assertEquals(8, onlySecondChunkExist);
 	}
-	
+
 	@Test
 	void testSaveVideoPack_checkInfiniteLoopEnd() throws IOException {
 		setVideo(0, 10);
@@ -169,14 +168,38 @@ class SharingBufferSingletonTest {
 
 		assertTrue(true);
 	}
-	
+
 	@Test
 	void testGetNumberOfBufferedVideoContent_checkAllIsMissing() {
 		sharingBufferSingleton.setVideoArray(new VideoPacket[10]);
 		VideoPacket video = VideoPacket.newBuilder().setVideoNum(2).build();
 		sharingBufferSingleton.addVideoPacket(2, video);
-		
+
 		assertEquals(1, sharingBufferSingleton.getNumberOfBufferedVideoContent());
+	}
+
+	@Test
+	void testIsHeadAtChunkStart_checkTrue() {
+		VideoPacket video = VideoPacket.newBuilder().setFirstFrame(true).build();
+		sharingBufferSingleton.addVideoPacket(0, video);
+
+		assertTrue(sharingBufferSingleton.isHeadAtChunkStart());
+	}
+
+	@Test
+	void testIsHeadAtChunkStart_checkFalse() {
+		VideoPacket video = VideoPacket.newBuilder().setFirstFrame(true).setVideoNum(1).build();
+		sharingBufferSingleton.addVideoPacket(1, video);
+
+		assertFalse(sharingBufferSingleton.isHeadAtChunkStart());
+	}
+
+	@Test
+	void testIsHeadAtChunkStart_checkFalseLostPacket() {
+		VideoPacket video = VideoPacket.newBuilder().setFirstFrame(false).build();
+		sharingBufferSingleton.addVideoPacket(0, video);
+
+		assertFalse(sharingBufferSingleton.isHeadAtChunkStart());
 	}
 
 }

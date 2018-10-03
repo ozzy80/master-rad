@@ -29,9 +29,10 @@ public final class ControlMessageOuterClass {
   static {
     java.lang.String[] descriptorData = {
       "\n\024ControlMessage.proto\022\021com.kikkar.packe" +
-      "t\"a\n\016ControlMessage\022\021\n\tmessageId\030\001 \001(\005\022 " +
-      "\n\030currentDisplayedVideoNum\030\002 \001(\005\022\032\n\022time" +
-      "InMilliseconds\030\003 \001(\003B\002P\001b\006proto3"
+      "t\"x\n\016ControlMessage\022\021\n\tmessageId\030\001 \001(\005\022\034" +
+      "\n\024currentChunkVideoNum\030\002 \001(\005\022\031\n\021playerEl" +
+      "apsedTime\030\003 \001(\005\022\032\n\022timeInMilliseconds\030\004 " +
+      "\001(\003B\002P\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -50,7 +51,7 @@ public final class ControlMessageOuterClass {
     internal_static_com_kikkar_packet_ControlMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_kikkar_packet_ControlMessage_descriptor,
-        new java.lang.String[] { "MessageId", "CurrentDisplayedVideoNum", "TimeInMilliseconds", });
+        new java.lang.String[] { "MessageId", "CurrentChunkVideoNum", "PlayerElapsedTime", "TimeInMilliseconds", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

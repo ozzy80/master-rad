@@ -51,6 +51,7 @@ class DownloadSchedulerImplTest {
 		downloadSchedulerImpl.setUploadScheduler(uploadSchedulerImpl);
 		downloadSchedulerImpl.setNotInterestList(new ArrayList<>());
 		sharingBufferSingleton.setVideoArray(new VideoPacket[300]);
+		sharingBufferSingleton.setMinVideoNum(0);
 	}
 
 	@Test
@@ -101,7 +102,7 @@ class DownloadSchedulerImplTest {
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2, 3, 4);
 		connectionManagerImpl.setPeerList(peerList);
 		PeerInformation peer = peerList.get(2);
-		ControlMessage control = ControlMessage.newBuilder().setCurrentDisplayedVideoNum(displayedVideoNum)
+		ControlMessage control = ControlMessage.newBuilder().setCurrentChunkVideoNum(displayedVideoNum)
 				.setMessageId(messageId).setTimeInMilliseconds(156423).build();
 		PacketWrapper wrap = MessageWrapper.wrapMessage(control, peer);
 		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
@@ -123,7 +124,7 @@ class DownloadSchedulerImplTest {
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2, 3, 4);
 		connectionManagerImpl.setPeerList(peerList);
 		PeerInformation peer = peerList.get(2);
-		ControlMessage control = ControlMessage.newBuilder().setCurrentDisplayedVideoNum(displayedVideoNum)
+		ControlMessage control = ControlMessage.newBuilder().setCurrentChunkVideoNum(displayedVideoNum)
 				.setMessageId(messageId).setTimeInMilliseconds(156423).build();
 		PacketWrapper wrap = MessageWrapper.wrapMessage(control, peer);
 		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
@@ -262,5 +263,23 @@ class DownloadSchedulerImplTest {
 		downloadSchedulerImpl.processPacket(packetPair);
 
 		assertEquals(videoExpected, sharingBufferSingleton.getVideoPacket(0));
+	}
+
+	@Test
+	void testProcessControlMessage_checkUnkownHead() {
+		int videoNum = 15;
+		int messageId = 0;
+		int playerElapsedTime = 5624;
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2, 3, 4);
+		PeerInformation peer = peerList.get(2);
+		connectionManagerImpl.setPeerList(peerList);
+		ControlMessage responseVideoMessage = ControlMessage.newBuilder().setCurrentChunkVideoNum(videoNum).setMessageId(messageId)
+				.setPlayerElapsedTime(playerElapsedTime).setTimeInMilliseconds(12458l).build();
+		PacketWrapper wrap = MessageWrapper.wrapMessage(responseVideoMessage, peer);
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
+
+		downloadSchedulerImpl.processPacket(packetPair);
+
+		assertEquals(videoNum, sharingBufferSingleton.getMinVideoNum());
 	}
 }

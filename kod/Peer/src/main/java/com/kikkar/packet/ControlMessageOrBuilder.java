@@ -13,12 +13,17 @@ public interface ControlMessageOrBuilder extends
   int getMessageId();
 
   /**
-   * <code>int32 currentDisplayedVideoNum = 2;</code>
+   * <code>int32 currentChunkVideoNum = 2;</code>
    */
-  int getCurrentDisplayedVideoNum();
+  int getCurrentChunkVideoNum();
 
   /**
-   * <code>int64 timeInMilliseconds = 3;</code>
+   * <code>int32 playerElapsedTime = 3;</code>
+   */
+  int getPlayerElapsedTime();
+
+  /**
+   * <code>int64 timeInMilliseconds = 4;</code>
    */
   long getTimeInMilliseconds();
 }

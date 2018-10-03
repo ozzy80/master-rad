@@ -27,7 +27,7 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 	private UploadScheduler uploadScheduler;
 	private List<Pair<String, Integer>> notInterestList;
 	private int lastVideoNumberSent;
-	private int lastControlMessageId;
+	private int lastControlMessageId = -1;
 
 	private long WAIT_MILLISECOND = 300;
 
@@ -90,8 +90,12 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 
 	private void processControlMessage(ControlMessage controlMessage) {
 		uploadScheduler.sendControlMessage(controlMessage);
-		sharingBufferSingleton.synchronizeVideoPlayTime(controlMessage.getTimeInMilliseconds());
-		sharingBufferSingleton.setMinVideoNum(controlMessage.getCurrentDisplayedVideoNum());
+
+		if (sharingBufferSingleton.isHeadAtChunkStart()) {
+			sharingBufferSingleton.saveVideoPackIntoFile();
+			sharingBufferSingleton.synchronizeVideoPlayTime(controlMessage);
+		}
+		sharingBufferSingleton.setMinVideoNum(controlMessage.getCurrentChunkVideoNum());
 	}
 
 	private void sendVideoOther() {

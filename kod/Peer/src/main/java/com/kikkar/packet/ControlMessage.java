@@ -17,7 +17,8 @@ private static final long serialVersionUID = 0L;
   }
   private ControlMessage() {
     messageId_ = 0;
-    currentDisplayedVideoNum_ = 0;
+    currentChunkVideoNum_ = 0;
+    playerElapsedTime_ = 0;
     timeInMilliseconds_ = 0L;
   }
 
@@ -52,10 +53,15 @@ private static final long serialVersionUID = 0L;
           }
           case 16: {
 
-            currentDisplayedVideoNum_ = input.readInt32();
+            currentChunkVideoNum_ = input.readInt32();
             break;
           }
           case 24: {
+
+            playerElapsedTime_ = input.readInt32();
+            break;
+          }
+          case 32: {
 
             timeInMilliseconds_ = input.readInt64();
             break;
@@ -101,19 +107,28 @@ private static final long serialVersionUID = 0L;
     return messageId_;
   }
 
-  public static final int CURRENTDISPLAYEDVIDEONUM_FIELD_NUMBER = 2;
-  private int currentDisplayedVideoNum_;
+  public static final int CURRENTCHUNKVIDEONUM_FIELD_NUMBER = 2;
+  private int currentChunkVideoNum_;
   /**
-   * <code>int32 currentDisplayedVideoNum = 2;</code>
+   * <code>int32 currentChunkVideoNum = 2;</code>
    */
-  public int getCurrentDisplayedVideoNum() {
-    return currentDisplayedVideoNum_;
+  public int getCurrentChunkVideoNum() {
+    return currentChunkVideoNum_;
   }
 
-  public static final int TIMEINMILLISECONDS_FIELD_NUMBER = 3;
+  public static final int PLAYERELAPSEDTIME_FIELD_NUMBER = 3;
+  private int playerElapsedTime_;
+  /**
+   * <code>int32 playerElapsedTime = 3;</code>
+   */
+  public int getPlayerElapsedTime() {
+    return playerElapsedTime_;
+  }
+
+  public static final int TIMEINMILLISECONDS_FIELD_NUMBER = 4;
   private long timeInMilliseconds_;
   /**
-   * <code>int64 timeInMilliseconds = 3;</code>
+   * <code>int64 timeInMilliseconds = 4;</code>
    */
   public long getTimeInMilliseconds() {
     return timeInMilliseconds_;
@@ -136,11 +151,14 @@ private static final long serialVersionUID = 0L;
     if (messageId_ != 0) {
       output.writeInt32(1, messageId_);
     }
-    if (currentDisplayedVideoNum_ != 0) {
-      output.writeInt32(2, currentDisplayedVideoNum_);
+    if (currentChunkVideoNum_ != 0) {
+      output.writeInt32(2, currentChunkVideoNum_);
+    }
+    if (playerElapsedTime_ != 0) {
+      output.writeInt32(3, playerElapsedTime_);
     }
     if (timeInMilliseconds_ != 0L) {
-      output.writeInt64(3, timeInMilliseconds_);
+      output.writeInt64(4, timeInMilliseconds_);
     }
     unknownFields.writeTo(output);
   }
@@ -155,13 +173,17 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(1, messageId_);
     }
-    if (currentDisplayedVideoNum_ != 0) {
+    if (currentChunkVideoNum_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(2, currentDisplayedVideoNum_);
+        .computeInt32Size(2, currentChunkVideoNum_);
+    }
+    if (playerElapsedTime_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(3, playerElapsedTime_);
     }
     if (timeInMilliseconds_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt64Size(3, timeInMilliseconds_);
+        .computeInt64Size(4, timeInMilliseconds_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -181,8 +203,10 @@ private static final long serialVersionUID = 0L;
     boolean result = true;
     result = result && (getMessageId()
         == other.getMessageId());
-    result = result && (getCurrentDisplayedVideoNum()
-        == other.getCurrentDisplayedVideoNum());
+    result = result && (getCurrentChunkVideoNum()
+        == other.getCurrentChunkVideoNum());
+    result = result && (getPlayerElapsedTime()
+        == other.getPlayerElapsedTime());
     result = result && (getTimeInMilliseconds()
         == other.getTimeInMilliseconds());
     result = result && unknownFields.equals(other.unknownFields);
@@ -198,8 +222,10 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + MESSAGEID_FIELD_NUMBER;
     hash = (53 * hash) + getMessageId();
-    hash = (37 * hash) + CURRENTDISPLAYEDVIDEONUM_FIELD_NUMBER;
-    hash = (53 * hash) + getCurrentDisplayedVideoNum();
+    hash = (37 * hash) + CURRENTCHUNKVIDEONUM_FIELD_NUMBER;
+    hash = (53 * hash) + getCurrentChunkVideoNum();
+    hash = (37 * hash) + PLAYERELAPSEDTIME_FIELD_NUMBER;
+    hash = (53 * hash) + getPlayerElapsedTime();
     hash = (37 * hash) + TIMEINMILLISECONDS_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
         getTimeInMilliseconds());
@@ -338,7 +364,9 @@ private static final long serialVersionUID = 0L;
       super.clear();
       messageId_ = 0;
 
-      currentDisplayedVideoNum_ = 0;
+      currentChunkVideoNum_ = 0;
+
+      playerElapsedTime_ = 0;
 
       timeInMilliseconds_ = 0L;
 
@@ -369,7 +397,8 @@ private static final long serialVersionUID = 0L;
     public com.kikkar.packet.ControlMessage buildPartial() {
       com.kikkar.packet.ControlMessage result = new com.kikkar.packet.ControlMessage(this);
       result.messageId_ = messageId_;
-      result.currentDisplayedVideoNum_ = currentDisplayedVideoNum_;
+      result.currentChunkVideoNum_ = currentChunkVideoNum_;
+      result.playerElapsedTime_ = playerElapsedTime_;
       result.timeInMilliseconds_ = timeInMilliseconds_;
       onBuilt();
       return result;
@@ -422,8 +451,11 @@ private static final long serialVersionUID = 0L;
       if (other.getMessageId() != 0) {
         setMessageId(other.getMessageId());
       }
-      if (other.getCurrentDisplayedVideoNum() != 0) {
-        setCurrentDisplayedVideoNum(other.getCurrentDisplayedVideoNum());
+      if (other.getCurrentChunkVideoNum() != 0) {
+        setCurrentChunkVideoNum(other.getCurrentChunkVideoNum());
+      }
+      if (other.getPlayerElapsedTime() != 0) {
+        setPlayerElapsedTime(other.getPlayerElapsedTime());
       }
       if (other.getTimeInMilliseconds() != 0L) {
         setTimeInMilliseconds(other.getTimeInMilliseconds());
@@ -483,41 +515,67 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int currentDisplayedVideoNum_ ;
+    private int currentChunkVideoNum_ ;
     /**
-     * <code>int32 currentDisplayedVideoNum = 2;</code>
+     * <code>int32 currentChunkVideoNum = 2;</code>
      */
-    public int getCurrentDisplayedVideoNum() {
-      return currentDisplayedVideoNum_;
+    public int getCurrentChunkVideoNum() {
+      return currentChunkVideoNum_;
     }
     /**
-     * <code>int32 currentDisplayedVideoNum = 2;</code>
+     * <code>int32 currentChunkVideoNum = 2;</code>
      */
-    public Builder setCurrentDisplayedVideoNum(int value) {
+    public Builder setCurrentChunkVideoNum(int value) {
       
-      currentDisplayedVideoNum_ = value;
+      currentChunkVideoNum_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>int32 currentDisplayedVideoNum = 2;</code>
+     * <code>int32 currentChunkVideoNum = 2;</code>
      */
-    public Builder clearCurrentDisplayedVideoNum() {
+    public Builder clearCurrentChunkVideoNum() {
       
-      currentDisplayedVideoNum_ = 0;
+      currentChunkVideoNum_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int playerElapsedTime_ ;
+    /**
+     * <code>int32 playerElapsedTime = 3;</code>
+     */
+    public int getPlayerElapsedTime() {
+      return playerElapsedTime_;
+    }
+    /**
+     * <code>int32 playerElapsedTime = 3;</code>
+     */
+    public Builder setPlayerElapsedTime(int value) {
+      
+      playerElapsedTime_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 playerElapsedTime = 3;</code>
+     */
+    public Builder clearPlayerElapsedTime() {
+      
+      playerElapsedTime_ = 0;
       onChanged();
       return this;
     }
 
     private long timeInMilliseconds_ ;
     /**
-     * <code>int64 timeInMilliseconds = 3;</code>
+     * <code>int64 timeInMilliseconds = 4;</code>
      */
     public long getTimeInMilliseconds() {
       return timeInMilliseconds_;
     }
     /**
-     * <code>int64 timeInMilliseconds = 3;</code>
+     * <code>int64 timeInMilliseconds = 4;</code>
      */
     public Builder setTimeInMilliseconds(long value) {
       
@@ -526,7 +584,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int64 timeInMilliseconds = 3;</code>
+     * <code>int64 timeInMilliseconds = 4;</code>
      */
     public Builder clearTimeInMilliseconds() {
       

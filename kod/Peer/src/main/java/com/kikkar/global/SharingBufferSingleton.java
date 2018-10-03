@@ -6,24 +6,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
+import com.kikkar.packet.ControlMessage;
 import com.kikkar.packet.VideoPacket;
 
 public class SharingBufferSingleton {
 
+	private ClockSingleton clock = ClockSingleton.getInstance();
 	private int MAX_ELEMENT_NUMBER = 6_000; // 6s je max 4_000 delova + jos malo preko
 	private int VIDEO_DURATION_SECOND = 6;
 	private int INITIA_VIDEO_DELAY_SECOND = 8;
-	//private String videoFile = "output.mxf";
+	private long sourcePlayerPastTime;
+	// private String videoFile = "output.mxf";
 	private String videoFile = "output.mov";
 
 	private OutputStream os;
 	private VideoPacket[] videoArray = new VideoPacket[MAX_ELEMENT_NUMBER];
 	private int minVideoNum;
-	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 	private static SharingBufferSingleton firstInstance;
 
 	private SharingBufferSingleton() {
@@ -53,6 +52,29 @@ public class SharingBufferSingleton {
 		return true;
 	}
 
+	public ClockSingleton getClock() {
+		return clock;
+	}
+
+	public void setClock(ClockSingleton clock) {
+		this.clock = clock;
+	}
+
+	public long getSourcePlayerPastTime() {
+		return sourcePlayerPastTime;
+	}
+
+	public void setSourcePlayerPastTime(long sourcePlayerPastTime) {
+		this.sourcePlayerPastTime = sourcePlayerPastTime;
+	}
+
+	public boolean isHeadAtChunkStart() {
+		if (isVideoPresent(minVideoNum)) {
+			return videoArray[minVideoNum].getFirstFrame();
+		}
+		return false;
+	}
+
 	public VideoPacket getVideoPacket(int i) {
 		if (i < 0) {
 			throw new ArrayIndexOutOfBoundsException(i);
@@ -66,7 +88,7 @@ public class SharingBufferSingleton {
 		while (true) {
 			processMissingChunk(minVideoNum);
 
-			if(checkExitCondition(i, previousChunkNum)) {
+			if (checkExitCondition(i, previousChunkNum)) {
 				break;
 			}
 
@@ -114,12 +136,12 @@ public class SharingBufferSingleton {
 		}
 		return previousVideoNum;
 	}
-	
+
 	public int getNumberOfBufferedVideoContent() {
 		int start = minVideoNum;
 		int presentVideoNum = 0;
 		for (int i = 0; i < videoArray.length; i++) {
-			if(isVideoPresent(start)) {
+			if (isVideoPresent(start)) {
 				presentVideoNum++;
 			}
 			start = (start + 1) % MAX_ELEMENT_NUMBER;
@@ -127,10 +149,15 @@ public class SharingBufferSingleton {
 		return presentVideoNum;
 	}
 
-	public void synchronizeVideoPlayTime(long controlMessageTime) {
-		// TODO pomeri video player ako treba da se slaze sa kontrolnom porukom
+	public void synchronizeVideoPlayTime(ControlMessage controlMessage) {
+		long currentPlayerDelay = clock.getcurrentTimeMilliseconds() - controlMessage.getTimeInMilliseconds();
+		// if() Proveri da li je plejer pusten
+		// ubrzava/usporava/ne dira se plejer da stigne do prethodno dobijene vrednosti
+		// else
+		sourcePlayerPastTime = controlMessage.getPlayerElapsedTime();
+		// pokreni plejer
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -168,25 +195,14 @@ public class SharingBufferSingleton {
 		return true;
 	}
 
-	private void automaticIncrement() {
-		scheduler.scheduleAtFixedRate(() -> {
-			OutputStream os = null;
-			try {
-				os = new FileOutputStream(new File(videoFile), true);
-				if (videoArray[minVideoNum] != null) {
-					saveVideoPack(os);
-				}
-			} catch (FileNotFoundException e) {
-				System.err.println(e.getMessage());
-			} catch (IOException e) {
-				System.err.println(e.getMessage());
-			} finally {
-				try {
-					os.close();
-				} catch (IOException e) {
-				}
-			}
-		}, INITIA_VIDEO_DELAY_SECOND, VIDEO_DURATION_SECOND, TimeUnit.SECONDS);
+	public void saveVideoPackIntoFile() {
+		try (OutputStream os = new FileOutputStream(new File(videoFile), true)) {
+			saveVideoPack(os);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public int getMAX_ELEMENT_NUMBER() {
