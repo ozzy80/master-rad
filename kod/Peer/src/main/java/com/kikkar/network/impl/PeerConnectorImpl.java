@@ -1,7 +1,6 @@
 package com.kikkar.network.impl;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.List;
@@ -158,7 +157,7 @@ public class PeerConnectorImpl implements PeerConnector {
 
 	@Override
 	public void sendRequestMessage(List<PeerInformation> neighbourPeers, DatagramSocket socket,
-			ConnectionType connectionType, OutputStream errorOutput) {
+			ConnectionType connectionType) {
 		neighbourPeers.stream().forEach(peer -> {
 			try {
 				DatagramPacket packet = createRequestMessage(peer, connectionType);
@@ -169,10 +168,7 @@ public class PeerConnectorImpl implements PeerConnector {
 					peer.setPeerStatus(PeerStatus.RESPONSE_WAIT_UPLOAD);
 				}
 			} catch (IOException e) {
-				try {
-					errorOutput.write(e.getMessage().getBytes());
-				} catch (IOException e1) {
-				}
+				System.err.println(e.getMessage());
 			}
 		});
 	}

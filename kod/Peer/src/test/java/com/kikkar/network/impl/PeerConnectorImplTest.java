@@ -217,7 +217,7 @@ class PeerConnectorImplTest {
 		List<PeerInformation> peerInformations = DummyObjectCreator.createDummyPeers(3, 1, 2);
 		DatagramSocket socket = new DatagramSocket();
 		
-		peerConnectorImpl.sendRequestMessage(peerInformations, socket, connectionType, System.err);
+		peerConnectorImpl.sendRequestMessage(peerInformations, socket, connectionType);
 		
 		if(connectionType.equals(ConnectionType.DOWNLOAD)) {
 			assertEquals(expectedNum, peerInformations.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.RESPONSE_WAIT_DOWNLOAD)).count());

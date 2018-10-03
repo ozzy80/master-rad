@@ -1,7 +1,6 @@
 package com.kikkar.network.impl;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.MalformedURLException;
@@ -74,7 +73,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		Pair<String, PacketWrapper> packetPair = null;
 		while (true) {
 			if (!hasNotContactedPeer()) {
-				contactServerForMorePeers(System.err);
+				contactServerForMorePeers();
 			}
 			congestionControl();
 			keepAliveUploadConnection();
@@ -152,7 +151,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	}
 
 	@Override
-	public void contactServerForMorePeers(OutputStream errorOutput) {
+	public void contactServerForMorePeers() {
 		try {
 			List<PeerInformation> newPeerList = getServersPeerInformations(token);
 			newPeerList.remove(newPeerList.size() - 1);
@@ -161,10 +160,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 					peerList.add(p);
 			}
 		} catch (Exception e) {
-			try {
-				errorOutput.write(e.getMessage().getBytes());
-			} catch (IOException e1) {
-			}
+			System.err.println(e.getMessage());
 		}
 	}
 
@@ -295,7 +291,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	public void sendRequestMessage(short wantedConnections, PeerStatus peerStatus, ConnectionType connectedType,
 			int clubNum) {
 		List<PeerInformation> bestFitPeers = takePeersForConnection(wantedConnections, peerStatus, (short) clubNum);
-		peerConnector.sendRequestMessage(bestFitPeers, socket, connectedType, System.err);
+		peerConnector.sendRequestMessage(bestFitPeers, socket, connectedType);
 		bestFitPeers.stream().forEach(p -> p.setLastSentMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds()));
 	}
 
@@ -432,14 +428,11 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		peerList.remove(peerInformation);
 	}
 
-	public void send(DatagramPacket packet, OutputStream outError) {
+	public void send(DatagramPacket packet) {
 		try {
 			peerConnector.send(packet, socket);
 		} catch (IOException e) {
-			try {
-				outError.write(e.getMessage().getBytes());
-			} catch (IOException e1) {
-			}
+			System.err.println(e.getMessage());
 		}
 	}
 
@@ -467,7 +460,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 			wrap.setPacketId(peer.getLastSentPacketNumber());
 			peer.incrementLastSentPacketNumber();
 			packet = MessageWrapper.createSendDatagramPacket(wrap.build(), peer);
-			send(packet, System.err);
+			send(packet);
 			updateLastTimeSentMessage(peer);
 		} catch (IOException e) {
 		}
@@ -542,7 +535,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		try {
 			return packetsForHigherLevel.take();
 		} catch (InterruptedException e) {
-			System.out.println("thread error");
+			System.err.println(e.getMessage());
 		}
 		return null;
 	}

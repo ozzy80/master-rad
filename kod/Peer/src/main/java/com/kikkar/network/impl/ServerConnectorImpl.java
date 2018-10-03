@@ -118,10 +118,10 @@ public class ServerConnectorImpl implements ServerConnector, Job {
 			} catch (UnknownHostException e) {
 				throw e;
 			} catch (IOException e) {
-				System.out.println(e.getMessage());
+				System.err.println(e.getMessage());
 			}
 		} catch (SocketException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		} finally {
 			client.close();
 		}
@@ -178,7 +178,7 @@ public class ServerConnectorImpl implements ServerConnector, Job {
 				result.append("&");
 			}
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 
 		String resultString = result.toString();

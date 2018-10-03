@@ -173,9 +173,9 @@ public class SharingBufferSingleton {
 		try (OutputStream os = new FileOutputStream(new File(Constants.VIDEO_FILE_PATH), true)) {
 			saveVideoPack(os);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 	}
 

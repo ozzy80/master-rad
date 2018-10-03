@@ -99,7 +99,7 @@ class ConnectionManagerImplTest {
 		connectionManagerImpl.setPeerList(newPeerList);
 		connectionManagerImpl.setToken(token);
 
-		connectionManagerImpl.contactServerForMorePeers(System.err);
+		connectionManagerImpl.contactServerForMorePeers();
 
 		assertEquals(oldPeerList.size() + newPeerNum, newPeerList.size());
 	}

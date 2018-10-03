@@ -1,5 +1,7 @@
 package com.kikkar.global;
 
+import java.io.PrintStream;
+
 public final class Constants {
 	private Constants() {
 	}
@@ -21,4 +23,9 @@ public final class Constants {
 	public static final int MAX_REUQEST_VIDEO_SIZE = 20;
 
 	public static final int INITIA_MISSING_VIDEO_COLLECT_DELAY_SECOND = 5;
+	
+	//final PrintStream pst = new PrintStream("error.txt");  
+	public static void setErrorPrintIntoFile(PrintStream pst) {
+		System.setErr(pst);
+	}
 }

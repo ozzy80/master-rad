@@ -1,7 +1,6 @@
 package com.kikkar.network;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.List;
@@ -42,8 +41,7 @@ public interface PeerConnector {
 
 	Pair<String, PacketWrapper> getPacketsWaitingForProcessing();
 
-	void sendRequestMessage(List<PeerInformation> peerInformations, DatagramSocket socket,
-			ConnectionType connectionType, OutputStream errorOutput);
+	void sendRequestMessage(List<PeerInformation> neighbourPeers, DatagramSocket socket, ConnectionType connectionType);
 
 	void sendPingMessages(List<PeerInformation> peers, ConnectionType connectionType, DatagramSocket socket);
 

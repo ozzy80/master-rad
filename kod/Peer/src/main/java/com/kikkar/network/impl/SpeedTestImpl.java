@@ -22,7 +22,7 @@ public class SpeedTestImpl implements SpeedTest {
 		try {
 			Thread.sleep(measureTime + additionallyWaitForDataMilliseconds);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 		return bitePerSecond;
 	}
@@ -33,7 +33,7 @@ public class SpeedTestImpl implements SpeedTest {
 		try {
 			Thread.sleep(measureTimeMilliseconds + additionallyWaitForDataMilliseconds);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 		return bitePerSecond;
 	}

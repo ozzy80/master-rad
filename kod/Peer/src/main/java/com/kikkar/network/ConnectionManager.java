@@ -1,6 +1,5 @@
 package com.kikkar.network;
 
-import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.util.List;
 
@@ -16,7 +15,7 @@ public interface ConnectionManager {
 
 	void start(DatagramPacket reciveDatagramPacket) throws Exception;
 
-	void contactServerForMorePeers(OutputStream errorOutput);
+	void contactServerForMorePeers();
 
 	void congestionControl();
 
