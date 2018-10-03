@@ -17,7 +17,8 @@ public class SharingBufferSingleton {
 	private int MAX_ELEMENT_NUMBER = 6_000; // 6s je max 4_000 delova + jos malo preko
 	private int VIDEO_DURATION_SECOND = 6;
 	private int INITIA_VIDEO_DELAY_SECOND = 8;
-	private String videoFile = "output.mxf";
+	//private String videoFile = "output.mxf";
+	private String videoFile = "output.mov";
 
 	private OutputStream os;
 	private VideoPacket[] videoArray = new VideoPacket[MAX_ELEMENT_NUMBER];

@@ -169,5 +169,14 @@ class SharingBufferSingletonTest {
 
 		assertTrue(true);
 	}
+	
+	@Test
+	void testGetNumberOfBufferedVideoContent_checkAllIsMissing() {
+		sharingBufferSingleton.setVideoArray(new VideoPacket[10]);
+		VideoPacket video = VideoPacket.newBuilder().setVideoNum(2).build();
+		sharingBufferSingleton.addVideoPacket(2, video);
+		
+		assertEquals(1, sharingBufferSingleton.getNumberOfBufferedVideoContent());
+	}
 
 }
