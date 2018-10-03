@@ -2,7 +2,6 @@ package com.kikkar.network.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -33,7 +32,6 @@ import com.kikkar.global.ClockSingleton;
 import com.kikkar.network.ServerConnector;
 import com.kikkar.network.SpeedTest;
 import com.kikkar.packet.ConnectionType;
-import com.kikkar.packet.HaveMessage;
 import com.kikkar.packet.KeepAliveMessage;
 import com.kikkar.packet.PacketWrapper;
 import com.kikkar.packet.Pair;
@@ -41,12 +39,9 @@ import com.kikkar.packet.PingMessage;
 import com.kikkar.packet.PongMessage;
 import com.kikkar.packet.RequestMessage;
 import com.kikkar.packet.ResponseMessage;
-import com.kikkar.packet.ResponseVideoMessage;
 import com.kikkar.packet.TerminatedMessage;
 import com.kikkar.packet.TerminatedReason;
 import com.kikkar.packet.VideoPacket;
-
-import fr.bmartel.speedtest.SpeedTestSocket;
 
 class ConnectionManagerImplTest {
 
@@ -490,7 +485,7 @@ class ConnectionManagerImplTest {
 		connectionManagerImpl.setPeerList(peerList);
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
 
-		connectionManagerImpl.sendAll(wrap, new ArrayList<>());
+		connectionManagerImpl.sendAll(wrap, new ArrayList<>(), PeerStatus.DOWNLOAD_CONNECTION);
 
 		assertEquals(downloadNum, peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
 		assertEquals(downloadNum, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count());
@@ -503,7 +498,7 @@ class ConnectionManagerImplTest {
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
 
 		connectionManagerImpl.sendAll(wrap, peerList.subList(0, 2).stream().map(PeerInformation::getIpAddress)
-				.map(String::new).collect(Collectors.toList()));
+				.map(String::new).collect(Collectors.toList()), PeerStatus.DOWNLOAD_CONNECTION);
 
 		assertEquals(3, peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
 		assertEquals(3, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count());
@@ -655,7 +650,7 @@ class ConnectionManagerImplTest {
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = ConnectionType.class, names = { "UPLOAD", "DOWNLOAD"})	
+	@EnumSource(value = ConnectionType.class, names = { "UPLOAD", "DOWNLOAD" })
 	void testProcessPacket_checkRequestMessageProcess(ConnectionType connectionType) {
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 1);
 		connectionManagerImpl.setPeerList(peerList);
@@ -664,14 +659,15 @@ class ConnectionManagerImplTest {
 		PacketWrapper packetWrap = MessageWrapper.wrapMessage(request, peer);
 		peer.setLastSentMessageTimeMilliseconds(0);
 		peer.setLastSentPacketNumber(0);
-		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), packetWrap);
-		
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()),
+				packetWrap);
+
 		connectionManagerImpl.processPacket(packetPair);
-		
+
 		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
 		assertEquals(1, peer.getLastSentPacketNumber());
 		assertEquals(0, peer.getRequestMessageNumber());
-		
+
 		if (connectionType.equals(ConnectionType.DOWNLOAD)) {
 			assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
 		} else {
@@ -680,7 +676,7 @@ class ConnectionManagerImplTest {
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = PeerStatus.class, names = { "RESPONSE_WAIT_DOWNLOAD", "RESPONSE_WAIT_UPLOAD"})	
+	@EnumSource(value = PeerStatus.class, names = { "RESPONSE_WAIT_DOWNLOAD", "RESPONSE_WAIT_UPLOAD" })
 	void testProcessPacket_checkResponseMessageProcess(PeerStatus peerStatus) {
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 1);
 		connectionManagerImpl.setPeerList(peerList);
@@ -688,10 +684,11 @@ class ConnectionManagerImplTest {
 		peer.setPeerStatus(peerStatus);
 		ResponseMessage request = ResponseMessage.newBuilder().setResponseRequestId(1).build();
 		PacketWrapper packetWrap = MessageWrapper.wrapMessage(request, peer);
-		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), packetWrap);
-		
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()),
+				packetWrap);
+
 		connectionManagerImpl.processPacket(packetPair);
-		
+
 		if (peerStatus.equals(PeerStatus.RESPONSE_WAIT_DOWNLOAD)) {
 			assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
 		} else {
@@ -706,15 +703,17 @@ class ConnectionManagerImplTest {
 		List<PeerInformation> peerListActual = DummyObjectCreator.createDummyPeers(3, 3, 0);
 		connectionManagerImpl.setPeerList(peerListActual);
 		PeerInformation peer = peerListActual.get(3);
-		TerminatedMessage terminated = TerminatedMessage.newBuilder().setTerminatedReason(TerminatedReason.BLOCK_TIMEOUT).build();
+		TerminatedMessage terminated = TerminatedMessage.newBuilder()
+				.setTerminatedReason(TerminatedReason.BLOCK_TIMEOUT).build();
 		PacketWrapper packetWrap = MessageWrapper.wrapMessage(terminated, peer);
-		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), packetWrap);
-		
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()),
+				packetWrap);
+
 		connectionManagerImpl.processPacket(packetPair);
-		
+
 		assertEquals(peerListExpected, peerListActual);
 	}
-	
+
 	@Test
 	void testProcessPacket_checkPacketForDownload() {
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(3, 3, 0);
@@ -722,10 +721,11 @@ class ConnectionManagerImplTest {
 		PeerInformation peer = peerList.get(3);
 		VideoPacket video = VideoPacket.newBuilder().build();
 		PacketWrapper packetWrap = MessageWrapper.wrapMessage(video, peer);
-		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), packetWrap);
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()),
+				packetWrap);
 		connectionManagerImpl.processPacket(packetPair);
-		
+
 		assertEquals(1, connectionManagerImpl.getPacketsForHigherLevel().size());
-		assertEquals(packetPair, connectionManagerImpl.getWaitingPackets());		
+		assertEquals(packetPair, connectionManagerImpl.getWaitingPackets());
 	}
 }

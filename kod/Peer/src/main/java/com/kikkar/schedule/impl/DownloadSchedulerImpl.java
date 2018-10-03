@@ -7,7 +7,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.kikkar.global.ClockSingleton;
 import com.kikkar.global.SharingBufferSingleton;
 import com.kikkar.network.ConnectionManager;
 import com.kikkar.packet.ControlMessage;
@@ -22,7 +21,6 @@ import com.kikkar.schedule.UploadScheduler;
 
 public class DownloadSchedulerImpl implements DownloadScheduler {
 	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-	private ClockSingleton clockSingleton;
 	private SharingBufferSingleton sharingBufferSingleton;
 	private ConnectionManager connectionManager;
 	private DatagramPacket reciveDatagramPacket;
@@ -31,7 +29,7 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 	private int lastVideoNumberSent;
 	private int lastControlMessageId;
 
-	private long WAIT_MILLISECOND = 200;
+	private long WAIT_MILLISECOND = 300;
 
 	@Override
 	public void startDownload() {
@@ -61,13 +59,9 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 			}
 		} else if (packetPair.getRight().hasControlMessage()) {
 			ControlMessage controlMessage = packetPair.getRight().getControlMessage();
-			long currentTime = clockSingleton.getcurrentTimeMilliseconds();
-			boolean properTime = controlMessage.getTimeInMilliseconds() > currentTime - 500
-					&& controlMessage.getTimeInMilliseconds() < currentTime + 500;
-			if (controlMessage.getMessageId() > lastControlMessageId && properTime) {
-				sharingBufferSingleton.setMinVideoNum(controlMessage.getCurrentDisplayedVideoNum());
+			if (lastControlMessageId < controlMessage.getMessageId()) {
+				processControlMessage(packetPair.getRight().getControlMessage());
 				lastControlMessageId = controlMessage.getMessageId();
-				uploadScheduler.sendControlMessage(controlMessage);
 			}
 		} else if (packetPair.getRight().hasNotInterestedMessage()) {
 			notInterestList.add(new Pair<String, Integer>(packetPair.getLeft(),
@@ -75,25 +69,17 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 		} else if (packetPair.getRight().hasVideoPacket()) {
 			VideoPacket video = packetPair.getRight().getVideoPacket();
 			uploadScheduler.sendHaveMessage(video.getVideoNum());
-			if (sharingBufferSingleton.isVideoPresent(video.getVideoNum())) {
+			if (!sharingBufferSingleton.isVideoPresent(video.getVideoNum())) {
 				sharingBufferSingleton.addVideoPacket(video.getVideoNum(), video);
 			}
-			executor.schedule(() -> {
-				List<String> currentVideoNotInterestedIpAddresses = notInterestList.stream()
-						.filter(p -> p.getRight().equals(lastVideoNumberSent)).map(Pair::getLeft)
-						.collect(Collectors.toList());
-				lastVideoNumberSent++;
-				int currentVideoNum = lastVideoNumberSent - 1;
-				uploadScheduler.sendVideo(currentVideoNum, currentVideoNotInterestedIpAddresses);
-				notInterestList.removeIf(p -> p.getRight() < lastVideoNumberSent);
-			}, WAIT_MILLISECOND, TimeUnit.MILLISECONDS);
+			sendVideoOther();
 		} else if (packetPair.getRight().hasRequestVideoMessage()) {
 			RequestVideoMessage request = packetPair.getRight().getRequestVideoMessage();
 			int[] videoNum = request.getVideoNumList().stream().mapToInt(i -> i).toArray();
 			uploadScheduler.sendResponseMessage(packetPair, videoNum);
 		} else if (packetPair.getRight().hasResponseVideoMessage()) {
 			ResponseVideoMessage response = packetPair.getRight().getResponseVideoMessage();
-			if (sharingBufferSingleton.isVideoPresent(response.getVideoNum())) {
+			if (!sharingBufferSingleton.isVideoPresent(response.getVideoNum())) {
 				VideoPacket.Builder videoBuilder = VideoPacket.newBuilder();
 				videoBuilder.setVideoNum(response.getVideoNum()).setChunkNum(response.getChunkNum())
 						.setVideo(response.getVideo());
@@ -101,4 +87,87 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 			}
 		}
 	}
+
+	private void processControlMessage(ControlMessage controlMessage) {
+		uploadScheduler.sendControlMessage(controlMessage);
+		sharingBufferSingleton.synchronizeVideoPlayTime(controlMessage.getTimeInMilliseconds());
+		sharingBufferSingleton.setMinVideoNum(controlMessage.getCurrentDisplayedVideoNum());
+	}
+
+	private void sendVideoOther() {
+		executor.schedule(() -> {
+			List<String> currentVideoNotInterestedIpAddresses = notInterestList.stream()
+					.filter(p -> p.getRight().equals(lastVideoNumberSent)).map(Pair::getLeft)
+					.collect(Collectors.toList());
+			lastVideoNumberSent++;
+			int currentVideoNum = lastVideoNumberSent - 1;
+			notInterestList.removeIf(p -> p.getRight() < lastVideoNumberSent);
+			uploadScheduler.sendVideo(currentVideoNum, currentVideoNotInterestedIpAddresses);
+		}, WAIT_MILLISECOND, TimeUnit.MILLISECONDS);
+	}
+
+	public SharingBufferSingleton getSharingBufferSingleton() {
+		return sharingBufferSingleton;
+	}
+
+	public void setSharingBufferSingleton(SharingBufferSingleton sharingBufferSingleton) {
+		this.sharingBufferSingleton = sharingBufferSingleton;
+	}
+
+	public ConnectionManager getConnectionManager() {
+		return connectionManager;
+	}
+
+	public void setConnectionManager(ConnectionManager connectionManager) {
+		this.connectionManager = connectionManager;
+	}
+
+	public DatagramPacket getReciveDatagramPacket() {
+		return reciveDatagramPacket;
+	}
+
+	public void setReciveDatagramPacket(DatagramPacket reciveDatagramPacket) {
+		this.reciveDatagramPacket = reciveDatagramPacket;
+	}
+
+	public UploadScheduler getUploadScheduler() {
+		return uploadScheduler;
+	}
+
+	public void setUploadScheduler(UploadScheduler uploadScheduler) {
+		this.uploadScheduler = uploadScheduler;
+	}
+
+	public List<Pair<String, Integer>> getNotInterestList() {
+		return notInterestList;
+	}
+
+	public void setNotInterestList(List<Pair<String, Integer>> notInterestList) {
+		this.notInterestList = notInterestList;
+	}
+
+	public int getLastVideoNumberSent() {
+		return lastVideoNumberSent;
+	}
+
+	public void setLastVideoNumberSent(int lastVideoNumberSent) {
+		this.lastVideoNumberSent = lastVideoNumberSent;
+	}
+
+	public int getLastControlMessageId() {
+		return lastControlMessageId;
+	}
+
+	public void setLastControlMessageId(int lastControlMessageId) {
+		this.lastControlMessageId = lastControlMessageId;
+	}
+
+	public long getWAIT_MILLISECOND() {
+		return WAIT_MILLISECOND;
+	}
+
+	public void setWAIT_MILLISECOND(long wAIT_MILLISECOND) {
+		WAIT_MILLISECOND = wAIT_MILLISECOND;
+	}
+
 }

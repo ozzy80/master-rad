@@ -2,10 +2,14 @@ package com.kikkar.schedule.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import com.kikkar.global.SharingBufferSingleton;
 import com.kikkar.network.ConnectionManager;
+import com.kikkar.network.impl.PeerStatus;
 import com.kikkar.packet.ControlMessage;
 import com.kikkar.packet.HaveMessage;
 import com.kikkar.packet.NotInterestedMessage;
@@ -18,17 +22,20 @@ import com.kikkar.schedule.UploadScheduler;
 
 public class UploadSchedulerImpl implements UploadScheduler {
 	private ConnectionManager connectionManager;
-	private SharingBufferSingleton sharingBufferSingleton;
+	private SharingBufferSingleton sharingBufferSingleton = SharingBufferSingleton.getInstance();
+	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
 	private int MAX_REUQEST_VIDEO_SIZE = 20;
-	
 	private int MAX_ELEMENT_NUMBER = sharingBufferSingleton.getMAX_ELEMENT_NUMBER();
-	
+	private long INITIA_MISSING_VIDEO_COLLECT_DELAY_SECOND = 5;
+	private long VIDEO_DURATION_SECOND = 6;
+
 	@Override
 	public void sendControlMessage(ControlMessage message) {
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
 		wrap.setControlMessage(message);
 
-		connectionManager.sendAll(wrap, new ArrayList<>());
+		connectionManager.sendAll(wrap, new ArrayList<>(), PeerStatus.DOWNLOAD_CONNECTION);
 	}
 
 	@Override
@@ -46,25 +53,29 @@ public class UploadSchedulerImpl implements UploadScheduler {
 		HaveMessage haveMessage = HaveMessage.newBuilder().setVideoNum(videoNum).build();
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setHaveMessage(haveMessage);
 
-		connectionManager.sendAll(wrap, new ArrayList<>());
+		connectionManager.sendAll(wrap, new ArrayList<>(), PeerStatus.DOWNLOAD_CONNECTION);
 	}
 
 	@Override
 	public void sendVideo(int currentVideoNum, List<String> currentVideoNotInterestedIpAddresses) {
-		VideoPacket video = sharingBufferSingleton.getVideoPacket(currentVideoNum);
-		PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setVideoPacket(video);
+		if (sharingBufferSingleton.isVideoPresent(currentVideoNum)) {
+			VideoPacket video = sharingBufferSingleton.getVideoPacket(currentVideoNum);
+			PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setVideoPacket(video);
 
-		connectionManager.sendAll(wrap, currentVideoNotInterestedIpAddresses);
+			connectionManager.sendAll(wrap, currentVideoNotInterestedIpAddresses, PeerStatus.DOWNLOAD_CONNECTION);
+		}
 	}
 
 	@Override
 	public void sendResponseMessage(Pair<String, PacketWrapper> packetPair, int[] videoNum) {
 		VideoPacket[] videoPack = new VideoPacket[videoNum.length];
 		for (int i = 0; i < videoPack.length; i++) {
-			videoPack[i] = sharingBufferSingleton.getVideoPacket(videoNum[i]);
+			if (sharingBufferSingleton.isVideoPresent(i)) {
+				videoPack[i] = sharingBufferSingleton.getVideoPacket(videoNum[i]);
+			}
 		}
 
-		Stream.of(videoPack).forEach(v -> {
+		Stream.of(videoPack).filter(v -> v != null).forEach(v -> {
 			ResponseVideoMessage.Builder responseBuilder = ResponseVideoMessage.newBuilder();
 			responseBuilder.setVideoNum(v.getVideoNum()).setChunkNum(v.getChunkNum()).setVideo(v.getVideo());
 			PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setResponseVideoMessage(responseBuilder.build());
@@ -72,27 +83,26 @@ public class UploadSchedulerImpl implements UploadScheduler {
 			connectionManager.sendOne(wrap, packetPair.getLeft());
 		});
 	}
-	
-	// Automatski pokretati na 5s
-	public void getMissingVideoNum() {
-		int[] videoNum = getMissingVideos();
-		RequestVideoMessage.Builder request = RequestVideoMessage.newBuilder();
-		request.setMessageId(0);
-		
-		for (int i = 0; i < videoNum.length; i++) {
-			request.setVideoNum(i, videoNum[i]);			
-		}
-		
-		PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setRequestVideoMessage(request.build());
-		
-		connectionManager.sendAll(wrap, new ArrayList<>());
+
+	public void scheduleCollectMissingVideo() {
+		executor.scheduleAtFixedRate(() -> getMissingVideoNum(), INITIA_MISSING_VIDEO_COLLECT_DELAY_SECOND,
+				VIDEO_DURATION_SECOND / 2, TimeUnit.SECONDS);
 	}
 
-	private int[] getMissingVideos() {
+	public void getMissingVideoNum() {
+		List<Integer> videoNum = getMissingVideos();
+		RequestVideoMessage.Builder request = RequestVideoMessage.newBuilder().setMessageId(0).addAllVideoNum(videoNum);
+
+		PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setRequestVideoMessage(request.build());
+
+		connectionManager.sendAll(wrap, new ArrayList<>(), PeerStatus.UPLOAD_CONNECTION);
+	}
+
+	private List<Integer> getMissingVideos() {
 		int currentPos = sharingBufferSingleton.getMinVideoNum();
 		List<Integer> videoNum = new ArrayList<>();
 		int previousChunkNum = -1;
-		
+
 		int iterationNUm = 0;
 		while (true) {
 			VideoPacket video = sharingBufferSingleton.getVideoPacket(sharingBufferSingleton.getMinVideoNum());
@@ -103,16 +113,48 @@ public class UploadSchedulerImpl implements UploadScheduler {
 			} else {
 				previousChunkNum = video.getChunkNum();
 			}
-			
-			if(iterationNUm > MAX_ELEMENT_NUMBER || videoNum.size() > MAX_REUQEST_VIDEO_SIZE) {
+
+			if (iterationNUm > MAX_ELEMENT_NUMBER || videoNum.size() > MAX_REUQEST_VIDEO_SIZE) {
 				break;
 			}
-			
+
 			currentPos = (currentPos + 1) % MAX_ELEMENT_NUMBER;
 			iterationNUm++;
 		}
 
-		return videoNum.stream().mapToInt(i -> i).toArray();
+		return videoNum;
+	}
+
+	public ConnectionManager getConnectionManager() {
+		return connectionManager;
+	}
+
+	public void setConnectionManager(ConnectionManager connectionManager) {
+		this.connectionManager = connectionManager;
+	}
+
+	public SharingBufferSingleton getSharingBufferSingleton() {
+		return sharingBufferSingleton;
+	}
+
+	public void setSharingBufferSingleton(SharingBufferSingleton sharingBufferSingleton) {
+		this.sharingBufferSingleton = sharingBufferSingleton;
+	}
+
+	public int getMAX_REUQEST_VIDEO_SIZE() {
+		return MAX_REUQEST_VIDEO_SIZE;
+	}
+
+	public void setMAX_REUQEST_VIDEO_SIZE(int mAX_REUQEST_VIDEO_SIZE) {
+		MAX_REUQEST_VIDEO_SIZE = mAX_REUQEST_VIDEO_SIZE;
+	}
+
+	public int getMAX_ELEMENT_NUMBER() {
+		return MAX_ELEMENT_NUMBER;
+	}
+
+	public void setMAX_ELEMENT_NUMBER(int mAX_ELEMENT_NUMBER) {
+		MAX_ELEMENT_NUMBER = mAX_ELEMENT_NUMBER;
 	}
 
 }

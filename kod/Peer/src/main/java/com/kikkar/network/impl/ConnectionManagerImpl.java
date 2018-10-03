@@ -443,9 +443,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	}
 
 	@Override
-	public void sendAll(PacketWrapper.Builder wrap, List<String> uninterestedPeerIp) {
+	public void sendAll(PacketWrapper.Builder wrap, List<String> uninterestedPeerIp, PeerStatus peerStatus) {
 		List<PeerInformation> connectedPeers = peerList.stream()
-				.filter(p -> p.getPeerStatus().equals(PeerStatus.DOWNLOAD_CONNECTION)).collect(Collectors.toList());
+				.filter(p -> p.getPeerStatus().equals(peerStatus)).collect(Collectors.toList());
 
 		connectedPeers.stream().filter(p -> !uninterestedPeerIp.contains(new String(p.getIpAddress()))).forEach(p -> {
 			sendWrap(p, wrap);
@@ -561,5 +561,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	public void setToken(Short token) {
 		this.token = token;
 	}
+	
+	
 
 }

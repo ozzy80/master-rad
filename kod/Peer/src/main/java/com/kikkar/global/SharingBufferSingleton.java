@@ -126,6 +126,10 @@ public class SharingBufferSingleton {
 		return presentVideoNum;
 	}
 
+	public void synchronizeVideoPlayTime(long controlMessageTime) {
+		// TODO pomeri video player ako treba da se slaze sa kontrolnom porukom
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -167,7 +171,7 @@ public class SharingBufferSingleton {
 		scheduler.scheduleAtFixedRate(() -> {
 			OutputStream os = null;
 			try {
-				os = new FileOutputStream(new File(videoFile));
+				os = new FileOutputStream(new File(videoFile), true);
 				if (videoArray[minVideoNum] != null) {
 					saveVideoPack(os);
 				}

@@ -19,4 +19,6 @@ public interface UploadScheduler {
 	void sendResponseMessage(Pair<String, PacketWrapper> packetPair, int[] videoNum);
 
 	void getMissingVideoNum();
+	
+	void scheduleCollectMissingVideo();
 }
