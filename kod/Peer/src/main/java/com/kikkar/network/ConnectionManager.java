@@ -28,4 +28,6 @@ public interface ConnectionManager {
 	void sendAll(PacketWrapper.Builder wrap, List<String> uninterestedPeerIp, PeerStatus peerStatus);
 
 	void sendOne(PacketWrapper.Builder wrap, String IpAddress);
+	
+	void sendToClub(PacketWrapper.Builder wrap, PeerStatus peerStatus, int clubNum);
 }

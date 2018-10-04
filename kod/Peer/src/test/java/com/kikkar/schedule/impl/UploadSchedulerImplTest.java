@@ -30,7 +30,9 @@ class UploadSchedulerImplTest {
 		connectionManagerImpl = new ConnectionManagerImpl();
 		uploadSchedulerImpl = new UploadSchedulerImpl();
 		uploadSchedulerImpl.setConnectionManager(connectionManagerImpl);
-		connectionManagerImpl.setPeerConnector(new PeerConnectorImpl());
+		PeerConnectorImpl peerConnectorImpl = new PeerConnectorImpl();
+		peerConnectorImpl.setThisPeer(new PeerInformation("192.168.0.54".getBytes(), 5721, (short) 0));
+		connectionManagerImpl.setPeerConnector(peerConnectorImpl);
 		connectionManagerImpl.setClock(ClockSingleton.getInstance());
 		connectionManagerImpl.setSocket(new DatagramSocket());
 		sharingBufferSingleton = SharingBufferSingleton.getInstance();

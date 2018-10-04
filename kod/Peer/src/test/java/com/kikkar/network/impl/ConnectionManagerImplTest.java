@@ -29,6 +29,7 @@ import org.mockito.Mockito;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.kikkar.global.ClockSingleton;
+import com.kikkar.global.Constants;
 import com.kikkar.network.ServerConnector;
 import com.kikkar.network.SpeedTest;
 import com.kikkar.packet.ConnectionType;
@@ -326,7 +327,7 @@ class ConnectionManagerImplTest {
 	}
 
 	private void testMaintainClubsConnection_setup(int downloadConnNUm) throws IOException {
-		connectionManagerImpl.setThreadWaitSecond(0);
+		connectionManagerImpl.setDataWaitSecond(0);
 		List<PeerInformation> peerListActual = DummyObjectCreator.createDummyPeers(0, downloadConnNUm, 6 * 3);
 		peerListActual.stream()
 				.filter(p -> p.getPeerStatus().equals(PeerStatus.RESPONSE_WAIT_DOWNLOAD)
@@ -339,7 +340,7 @@ class ConnectionManagerImplTest {
 		Map<String, PongMessage> mapPongMessage = DummyObjectCreator.createDummyPongMessageMap(notConnectedPeerList,
 				peerConnectorImpl);
 		connectionManagerImpl.setPongMessageMap(mapPongMessage);
-
+		
 		peerListActual.add(new PeerInformation("192.168.0.114".getBytes(), 5721, clubNum));
 		peerListActual.add(new PeerInformation("192.168.0.115".getBytes(), 5721, clubNum));
 		connectionManagerImpl.setPeerList(peerListActual);
@@ -362,7 +363,6 @@ class ConnectionManagerImplTest {
 	void testMaintainClubsConnection_checkNoConnection(short connInnerClubNum, short connOuterClubNum,
 			int downloadConnNUm, short totalConnInClub, short totalConnOuterClub) throws IOException {
 		testMaintainClubsConnection_setup(downloadConnNUm);
-		List<PeerInformation> peerListExpected = DummyObjectCreator.createDummyPeers(0, downloadConnNUm, 6 * 3);
 		List<PeerInformation> peerListActual = connectionManagerImpl.getPeerList();
 
 		connectionManagerImpl.maintainClubsConnection();
@@ -727,5 +727,18 @@ class ConnectionManagerImplTest {
 
 		assertEquals(1, connectionManagerImpl.getPacketsForHigherLevel().size());
 		assertEquals(packetPair, connectionManagerImpl.getWaitingPackets());
+	}
+	
+	@Test
+	void testSendToClub_checkDefaultBehaviour() {
+		int uploadClubNum = 2;
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(uploadClubNum * 6, 3, 0);
+		connectionManagerImpl.setPeerList(peerList);
+		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
+
+		connectionManagerImpl.sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, 0);
+
+		assertEquals(uploadClubNum, peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
+		assertEquals(uploadClubNum, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count());
 	}
 }

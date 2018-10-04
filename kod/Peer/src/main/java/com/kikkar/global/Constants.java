@@ -24,6 +24,8 @@ public final class Constants {
 
 	public static final int INITIA_MISSING_VIDEO_COLLECT_DELAY_SECOND = 5;
 	
+	public static final int DATA_WAIT_SECOND = 1;
+	
 	//final PrintStream pst = new PrintStream("error.txt");  
 	public static void setErrorPrintIntoFile(PrintStream pst) {
 		System.setErr(pst);
