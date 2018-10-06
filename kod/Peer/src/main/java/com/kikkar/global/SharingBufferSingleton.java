@@ -11,15 +11,16 @@ import com.kikkar.packet.ControlMessage;
 import com.kikkar.packet.VideoPacket;
 
 public class SharingBufferSingleton {
-	private ClockSingleton clock = ClockSingleton.getInstance();
+	private ClockSingleton clock;
 	private long sourcePlayerPastTime;
 
-	private OutputStream os;
-	private VideoPacket[] videoArray = new VideoPacket[Constants.BUFFER_SIZE];
+	private VideoPacket[] videoArray;
 	private int minVideoNum;
 	private static SharingBufferSingleton firstInstance;
 
 	private SharingBufferSingleton() {
+		clock = ClockSingleton.getInstance();
+		videoArray = new VideoPacket[Constants.BUFFER_SIZE];
 	}
 
 	public static SharingBufferSingleton getInstance() {
@@ -46,14 +47,6 @@ public class SharingBufferSingleton {
 		return true;
 	}
 
-	public ClockSingleton getClock() {
-		return clock;
-	}
-
-	public void setClock(ClockSingleton clock) {
-		this.clock = clock;
-	}
-
 	public boolean isHeadAtChunkStart() {
 		if (isVideoPresent(minVideoNum)) {
 			return videoArray[minVideoNum].getFirstFrame();
@@ -69,10 +62,16 @@ public class SharingBufferSingleton {
 	}
 
 	public void saveVideoPack(OutputStream os) throws IOException {
+		if (!isHeadAtChunkStart()) {
+			return;
+		}
+
 		int previousChunkNum = videoArray[minVideoNum].getChunkNum();
 		int i = 0;
 		while (true) {
-			processMissingChunk(minVideoNum);
+			if (previousChunkNum > 0) {
+				processMissingChunk(minVideoNum);
+			}
 
 			if (checkExitCondition(i, previousChunkNum)) {
 				break;
@@ -111,6 +110,7 @@ public class SharingBufferSingleton {
 			int previousVideoNum = getPreviousIndex();
 			if (previousVideoNum >= 0) {
 				videoArray[videoNum] = videoArray[previousVideoNum];
+				videoArray[previousVideoNum] = null;
 			}
 		}
 	}
@@ -177,14 +177,6 @@ public class SharingBufferSingleton {
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
-	}
-
-	public OutputStream getOs() {
-		return os;
-	}
-
-	public void setOs(OutputStream os) {
-		this.os = os;
 	}
 
 	public VideoPacket[] getVideoArray() {

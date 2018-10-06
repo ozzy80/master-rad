@@ -35,15 +35,8 @@ class DownloadSchedulerSourceImplTest {
 		downloadSchedulerImpl = new DownloadSchedulerImpl();
 		uploadSchedulerImpl = new UploadSchedulerImpl();
 		uploadSchedulerImpl.setConnectionManager(connectionManagerImpl);
-		downloadSchedulerImpl.setConnectionManager(connectionManagerImpl);
-		connectionManagerImpl.setPeerConnector(new PeerConnectorImpl());
-		connectionManagerImpl.setClock(ClockSingleton.getInstance());
-		connectionManagerImpl.setSocket(new DatagramSocket());
 		sharingBufferSingleton = SharingBufferSingleton.getInstance();
-		downloadSchedulerImpl.setSharingBufferSingleton(sharingBufferSingleton);
 		downloadSchedulerImpl.setUploadScheduler(uploadSchedulerImpl);
-		downloadSchedulerImpl.setNotInterestList(new ArrayList<>());
-		sharingBufferSingleton.setVideoArray(new VideoPacket[300]);
 		sharingBufferSingleton.setMinVideoNum(0);
 	}
 	

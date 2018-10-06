@@ -23,10 +23,14 @@ import com.kikkar.packet.TerminatedReason;
 
 public class PeerConnectorImpl implements PeerConnector {
 
-	private BlockingQueue<Pair<String, PacketWrapper>> packetsWaitingForProcessing = new ArrayBlockingQueue<>(
-			Constants.MAX_NUMBER_OF_WAIT_PACKET);;
+	private BlockingQueue<Pair<String, PacketWrapper>> packetsWaitingForProcessing;
 	private PeerInformation thisPeer;
-	private SharingBufferSingleton sharingBufferSingleton = SharingBufferSingleton.getInstance();
+	private SharingBufferSingleton sharingBufferSingleton;
+
+	public PeerConnectorImpl() {
+		packetsWaitingForProcessing = new ArrayBlockingQueue<>(Constants.MAX_NUMBER_OF_WAIT_PACKET);
+		sharingBufferSingleton = SharingBufferSingleton.getInstance();
+	}
 
 	@Override
 	public DatagramPacket createPingMessage(PeerInformation peerInformation, ConnectionType connectionType)
@@ -132,8 +136,9 @@ public class PeerConnectorImpl implements PeerConnector {
 	}
 
 	@Override
-	public void startRecivePacketLoop(DatagramSocket socket, DatagramPacket recivePacket) throws IOException {
+	public void startRecivePacketLoop(DatagramSocket socket) throws IOException {
 		while (true) {
+			DatagramPacket recivePacket = new DatagramPacket(new byte[Constants.BUFFER_SIZE], Constants.BUFFER_SIZE);
 			PacketWrapper packet = recive(socket, recivePacket);
 			packetsWaitingForProcessing
 					.add(new Pair<String, PacketWrapper>(recivePacket.getAddress().getHostAddress(), packet));

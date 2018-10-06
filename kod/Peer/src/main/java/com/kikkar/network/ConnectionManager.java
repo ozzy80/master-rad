@@ -1,6 +1,5 @@
 package com.kikkar.network;
 
-import java.net.DatagramPacket;
 import java.util.List;
 
 import com.kikkar.network.impl.PeerInformation;
@@ -13,7 +12,7 @@ public interface ConnectionManager {
 
 	void loadJson(String rawJson);
 
-	void start(DatagramPacket reciveDatagramPacket) throws Exception;
+	void start() throws Exception;
 
 	void contactServerForMorePeers();
 
@@ -28,6 +27,6 @@ public interface ConnectionManager {
 	void sendAll(PacketWrapper.Builder wrap, List<String> uninterestedPeerIp, PeerStatus peerStatus);
 
 	void sendOne(PacketWrapper.Builder wrap, String IpAddress);
-	
+
 	void sendToClub(PacketWrapper.Builder wrap, PeerStatus peerStatus, int clubNum);
 }

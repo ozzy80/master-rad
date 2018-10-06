@@ -2,12 +2,11 @@ package com.kikkar.schedule.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import com.kikkar.global.ClockSingleton;
 import com.kikkar.global.Constants;
 import com.kikkar.global.SharingBufferSingleton;
+import com.kikkar.network.ConnectionManager;
 import com.kikkar.network.impl.PeerStatus;
 import com.kikkar.packet.ControlMessage;
 import com.kikkar.packet.PacketWrapper;
@@ -17,9 +16,20 @@ public class UploadSchedulerSourceImpl extends UploadSchedulerImpl {
 
 	private int currentVideoNum;
 	private int controlMessageId;
-	private ClockSingleton clock = ClockSingleton.getInstance();
-	private SharingBufferSingleton sharingBufferSingleton = SharingBufferSingleton.getInstance();
-	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+	private ClockSingleton clock;
+	private SharingBufferSingleton sharingBufferSingleton;
+	
+	public UploadSchedulerSourceImpl() {
+		super();
+		clock = ClockSingleton.getInstance();
+		sharingBufferSingleton = SharingBufferSingleton.getInstance();
+	}
+	
+	public UploadSchedulerSourceImpl(ConnectionManager connectionManager) {
+		super(connectionManager);
+		clock = ClockSingleton.getInstance();
+		sharingBufferSingleton = SharingBufferSingleton.getInstance();
+	}
 	
 	@Override
 	public void sendVideo(int currentVideoNum, List<String> currentVideoNotInterestedIpAddresses) {

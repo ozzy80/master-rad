@@ -13,7 +13,6 @@ import java.util.concurrent.BlockingQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.kikkar.global.ClockSingleton;
 import com.kikkar.global.Constants;
 import com.kikkar.global.SharingBufferSingleton;
 import com.kikkar.network.impl.ConnectionManagerImpl;
@@ -36,8 +35,6 @@ class DownloadSchedulerImplTest {
 	private ConnectionManagerImpl connectionManagerImpl;
 	private SharingBufferSingleton sharingBufferSingleton;
 	private UploadSchedulerImpl uploadSchedulerImpl;
-	
-	
 
 	@BeforeEach
 	void setup() throws SocketException {
@@ -49,7 +46,6 @@ class DownloadSchedulerImplTest {
 		PeerConnectorImpl peerConnectorImpl = new PeerConnectorImpl();
 		peerConnectorImpl.setThisPeer(new PeerInformation("192.168.0.54".getBytes(), 5721, (short) 0));
 		connectionManagerImpl.setPeerConnector(peerConnectorImpl);
-		connectionManagerImpl.setClock(ClockSingleton.getInstance());
 		connectionManagerImpl.setSocket(new DatagramSocket());
 		sharingBufferSingleton = SharingBufferSingleton.getInstance();
 		downloadSchedulerImpl.setSharingBufferSingleton(sharingBufferSingleton);
@@ -115,8 +111,7 @@ class DownloadSchedulerImplTest {
 		downloadSchedulerImpl.processPacket(packetPair);
 
 		assertEquals(5, downloadSchedulerImpl.getLastControlMessageId());
-		assertEquals(displayedVideoNum % Constants.BUFFER_SIZE,
-				sharingBufferSingleton.getMinVideoNum());
+		assertEquals(displayedVideoNum % Constants.BUFFER_SIZE, sharingBufferSingleton.getMinVideoNum());
 		assertEquals(2, peer.getLastSentPacketNumber());
 		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
 	}
@@ -169,6 +164,7 @@ class DownloadSchedulerImplTest {
 		PacketWrapper wrap = MessageWrapper.wrapMessage(video, peer);
 		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
 		downloadSchedulerImpl.setWAIT_MILLISECOND(0);
+		downloadSchedulerImpl.setLastVideoNumberSent(5);
 
 		downloadSchedulerImpl.processPacket(packetPair);
 
@@ -181,7 +177,7 @@ class DownloadSchedulerImplTest {
 		assertEquals(video, sharingBufferSingleton.getVideoPacket(videoNum));
 		assertEquals(2, peer.getLastSentPacketNumber());
 		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
-		assertEquals(1, downloadSchedulerImpl.getLastVideoNumberSent());
+		assertEquals(6, downloadSchedulerImpl.getLastVideoNumberSent());
 	}
 
 	@Test
@@ -278,8 +274,8 @@ class DownloadSchedulerImplTest {
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2, 3, 4);
 		PeerInformation peer = peerList.get(2);
 		connectionManagerImpl.setPeerList(peerList);
-		ControlMessage responseVideoMessage = ControlMessage.newBuilder().setCurrentChunkVideoNum(videoNum).setMessageId(messageId)
-				.setPlayerElapsedTime(playerElapsedTime).setTimeInMilliseconds(12458l).build();
+		ControlMessage responseVideoMessage = ControlMessage.newBuilder().setCurrentChunkVideoNum(videoNum)
+				.setMessageId(messageId).setPlayerElapsedTime(playerElapsedTime).setTimeInMilliseconds(12458l).build();
 		PacketWrapper wrap = MessageWrapper.wrapMessage(responseVideoMessage, peer);
 		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
 

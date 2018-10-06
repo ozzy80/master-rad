@@ -37,7 +37,7 @@ public interface PeerConnector {
 
 	DatagramPacket createKeepAliveMessage(PeerInformation peerInformation) throws IOException;
 
-	void startRecivePacketLoop(DatagramSocket socket, DatagramPacket recivePacket) throws IOException;
+	void startRecivePacketLoop(DatagramSocket socket) throws IOException;
 
 	Pair<String, PacketWrapper> getPacketsWaitingForProcessing();
 

@@ -1,6 +1,7 @@
 package com.kikkar.schedule.impl;
 
 import java.net.DatagramPacket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,22 +21,34 @@ import com.kikkar.schedule.DownloadScheduler;
 import com.kikkar.schedule.UploadScheduler;
 
 public class DownloadSchedulerImpl implements DownloadScheduler {
-	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+	private ScheduledExecutorService executor;
 	private SharingBufferSingleton sharingBufferSingleton;
 	private ConnectionManager connectionManager;
-	private DatagramPacket reciveDatagramPacket;
 	private UploadScheduler uploadScheduler;
 	private List<Pair<String, Integer>> notInterestList;
 	private int lastVideoNumberSent;
-	private int lastControlMessageId = -1;
+	private int lastControlMessageId;
 
 	private long WAIT_MILLISECOND = 300;
 
+	public DownloadSchedulerImpl() {
+		executor = Executors.newSingleThreadScheduledExecutor();
+		sharingBufferSingleton = SharingBufferSingleton.getInstance();
+		notInterestList = new ArrayList<>();
+		lastControlMessageId = -1;
+	}
+	
+	public DownloadSchedulerImpl(ConnectionManager connectionManager, UploadScheduler uploadScheduler){
+		this();
+		this.connectionManager = connectionManager;
+		this.uploadScheduler = uploadScheduler;
+	}
+	
 	@Override
 	public void startDownload() {
 		new Thread(() -> {
 			try {
-				connectionManager.start(reciveDatagramPacket);
+				connectionManager.start();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -44,8 +57,7 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 
 	@Override
 	public Pair<String, PacketWrapper> getNextPacket() {
-		Pair<String, PacketWrapper> packetPair = connectionManager.getWaitingPackets();
-		return packetPair;
+		return connectionManager.getWaitingPackets();
 	}
 
 	@Override
@@ -68,11 +80,11 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 					packetPair.getRight().getNotInterestedMessage().getVideoNum()));
 		} else if (packetPair.getRight().hasVideoPacket()) {
 			VideoPacket video = packetPair.getRight().getVideoPacket();
-			uploadScheduler.sendHaveMessage(video.getVideoNum());
 			if (!sharingBufferSingleton.isVideoPresent(video.getVideoNum())) {
+				uploadScheduler.sendHaveMessage(video.getVideoNum());
 				sharingBufferSingleton.addVideoPacket(video.getVideoNum(), video);
+				sendVideoOther();
 			}
-			sendVideoOther();
 		} else if (packetPair.getRight().hasRequestVideoMessage()) {
 			RequestVideoMessage request = packetPair.getRight().getRequestVideoMessage();
 			int[] videoNum = request.getVideoNumList().stream().mapToInt(i -> i).toArray();
@@ -124,14 +136,6 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 
 	public void setConnectionManager(ConnectionManager connectionManager) {
 		this.connectionManager = connectionManager;
-	}
-
-	public DatagramPacket getReciveDatagramPacket() {
-		return reciveDatagramPacket;
-	}
-
-	public void setReciveDatagramPacket(DatagramPacket reciveDatagramPacket) {
-		this.reciveDatagramPacket = reciveDatagramPacket;
 	}
 
 	public UploadScheduler getUploadScheduler() {

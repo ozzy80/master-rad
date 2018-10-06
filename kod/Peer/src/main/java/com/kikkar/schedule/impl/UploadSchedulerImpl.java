@@ -23,9 +23,19 @@ import com.kikkar.schedule.UploadScheduler;
 
 public class UploadSchedulerImpl implements UploadScheduler {
 	private ConnectionManager connectionManager;
-	private SharingBufferSingleton sharingBufferSingleton = SharingBufferSingleton.getInstance();
-	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+	private SharingBufferSingleton sharingBufferSingleton;
+	private ScheduledExecutorService executor;
 
+	public UploadSchedulerImpl() {
+		sharingBufferSingleton = SharingBufferSingleton.getInstance();
+		executor = Executors.newSingleThreadScheduledExecutor();
+	}
+	
+	public UploadSchedulerImpl(ConnectionManager connectionManager) {
+		this();
+		this.connectionManager = connectionManager;
+	}
+	
 	@Override
 	public void sendControlMessage(ControlMessage message) {
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
@@ -49,7 +59,7 @@ public class UploadSchedulerImpl implements UploadScheduler {
 		HaveMessage haveMessage = HaveMessage.newBuilder().setVideoNum(videoNum).build();
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setHaveMessage(haveMessage);
 
-		connectionManager.sendAll(wrap, new ArrayList<>(), PeerStatus.DOWNLOAD_CONNECTION);
+		connectionManager.sendToClub(wrap, PeerStatus.DOWNLOAD_CONNECTION, -1);
 	}
 
 	@Override

@@ -9,10 +9,11 @@ import fr.bmartel.speedtest.model.SpeedTestError;
 
 public class SpeedTestImpl implements SpeedTest {
 
-	private static Long bitePerSecond = 0l;
+	private static Long bitePerSecond;
 	private SpeedTestSocket speedTestSocket;
 
 	public SpeedTestImpl(SpeedTestSocket speedTestSocket) {
+		bitePerSecond = 0l;
 		this.speedTestSocket = speedTestSocket;
 	}
 

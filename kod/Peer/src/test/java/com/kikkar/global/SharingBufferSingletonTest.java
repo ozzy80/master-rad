@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -93,7 +94,7 @@ class SharingBufferSingletonTest {
 		VideoPacket videoPack = VideoPacket.newBuilder().setVideoNum(videoNum).setChunkNum(chunkNum).setVideo(video)
 				.build();
 		sharingBufferSingleton.addVideoPacket(videoNum, videoPack);
-		videoNum += 6000;
+		videoNum += Constants.BUFFER_SIZE;
 
 		assertFalse(sharingBufferSingleton.isVideoPresent(videoNum));
 		assertFalse(sharingBufferSingleton.isVideoPresent(videoNum + 50));
@@ -126,13 +127,14 @@ class SharingBufferSingletonTest {
 	}
 
 	private void setVideo(int startPosition, int numberOfIteration) {
-		int chunkNum = numberOfIteration - startPosition;
-		for (int videoNum = startPosition; videoNum < numberOfIteration; videoNum++) {
-			VideoPacket videoPack = VideoPacket.newBuilder().setVideoNum(videoNum).setChunkNum(chunkNum--)
+		int chunkNum = numberOfIteration;
+		boolean head = true;
+		for (int videoNum = startPosition; videoNum < startPosition + numberOfIteration; videoNum++) {
+			VideoPacket videoPack = VideoPacket.newBuilder().setVideoNum(videoNum).setChunkNum(chunkNum--).setFirstFrame(head)
 					.setVideo(video).build();
 			sharingBufferSingleton.addVideoPacket(videoNum, videoPack);
+			head = false;
 		}
-
 	}
 
 	private byte[] repeat(byte[] array, int times) {
@@ -146,7 +148,7 @@ class SharingBufferSingletonTest {
 	@Test
 	void testSaveVideoPack_checkDefaultBehaviour() throws IOException {
 		setVideo(0, 15);
-		setVideo(15, 22);
+		setVideo(15, 8);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		sharingBufferSingleton.saveVideoPack(baos);
@@ -154,7 +156,7 @@ class SharingBufferSingletonTest {
 		assertArrayEquals(repeat(video.toByteArray(), 15), baos.toByteArray());
 		long onlySecondChunkExist = Arrays.asList(sharingBufferSingleton.getVideoArray()).stream()
 				.filter(v -> v != null).count();
-		assertEquals(8, onlySecondChunkExist);
+		assertEquals(9, onlySecondChunkExist);
 	}
 
 	@Test
@@ -168,12 +170,46 @@ class SharingBufferSingletonTest {
 	}
 
 	@Test
+	void testSaveVideoPack_checkIfHeadIsNotPresent() throws IOException {
+		setVideo(0, 10);
+		sharingBufferSingleton.setMinVideoNum(150);
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		sharingBufferSingleton.saveVideoPack(baos);
+
+		assertTrue(true);
+	}
+	
+	@Test
+	void testSaveVideoPack_checkProcessMissingChunk() throws IOException {
+		int chunkNum = 16;
+		boolean head = true;
+		for (int videoNum = 0; videoNum < 15; videoNum++) {
+			VideoPacket videoPack = VideoPacket.newBuilder().setVideoNum(videoNum).setChunkNum(chunkNum--).setFirstFrame(head)
+					.setVideo(video).build();
+			sharingBufferSingleton.addVideoPacket(videoNum, videoPack);
+			head = false;
+		}
+		setVideo(16, 10);
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		sharingBufferSingleton.saveVideoPack(baos);
+
+		assertArrayEquals(repeat(video.toByteArray(), 16), baos.toByteArray());
+	}
+
+	@Test
 	void testGetNumberOfBufferedVideoContent_checkAllIsMissing() {
 		sharingBufferSingleton.setVideoArray(new VideoPacket[10]);
 		VideoPacket video = VideoPacket.newBuilder().setVideoNum(2).build();
 		sharingBufferSingleton.addVideoPacket(2, video);
 
 		assertEquals(1, sharingBufferSingleton.getNumberOfBufferedVideoContent());
+	}
+	
+	@Test
+	void testGetNumberOfBufferedVideoContent_checkNoVideoPresent() {
+		assertEquals(0, sharingBufferSingleton.getNumberOfBufferedVideoContent());
 	}
 
 	@Test
@@ -200,4 +236,8 @@ class SharingBufferSingletonTest {
 		assertFalse(sharingBufferSingleton.isHeadAtChunkStart());
 	}
 
+	@Test
+	void testSynchronizeVideoPlayTime() {
+		fail("Not implemented");
+	}
 }

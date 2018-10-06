@@ -46,7 +46,6 @@ import com.kikkar.packet.VideoPacket;
 
 class ConnectionManagerImplTest {
 
-	private DatagramSocket socket = Mockito.mock(DatagramSocket.class);
 	private PeerConnectorImpl peerConnectorImpl;
 	private ConnectionManagerImpl connectionManagerImpl;
 	private short clubNum = 0;
@@ -55,15 +54,13 @@ class ConnectionManagerImplTest {
 	@BeforeEach
 	void setup() {
 		peerConnectorImpl = new PeerConnectorImpl();
+		peerConnectorImpl.setThisPeer(new PeerInformation("192.168.0.1".getBytes(), 51234, clubNum));
 		connectionManagerImpl = new ConnectionManagerImpl();
-		connectionManagerImpl.setClock(clock);
 		connectionManagerImpl.setPeerConnector(peerConnectorImpl);
-		connectionManagerImpl.setSocket(socket);
 		Channel channel = new Channel();
 		channel.setChannelId(1l);
 		channel.setIpAddress("http://192.168.0.171:8080/Tracker");
 		connectionManagerImpl.setChannel(channel);
-		peerConnectorImpl.setThisPeer(new PeerInformation("192.168.0.1".getBytes(), 51234, clubNum));
 	}
 
 	@Test
@@ -268,7 +265,7 @@ class ConnectionManagerImplTest {
 		assertEquals(3, numberOfChanges);
 	}
 
-	private void testSendRequestMessage_setup(PeerStatus peerStatus) throws IOException {
+	private void sendRequestMessage_setup(PeerStatus peerStatus) throws IOException {
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 6 * 6);
 		connectionManagerImpl.setPeerList(peerList);
 		List<PeerInformation> pongPeerList = peerList.stream().filter(p -> p.getPeerStatus().equals(peerStatus))
@@ -282,7 +279,7 @@ class ConnectionManagerImplTest {
 	@MethodSource("createDifferentRequestParameters")
 	void testSendRequestMessage_checkConnectionRequest(PeerStatus peerStatus, PeerStatus returnStatus,
 			short wantedConnections, short clubNum) throws IOException {
-		testSendRequestMessage_setup(peerStatus);
+		sendRequestMessage_setup(peerStatus);
 		List<PeerInformation> peerList = connectionManagerImpl.getPeerList();
 		ConnectionType connectionType = peerStatus.equals(PeerStatus.PONG_WAIT_DOWNLOAD) ? ConnectionType.DOWNLOAD
 				: ConnectionType.UPLOAD;
@@ -340,7 +337,7 @@ class ConnectionManagerImplTest {
 		Map<String, PongMessage> mapPongMessage = DummyObjectCreator.createDummyPongMessageMap(notConnectedPeerList,
 				peerConnectorImpl);
 		connectionManagerImpl.setPongMessageMap(mapPongMessage);
-		
+
 		peerListActual.add(new PeerInformation("192.168.0.114".getBytes(), 5721, clubNum));
 		peerListActual.add(new PeerInformation("192.168.0.115".getBytes(), 5721, clubNum));
 		connectionManagerImpl.setPeerList(peerListActual);
@@ -384,6 +381,27 @@ class ConnectionManagerImplTest {
 	}
 
 	@Test
+	void testMaintainClubsConnection_checkRejectOldestConnection() throws IOException {
+		testMaintainClubsConnection_setup(6 + 1);
+		List<PeerInformation> peerListActual = connectionManagerImpl.getPeerList();
+		peerListActual.stream().forEach(p -> p.setLastReceivedMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds()));
+		PeerInformation peer = peerListActual.get(0);
+		peer.setLastReceivedMessageTimeMilliseconds(12345);
+		peerListActual.get(3).setClubNumber((short) 0);
+		peerListActual.get(4).setClubNumber((short) 0);
+		connectionManagerImpl.getPeerConnector().getThisPeer().setClubNumber(clubNum);
+		
+		connectionManagerImpl.maintainClubsConnection();
+		
+		try {
+			Thread.sleep(1000);
+		} catch (Exception e) {
+		}
+		
+		assertFalse(peerListActual.contains(peer));
+	}
+
+	@Test
 	void testMaintainClubsConnection_checkCleanPongMessageAfterFinishConnection() throws IOException {
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 6);
 		Map<String, PongMessage> mapPongMessage = DummyObjectCreator.createDummyPongMessageMap(peerList,
@@ -397,6 +415,24 @@ class ConnectionManagerImplTest {
 		} catch (Exception e) {
 		}
 		assertEquals(0, connectionManagerImpl.getPongMessageMap().size());
+	}
+
+	@Test
+	void testMaintainClubsConnection_checkNotEnoughPeers() throws IOException {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 0);
+		Map<String, PongMessage> mapPongMessage = DummyObjectCreator.createDummyPongMessageMap(peerList,
+				peerConnectorImpl);
+		connectionManagerImpl.setPeerList(peerList);
+		connectionManagerImpl.setPongMessageMap(mapPongMessage);
+
+		connectionManagerImpl.maintainClubsConnection();
+		try {
+			Thread.sleep(100);
+		} catch (Exception e) {
+		}
+		for (int i = 0; i < Constants.NUMBER_OF_CLUB; i++) {
+			assertEquals(0, getDonwloadNum(peerList, i));
+		}
 	}
 
 	private short getDonwloadNum(List<PeerInformation> peerListActual, int clubNum) {
@@ -505,6 +541,16 @@ class ConnectionManagerImplTest {
 	}
 
 	@Test
+	void testSendAll_checkNoAvailablePeerPass() {
+		connectionManagerImpl.setPeerList(new ArrayList<>());
+		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
+
+		connectionManagerImpl.sendAll(wrap, new ArrayList<>(), PeerStatus.DOWNLOAD_CONNECTION);
+
+		assertTrue(true);
+	}
+
+	@Test
 	void testSendOne_checkIncrementMessageNumber() {
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(3, 3, 6);
 		connectionManagerImpl.setPeerList(peerList);
@@ -514,6 +560,16 @@ class ConnectionManagerImplTest {
 
 		assertTrue(peerList.get(0).getLastSentMessageTimeMilliseconds() > 1000);
 		assertTrue(peerList.get(0).getLastSentPacketNumber() == 1);
+	}
+
+	@Test
+	void testSendOne_checkNoAvailablePeerPass() {
+		connectionManagerImpl.setPeerList(new ArrayList<>());
+		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
+
+		connectionManagerImpl.sendOne(wrap, "192.168.0.5");
+
+		assertTrue(true);
 	}
 
 	@Test
@@ -728,7 +784,7 @@ class ConnectionManagerImplTest {
 		assertEquals(1, connectionManagerImpl.getPacketsForHigherLevel().size());
 		assertEquals(packetPair, connectionManagerImpl.getWaitingPackets());
 	}
-	
+
 	@Test
 	void testSendToClub_checkDefaultBehaviour() {
 		int uploadClubNum = 2;
@@ -738,7 +794,45 @@ class ConnectionManagerImplTest {
 
 		connectionManagerImpl.sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, 0);
 
-		assertEquals(uploadClubNum, peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
+		assertEquals(uploadClubNum,
+				peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
 		assertEquals(uploadClubNum, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count());
+	}
+
+	@Test
+	void testSendToClub_checkTooLittleumberOfUploadPeer() {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(3, 2, 0);
+		connectionManagerImpl.setPeerList(peerList);
+		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
+
+		connectionManagerImpl.sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, 5);
+
+		assertEquals(peerList.get(2),
+				peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).findAny().get());
+		assertEquals(1, peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
+		assertEquals(1, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count());
+	}
+
+	@Test
+	void testSendToClub_checkNoAvailablePeerPass() {
+		connectionManagerImpl.setPeerList(new ArrayList<>());
+		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
+
+		connectionManagerImpl.sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, 5);
+
+		assertTrue(true);
+	}
+	
+	@Test
+	void testSendToClub_checkNotFullAllClubs() {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2, 0, 0);
+		connectionManagerImpl.setPeerList(peerList);
+		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
+
+		for (int i = 0; i < Constants.NUMBER_OF_CLUB; i++) {
+			connectionManagerImpl.sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, i);			
+		}
+
+		assertEquals(5, peerList.get(0).getLastSentPacketNumber());
 	}
 }

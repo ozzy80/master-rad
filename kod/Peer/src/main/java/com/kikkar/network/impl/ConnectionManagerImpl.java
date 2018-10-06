@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -36,18 +38,35 @@ import com.kikkar.packet.TerminatedReason;
 import fr.bmartel.speedtest.SpeedTestSocket;
 
 public class ConnectionManagerImpl implements ConnectionManager {
-	private int dataWaitSecond = Constants.DATA_WAIT_SECOND;
+	private int dataWaitSecond;
 	private ServerConnector serverConnector;
 	private PeerConnector peerConnector;
 	private DatagramSocket socket;
 	private Channel channel;
 	private List<PeerInformation> peerList;
 	private Map<String, PongMessage> pongMessageMap;
-	private ClockSingleton clock = ClockSingleton.getInstance();
-	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-	private BlockingQueue<Pair<String, PacketWrapper>> packetsForHigherLevel = new ArrayBlockingQueue<>(
-			Constants.MAX_NUMBER_OF_WAIT_PACKET);
+	private ClockSingleton clock;
+	private ScheduledExecutorService executor;
+	private BlockingQueue<Pair<String, PacketWrapper>> packetsForHigherLevel;
 	private Short token;
+
+	public ConnectionManagerImpl() {
+		dataWaitSecond = Constants.DATA_WAIT_SECOND;
+		serverConnector = new ServerConnectorImpl();
+		peerConnector = new PeerConnectorImpl();
+		clock = ClockSingleton.getInstance();
+		packetsForHigherLevel = new ArrayBlockingQueue<>(Constants.MAX_NUMBER_OF_WAIT_PACKET);
+		try {
+			socket = new DatagramSocket();
+			PeerInformation thisPeer = new PeerInformation(Constants.getLocalIp().getBytes(), socket.getLocalPort(),
+					(short) 0);
+			peerConnector.setThisPeer(thisPeer);
+			pongMessageMap = new HashMap<>();
+			executor = Executors.newSingleThreadScheduledExecutor();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void loadJson(String rawJson) {
@@ -55,7 +74,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	}
 
 	@Override
-	public void start(DatagramPacket reciveDatagramPacket) throws Exception {
+	public void start() throws Exception {
 		token = initialServerConnection(new SpeedTestImpl(new SpeedTestSocket()));
 		serverConnector.synchronizeTime(new NTPUDPClient(), "0.pool.ntp.org");
 		clock = ClockSingleton.getInstance();
@@ -65,7 +84,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 		new Thread(() -> {
 			try {
-				peerConnector.startRecivePacketLoop(socket, reciveDatagramPacket);
+				peerConnector.startRecivePacketLoop(socket);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -277,7 +296,6 @@ public class ConnectionManagerImpl implements ConnectionManager {
 			}, dataWaitSecond, TimeUnit.SECONDS);
 		} else {
 			executor.schedule(() -> {
-				System.out.println(pongMessageMap.size());
 				sendRequestMessage(wantedConnections, PeerStatus.PONG_WAIT_UPLOAD, connectionType, clubNum);
 				deleteNotReplyPeers(pongMessageMap.keySet(), clubNum);
 			}, dataWaitSecond, TimeUnit.SECONDS);
@@ -314,8 +332,6 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	}
 
 	private void deleteNotReplyPeers(Set<String> replyIpAddress, int clubNum) {
-		System.out.println("--------------------");
-		System.out.println(replyIpAddress.size());
 		peerList.removeIf(p -> p.getClubNumber() == clubNum && p.getPeerStatus().equals(PeerStatus.NOT_CONTACTED)
 				&& !replyIpAddress.contains(new String(p.getIpAddress())));
 	}
@@ -354,14 +370,16 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	}
 
 	private void rejectOldestConnections(TerminatedReason terminatedReason, PeerStatus peerStatus, int clubNum) {
-		PeerInformation peerInformation = peerList.stream().filter(p -> p.getPeerStatus().equals(peerStatus))
+		Optional<PeerInformation> peerInformation = peerList.stream().filter(p -> p.getPeerStatus().equals(peerStatus))
 				.filter(p -> p.getClubNumber() == clubNum)
-				.sorted(Comparator.comparing(PeerInformation::getLastReceivedMessageTimeMilliseconds).reversed())
-				.findFirst().get();
-		List<PeerInformation> peer = new ArrayList<>();
-		peer.add(peerInformation);
+				.sorted(Comparator.comparing(PeerInformation::getLastReceivedMessageTimeMilliseconds)).findFirst();
 
-		terminateConnections(peer, TerminatedReason.NEW_CONNECTION);
+		if (peerInformation.isPresent()) {
+			List<PeerInformation> peer = new ArrayList<>();
+			peer.add(peerInformation.get());
+			terminateConnections(peer, TerminatedReason.NEW_CONNECTION);
+		}
+
 	}
 
 	public boolean checkPackageNumberASCOrder(Pair<String, PacketWrapper> packetPair) {
@@ -411,19 +429,16 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	}
 
 	protected PeerInformation getPeer(String ipAddress) {
-		try {
-			PeerInformation peerInformation = peerList.stream()
-					.filter(p -> new String(p.getIpAddress()).equals(ipAddress)).findFirst().orElse(null);
-			return peerInformation;
-		} catch (Exception e) {
-			return null;
-		}
+		return peerList.stream().filter(p -> new String(p.getIpAddress()).equals(ipAddress)).findFirst().orElse(null);
 	}
 
 	public void removeConnection(Pair<String, PacketWrapper> packetPair) {
-		PeerInformation peerInformation = peerList.stream()
-				.filter(p -> new String(p.getIpAddress()).equals(packetPair.getLeft())).findFirst().get();
-		peerList.remove(peerInformation);
+		Optional<PeerInformation> peerInformation = peerList.stream()
+				.filter(p -> new String(p.getIpAddress()).equals(packetPair.getLeft())).findFirst();
+
+		if (peerInformation.isPresent()) {
+			peerList.remove(peerInformation.get());
+		}
 	}
 
 	public void send(DatagramPacket packet) {
@@ -458,7 +473,19 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	@Override
 	public void sendToClub(PacketWrapper.Builder wrap, PeerStatus peerStatus, int clubNum) {
+		if (clubNum == -1) {
+			clubNum = peerConnector.getThisPeer().getClubNumber();
+		}
 		List<PeerInformation> connectedPeer = getConnectedPeerByClub(clubNum, peerStatus);
+
+		if (connectedPeer.size() == 0) {
+			Optional<PeerInformation> peer = peerList.stream().filter(p -> p.getPeerStatus().equals(peerStatus))
+					.findFirst();
+
+			if (peer.isPresent()) {
+				connectedPeer.add(peer.get());
+			}
+		}
 
 		connectedPeer.stream().forEach(p -> sendWrap(p, wrap));
 	}
@@ -538,14 +565,6 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	public void setPongMessageMap(Map<String, PongMessage> pongMessageMap) {
 		this.pongMessageMap = pongMessageMap;
-	}
-
-	public ClockSingleton getClock() {
-		return clock;
-	}
-
-	public void setClock(ClockSingleton clock) {
-		this.clock = clock;
 	}
 
 	@Override

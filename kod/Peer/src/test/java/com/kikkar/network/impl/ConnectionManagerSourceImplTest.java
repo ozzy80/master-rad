@@ -47,7 +47,6 @@ class ConnectionManagerSourceImplTest {
 	void setup() {
 		peerConnectorImpl = new PeerConnectorImpl();
 		connectionManagerImpl = new ConnectionManagerSourceImpl();
-		connectionManagerImpl.setClock(clock);
 		connectionManagerImpl.setPeerConnector(peerConnectorImpl);
 		connectionManagerImpl.setSocket(socket);
 		connectionManagerImpl.setDataWaitSecond(0);

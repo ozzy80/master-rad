@@ -33,7 +33,6 @@ class UploadSchedulerImplTest {
 		PeerConnectorImpl peerConnectorImpl = new PeerConnectorImpl();
 		peerConnectorImpl.setThisPeer(new PeerInformation("192.168.0.54".getBytes(), 5721, (short) 0));
 		connectionManagerImpl.setPeerConnector(peerConnectorImpl);
-		connectionManagerImpl.setClock(ClockSingleton.getInstance());
 		connectionManagerImpl.setSocket(new DatagramSocket());
 		sharingBufferSingleton = SharingBufferSingleton.getInstance();
 		sharingBufferSingleton.setVideoArray(new VideoPacket[Constants.BUFFER_SIZE]);
@@ -50,6 +49,20 @@ class UploadSchedulerImplTest {
 		assertEquals(1, peerListActual.get(2).getLastSentPacketNumber());
 		assertTrue(peerListActual.get(3).getLastSentMessageTimeMilliseconds() > 1000);
 		assertEquals(1, peerListActual.get(3).getLastSentPacketNumber());
+	}
+	
+
+	@Test
+	void testSendHaveMessage_checkInClubSend() {
+		List<PeerInformation> peerListActual = DummyObjectCreator.createDummyPeers(2, 2, 4);
+		connectionManagerImpl.setPeerList(peerListActual);
+
+		uploadSchedulerImpl.sendHaveMessage(15);
+
+		assertTrue(peerListActual.get(0).getLastSentMessageTimeMilliseconds() > 1000);
+		assertEquals(1, peerListActual.get(0).getLastSentPacketNumber());
+		assertEquals(0, peerListActual.get(1).getLastSentMessageTimeMilliseconds());
+		assertEquals(0, peerListActual.get(1).getLastSentPacketNumber());
 	}
 
 }

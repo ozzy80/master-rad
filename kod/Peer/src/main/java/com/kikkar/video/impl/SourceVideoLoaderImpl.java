@@ -3,8 +3,10 @@ package com.kikkar.video.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import com.google.protobuf.ByteString;
@@ -17,50 +19,91 @@ import com.kikkar.video.SourceVideoLoader;
 
 public class SourceVideoLoaderImpl implements SourceVideoLoader {
 
-	private int videoBufferSize = 1450;
+	private int videoBufferSize;
 	private int videoNum;
+	private int videoDutarionMillisecond;
 	private UploadScheduler uploadScheduler;
-	private ClockSingleton clock = ClockSingleton.getInstance();
-	private SharingBufferSingleton sharingBufferSingleton = SharingBufferSingleton.getInstance();
+	private ClockSingleton clock;
+	private SharingBufferSingleton sharingBufferSingleton;
 
+	public SourceVideoLoaderImpl() {
+		videoBufferSize = 1450;
+		videoDutarionMillisecond = Constants.VIDEO_DURATION_SECOND * 1000;
+		clock = ClockSingleton.getInstance();
+		sharingBufferSingleton = SharingBufferSingleton.getInstance();
+	}
+	
+	public SourceVideoLoaderImpl(UploadScheduler uploadScheduler) {
+		this();
+		this.uploadScheduler = uploadScheduler;
+	}
+	
 	@Override
-	public void loadVideo(String inputVideoPath) {
+	public void loadVideo(String inputVideoPath, String outputVideoPath) throws FileNotFoundException {
 		int i = 0;
-		long startTime;
+		OutputStream os = new FileOutputStream(new File(outputVideoPath + "output.mov"));
 		while (true) {
 			File videoFile = new File(inputVideoPath + "izlaz" + i++ + ".mov");
 			try (InputStream is = new FileInputStream(videoFile)) {
-				startTime = clock.getcurrentTimeMilliseconds();
-				int chunkNum = (int) videoFile.length() / videoBufferSize;
-				readChunk(is, chunkNum);
-				try {
-					Thread.sleep(
-							Constants.VIDEO_DURATION_SECOND * 100 / (clock.getcurrentTimeMilliseconds() - startTime));
-				} catch (InterruptedException e) {
-					System.err.println(e.getMessage());
-				}
-			} catch (FileNotFoundException e) {
-				System.err.println(e.getMessage());
+				int chunkNum = (int) Math.ceil(videoFile.length() / videoBufferSize) - 1;
+				iterateOverFiles(is, os, chunkNum);
 			} catch (IOException e) {
 				System.err.println(e.getMessage());
 			}
 		}
 	}
 
+	public void iterateOverFiles(InputStream is, OutputStream os, int chunkNum) {
+		long startTime = clock.getcurrentTimeMilliseconds();
+		try {
+			readChunk(is, chunkNum);
+			long passTime = clock.getcurrentTimeMilliseconds() - startTime;
+			if(passTime < videoDutarionMillisecond) {
+				Thread.sleep(videoDutarionMillisecond - passTime);
+			}
+			sharingBufferSingleton.saveVideoPack(os);
+			// TODO sinhronizuj video plejer
+			// Neka python prebaci u .mxf i poveze sa prethodnim		
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		} catch (InterruptedException e) {
+			System.err.println(e.getMessage());
+		}
+	}
+	
 	public void readChunk(InputStream is, int chunkNum) throws IOException {
 		byte[] buffer = new byte[videoBufferSize];
-		boolean firstFrame = true;
+		int waitMilliseconds = (videoDutarionMillisecond - 1000) / chunkNum;
+		sharingBufferSingleton.setMinVideoNum(videoNum);
+		boolean isFirstChunk = true;
 		while (is.read(buffer) > 0) {
-			VideoPacket.Builder video = VideoPacket.newBuilder();
-			video.setVideoNum(videoNum);
-			video.setChunkNum(chunkNum--);
-			video.setFirstFrame(firstFrame);
-			video.setVideo(ByteString.copyFrom(buffer));
-			sharingBufferSingleton.addVideoPacket(videoNum, video.build());
+			addVideoToBuffer(buffer, isFirstChunk, chunkNum--);
+
+			try {
+				Thread.sleep(waitMilliseconds);
+			} catch (InterruptedException e) {
+				System.err.println(e.getMessage());
+			}
 
 			uploadScheduler.sendVideo(videoNum, new ArrayList<>());
-			firstFrame = false;
-			videoNum = ++videoNum < 0 ? 0 : videoNum++;
+			incrementVideoNum();
+			isFirstChunk = false;
+		}
+	}
+
+	public void addVideoToBuffer(byte[] buffer, boolean isFirstFrame, int chunkNum) {
+		VideoPacket.Builder video = VideoPacket.newBuilder();
+		video.setVideoNum(videoNum);
+		video.setChunkNum(chunkNum);
+		video.setFirstFrame(isFirstFrame);
+		video.setVideo(ByteString.copyFrom(buffer));
+		sharingBufferSingleton.addVideoPacket(videoNum, video.build());
+	}
+
+	private void incrementVideoNum() {
+		videoNum++;
+		if (videoNum < 0) {
+			videoNum = 0;
 		}
 	}
 
@@ -86,6 +129,14 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 
 	public void setUploadScheduler(UploadScheduler uploadScheduler) {
 		this.uploadScheduler = uploadScheduler;
+	}
+
+	public int getVideoDutarionMillisecond() {
+		return videoDutarionMillisecond;
+	}
+
+	public void setVideoDutarionMillisecond(int videoDutarionMillisecond) {
+		this.videoDutarionMillisecond = videoDutarionMillisecond;
 	}
 
 }

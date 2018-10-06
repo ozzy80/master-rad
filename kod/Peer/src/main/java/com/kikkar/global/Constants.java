@@ -1,6 +1,10 @@
 package com.kikkar.global;
 
 import java.io.PrintStream;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public final class Constants {
 	private Constants() {
@@ -23,11 +27,24 @@ public final class Constants {
 	public static final int MAX_REUQEST_VIDEO_SIZE = 20;
 
 	public static final int INITIA_MISSING_VIDEO_COLLECT_DELAY_SECOND = 5;
-	
+
 	public static final int DATA_WAIT_SECOND = 1;
 	
-	//final PrintStream pst = new PrintStream("error.txt");  
+	public static final int DATAGRAM_PACKET_SIZE = 1500;
+
 	public static void setErrorPrintIntoFile(PrintStream pst) {
 		System.setErr(pst);
+	}
+	
+	public static String getLocalIp() {
+		try(final DatagramSocket socket = new DatagramSocket()){
+			  socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+			  return socket.getLocalAddress().getHostAddress();
+		} catch (UnknownHostException e) {
+			System.err.println(e.getMessage());
+		} catch (SocketException e) {
+			System.err.println(e.getMessage());
+		}
+		return null;
 	}
 }

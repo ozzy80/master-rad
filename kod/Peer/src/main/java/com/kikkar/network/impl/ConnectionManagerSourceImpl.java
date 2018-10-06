@@ -10,9 +10,15 @@ import com.kikkar.packet.PacketWrapper;
 import com.kikkar.packet.Pair;
 
 public class ConnectionManagerSourceImpl extends ConnectionManagerImpl {
-	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-	private int threadWaitSecond = Constants.DATA_WAIT_SECOND;
+	private ScheduledExecutorService executor;
+	private int threadWaitSecond;
 
+	public ConnectionManagerSourceImpl() {
+		super();
+		executor = Executors.newSingleThreadScheduledExecutor();
+		threadWaitSecond = Constants.DATA_WAIT_SECOND;
+	}
+	
 	@Override
 	public void maintainClubsConnection() {
 		int uploadConnectionNum;
