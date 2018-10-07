@@ -32,3 +32,10 @@ hs_err_pid*
 *.toc
 *.bbl
 *.blg
+
+
+# Errors
+error.txt
+
+# Videos
+*.mov
