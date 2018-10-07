@@ -142,8 +142,6 @@ public class ServerConnectorImpl implements ServerConnector {
 		if (status == 200) {
 			PeerInformation[] peerInformation = new Gson().fromJson(content.toString(), PeerInformation[].class);
 			return Arrays.asList(peerInformation);
-		} else if (status == 509) {
-			return new ArrayList<>();
 		} else {
 			throw new HTTPException(status);
 		}

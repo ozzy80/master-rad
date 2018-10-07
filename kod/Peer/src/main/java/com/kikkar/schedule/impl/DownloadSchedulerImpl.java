@@ -1,6 +1,5 @@
 package com.kikkar.schedule.impl;
 
-import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -37,13 +36,13 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 		notInterestList = new ArrayList<>();
 		lastControlMessageId = -1;
 	}
-	
-	public DownloadSchedulerImpl(ConnectionManager connectionManager, UploadScheduler uploadScheduler){
+
+	public DownloadSchedulerImpl(ConnectionManager connectionManager, UploadScheduler uploadScheduler) {
 		this();
 		this.connectionManager = connectionManager;
 		this.uploadScheduler = uploadScheduler;
 	}
-	
+
 	@Override
 	public void startDownload() {
 		new Thread(() -> {

@@ -103,7 +103,7 @@ class ConnectionManagerSourceImplTest {
 		connectionManagerImpl.maintainClubsConnection();
 
 		try {
-			Thread.sleep(500);
+			Thread.sleep(600);
 		} catch (Exception e) {
 		}
 
@@ -169,7 +169,7 @@ class ConnectionManagerSourceImplTest {
 
 		connectionManagerImpl.processPacket(packetPair);
 
-		assertEquals(PeerStatus.UPLOAD_CONNECTION, peer.getPeerStatus());
+		assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
 		assertTrue(peer.getLastReceivedMessageTimeMilliseconds() > 1000);
 		assertEquals(1, peer.getRequestMessageNumber());
 		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
@@ -304,7 +304,7 @@ class ConnectionManagerSourceImplTest {
 		connectionManagerImpl.processPacket(packetPair);
 
 		assertEquals(0, peer.getRequestMessageNumber());
-		assertEquals(PeerStatus.UPLOAD_CONNECTION, peer.getPeerStatus());
+		assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
 		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
 		assertEquals(1, peer.getLastSentPacketNumber());
 	}

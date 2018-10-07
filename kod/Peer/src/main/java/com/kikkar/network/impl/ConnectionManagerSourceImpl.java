@@ -43,18 +43,7 @@ public class ConnectionManagerSourceImpl extends ConnectionManagerImpl {
 		if (packetPair.getRight().hasPingMessage()) {
 			System.out.println(packetPair.getRight().getPingMessage().getConnectionType());
 			if (packetPair.getRight().getPingMessage().getConnectionType().equals(ConnectionType.DOWNLOAD)) {
-				PingMessage ping = packetPair.getRight().getPingMessage();
-				PeerInformation peer = getPeer(packetPair.getLeft());
-				if (peer == null) {
-					peer = new PeerInformation(packetPair.getLeft().getBytes(), ping.getPortNumber(),
-							(short) ping.getClubNumber());
-					List<PeerInformation> modifiable = new ArrayList<>(super.getPeerList());
-					modifiable.add(peer);
-					super.setPeerList(Collections.unmodifiableList(modifiable));
-				} else {
-					peer.setPortNumber(ping.getPortNumber());
-					peer.setClubNumber(peer.getClubNumber());
-				}
+				PeerInformation peer = super.processPingMessage(packetPair);
 				super.getPeerConnector().sendPongMessage(super.getPeerList(), peer,
 						packetPair.getRight().getPingMessage(), super.getSocket());
 			}

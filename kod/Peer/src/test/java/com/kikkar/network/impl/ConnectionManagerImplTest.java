@@ -177,10 +177,12 @@ class ConnectionManagerImplTest {
 				.forEach(p -> p.setLastReceivedMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds() + 5000));
 
 		PeerInformation p1 = new PeerInformation("192.168.0.54".getBytes(), 5721, clubNum);
-		p1.setLastReceivedMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds() - 3000);
+		p1.setLastReceivedMessageTimeMilliseconds(
+				clock.getcurrentTimeMilliseconds() - Constants.WAIT_NEIGHBOUR_PACKETS_MILLISECOND - 110);
 		p1.setPeerStatus(peerStatus);
 		PeerInformation p2 = new PeerInformation("192.168.0.54".getBytes(), 5721, clubNum);
-		p2.setLastReceivedMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds() - 1010);
+		p2.setLastReceivedMessageTimeMilliseconds(
+				clock.getcurrentTimeMilliseconds() - Constants.WAIT_NEIGHBOUR_PACKETS_MILLISECOND * 10);
 		p2.setPeerStatus(peerStatus);
 		peerListActual.add(p2);
 		connectionManagerImpl.setPeerList(peerListActual);
@@ -360,7 +362,7 @@ class ConnectionManagerImplTest {
 		testMaintainClubsConnection_setup(downloadConnNUm);
 
 		connectionManagerImpl.maintainClubsConnection();
-		
+
 		try {
 			Thread.sleep(500);
 		} catch (Exception e) {
@@ -383,20 +385,21 @@ class ConnectionManagerImplTest {
 	void testMaintainClubsConnection_checkRejectOldestConnection() throws IOException {
 		testMaintainClubsConnection_setup(6 + 1);
 		List<PeerInformation> peerListActual = connectionManagerImpl.getPeerList();
-		peerListActual.stream().forEach(p -> p.setLastReceivedMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds()));
+		peerListActual.stream()
+				.forEach(p -> p.setLastReceivedMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds()));
 		PeerInformation peer = peerListActual.get(0);
 		peer.setLastReceivedMessageTimeMilliseconds(12345);
 		peerListActual.get(3).setClubNumber((short) 0);
 		peerListActual.get(4).setClubNumber((short) 0);
 		connectionManagerImpl.getPeerConnector().getThisPeer().setClubNumber(clubNum);
-		
+
 		connectionManagerImpl.maintainClubsConnection();
-		
+
 		try {
 			Thread.sleep(1000);
 		} catch (Exception e) {
 		}
-		
+
 		assertFalse(peerListActual.contains(peer));
 	}
 
@@ -599,7 +602,7 @@ class ConnectionManagerImplTest {
 
 		connectionManagerImpl.processPacket(packetPair);
 
-		assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
+		assertEquals(PeerStatus.UPLOAD_CONNECTION, peer.getPeerStatus());
 		assertTrue(peer.getLastReceivedMessageTimeMilliseconds() > 1000);
 		assertEquals(1, peer.getRequestMessageNumber());
 		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
@@ -724,9 +727,9 @@ class ConnectionManagerImplTest {
 		assertEquals(0, peer.getRequestMessageNumber());
 
 		if (connectionType.equals(ConnectionType.DOWNLOAD)) {
-			assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
-		} else {
 			assertEquals(PeerStatus.UPLOAD_CONNECTION, peer.getPeerStatus());
+		} else {
+			assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
 		}
 	}
 
@@ -821,7 +824,7 @@ class ConnectionManagerImplTest {
 
 		assertTrue(true);
 	}
-	
+
 	@Test
 	void testSendToClub_checkNotFullAllClubs() {
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2, 0, 0);
@@ -829,7 +832,7 @@ class ConnectionManagerImplTest {
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
 
 		for (int i = 0; i < Constants.NUMBER_OF_CLUB; i++) {
-			connectionManagerImpl.sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, i);			
+			connectionManagerImpl.sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, i);
 		}
 
 		assertEquals(5, peerList.get(0).getLastSentPacketNumber());

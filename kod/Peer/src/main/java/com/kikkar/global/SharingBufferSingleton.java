@@ -170,7 +170,7 @@ public class SharingBufferSingleton {
 	}
 
 	public void saveVideoPackIntoFile() {
-		try (OutputStream os = new FileOutputStream(new File(Constants.VIDEO_FILE_PATH + "/movie.mov"), true)) {
+		try (OutputStream os = new FileOutputStream(new File(Constants.OUTPUT_VIDEO_FILE_PATH), true)) {
 			saveVideoPack(os);
 		} catch (FileNotFoundException e) {
 			System.err.println(e.getMessage());

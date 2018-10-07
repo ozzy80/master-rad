@@ -257,10 +257,10 @@ class PeerConnectorImplTest {
 		 peerConnectorImpl.sendResponseMessage(peer, packet, socket);
 		 
 	    if(connectionType.equals(ConnectionType.DOWNLOAD)) {
-			assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
+			assertEquals(PeerStatus.UPLOAD_CONNECTION, peer.getPeerStatus());
 		}
 		if(connectionType.equals(ConnectionType.UPLOAD)) {
-			assertEquals(PeerStatus.UPLOAD_CONNECTION, peer.getPeerStatus());
+			assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
 		}
 	}
 	
