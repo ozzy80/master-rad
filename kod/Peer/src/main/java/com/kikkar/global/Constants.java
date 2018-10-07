@@ -12,7 +12,7 @@ public final class Constants {
 
 	public static final int BUFFER_SIZE = 6_000;
 
-	public static final int VIDEO_DURATION_SECOND = 6;
+	public static final int VIDEO_DURATION_SECOND = 6*5;
 
 	public static final int NUMBER_OF_CLUB = 6;
 
@@ -22,7 +22,7 @@ public final class Constants {
 
 	public static final int MAX_NUMBER_OF_WAIT_PACKET = 150;
 
-	public static final String VIDEO_FILE_PATH = "output.mov";
+	public static final String VIDEO_FILE_PATH = "./video/play/";
 
 	public static final int MAX_REUQEST_VIDEO_SIZE = 20;
 

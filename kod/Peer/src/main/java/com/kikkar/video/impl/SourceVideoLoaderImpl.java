@@ -78,9 +78,12 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 		int waitMilliseconds = (videoDutarionMillisecond - 1000) / chunkNum;
 		sharingBufferSingleton.setMinVideoNum(videoNum);
 		boolean isFirstChunk = true;
+		int readed = 0;
 		while (is.read(buffer) > 0) {
 			addVideoToBuffer(buffer, isFirstChunk, chunkNum--);
-
+			
+			System.out.println("novi");
+			
 			try {
 				Thread.sleep(waitMilliseconds);
 			} catch (InterruptedException e) {

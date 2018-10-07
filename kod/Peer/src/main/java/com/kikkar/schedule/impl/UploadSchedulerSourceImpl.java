@@ -14,7 +14,6 @@ import com.kikkar.packet.VideoPacket;
 
 public class UploadSchedulerSourceImpl extends UploadSchedulerImpl {
 
-	private int currentVideoNum;
 	private int controlMessageId;
 	private ClockSingleton clock;
 	private SharingBufferSingleton sharingBufferSingleton;
@@ -40,12 +39,11 @@ public class UploadSchedulerSourceImpl extends UploadSchedulerImpl {
 		
 		if(video.getFirstFrame()) {
 			System.out.println("-----------");
-			sendControlMessage();
+			sendControlMessage(currentVideoNum);
 		}
-		this.currentVideoNum = currentVideoNum;
 	}
 	
-	private void sendControlMessage() {
+	private void sendControlMessage(int currentVideoNum) {
 		ControlMessage.Builder controlMessage = ControlMessage.newBuilder();
 		controlMessage.setMessageId(controlMessageId++);
 		controlMessage.setCurrentChunkVideoNum(currentVideoNum);
@@ -54,20 +52,11 @@ public class UploadSchedulerSourceImpl extends UploadSchedulerImpl {
 		PacketWrapper.Builder controlWrap = PacketWrapper.newBuilder().setControlMessage(controlMessage);
 		
 		super.getConnectionManager().sendAll(controlWrap, new ArrayList<>(), PeerStatus.UPLOAD_CONNECTION);	
-		System.out.println("--");
 	}
 	
 	@Override
 	public void scheduleCollectMissingVideo() {
 		return;
-	}
-
-	public int getCurrentVideoNum() {
-		return currentVideoNum;
-	}
-
-	public void setCurrentVideoNum(int currentVideoNum) {
-		this.currentVideoNum = currentVideoNum;
 	}
 
 	public int getControlMessageId() {
