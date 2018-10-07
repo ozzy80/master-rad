@@ -66,6 +66,7 @@ public class PeerConnectionController {
 
 		Short token = (short) ThreadLocalRandom.current().nextInt(Short.MIN_VALUE, Short.MAX_VALUE);
 		String ip = peerConnectionMenager.getClientIp(request);
+		System.out.println("*****************************" + ip);
 		tokenManager.addToken(token, ip);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
 	}
@@ -78,20 +79,23 @@ public class PeerConnectionController {
 
 		String ip = peerConnectionMenager.getClientIp(request);
 		Token token = tokenManager.getTokenByIpAddress(ip);
-		if (token != null && token.getToken().equals(peerToken)) {
-			//tokenManager.deleteToken(token);
-		} else {
+		if (token == null || !token.getToken().equals(peerToken)) {
 			return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("Token is not valid");
 		}
 
-		List<PeerInformation> peerList = peerInformationManager.getPeersList(30, channelId);
-		Short clubNumber = (short) ((peerInformationManager.getLastChannelClubNumber(channelId) + 1) % 6);
+		List<PeerInformation> peerList = peerInformationManager.getPeersList(10, channelId, ip);
+		PeerInformation currentPeer = peerInformationManager.getPeerById(ip);
+		Short clubNumber;
+		if (currentPeer == null) {
+			clubNumber = (short) ((peerInformationManager.getLastChannelClubNumber(channelId) + 1) % 6);
+		} else {
+			clubNumber = currentPeer.getClubNumber();
+		}
 		Channel channel = channelManager.getChannelByID(channelId);
-		PeerInformation currentPeer = new PeerInformation(token.getIpAddress(), peerPort, clubNumber, new Date(),
-				channel);
+		currentPeer = new PeerInformation(token.getIpAddress(), peerPort, clubNumber, new Date(), channel);
 		peerInformationManager.addPeer(currentPeer);
 		peerList.add(currentPeer);
-		
+
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		String json = gson.toJson(peerList);
 
@@ -102,6 +106,9 @@ public class PeerConnectionController {
 	public @ResponseBody ResponseEntity<Object> leaveChannel(HttpServletRequest request) {
 		String ip = peerConnectionMenager.getClientIp(request);
 		peerInformationManager.deletePeer(ip);
+
+		Token token = tokenManager.getTokenByIpAddress(ip);
+		tokenManager.deleteToken(token);
 
 		return ResponseEntity.status(HttpStatus.OK).body("Goodbye");
 	}

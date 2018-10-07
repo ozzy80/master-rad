@@ -26,12 +26,12 @@ public class PeerInformationDaoImpl implements PeerInformationDao {
 	private SessionFactory sessionFactory;
 
 	@Override
-	public List<PeerInformation> getPeersList(int limit, Channel channel) {
+	public List<PeerInformation> getPeersList(int limit, byte[] ipAddress, Channel channel) {
 		Session session = sessionFactory.getCurrentSession();
 
 		Query query = session
-				.createQuery("from PeerInformation p where p.channel = :channel and p.clubNumber = :clubNumber")
-				.setParameter("channel", channel);
+				.createQuery("from PeerInformation p where p.channel = :channel and p.clubNumber = :clubNumber and ipAddress <> :ipAddress")
+				.setParameter("channel", channel).setParameter("ipAddress", ipAddress);
 
 		List<PeerInformation> peerInformationList = query.setParameter("clubNumber", (short) 0).list();
 		for (int i = 1; i < 5; i++) {

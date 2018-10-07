@@ -38,6 +38,7 @@ public class PeerConnectorImpl implements PeerConnector {
 		PingMessage.Builder ping = PingMessage.newBuilder();
 		ping.setClubNumber(thisPeer.getClubNumber());
 		ping.setPingId(peerInformation.getPingMessageNumber());
+		ping.setPortNumber(thisPeer.getPortNumber());
 		ping.setConnectionType(connectionType);
 		peerInformation.incrementPingMessageNumber();
 
@@ -180,8 +181,9 @@ public class PeerConnectorImpl implements PeerConnector {
 
 	@Override
 	public void sendPingMessages(List<PeerInformation> neighbourPeers, ConnectionType connectionType,
-			DatagramSocket socket) {
-		neighbourPeers.stream().filter(peer -> peer.getPeerStatus().equals(PeerStatus.NOT_CONTACTED)).forEach(peer -> {
+			DatagramSocket socket, Short clubNum) {
+
+		neighbourPeers.stream().filter(peer -> peer != null && peer.getPeerStatus().equals(PeerStatus.NOT_CONTACTED) && peer.getClubNumber().equals(clubNum)).forEach(peer -> {
 			try {
 				DatagramPacket packet = createPingMessage(peer, connectionType);
 				send(packet, socket);
@@ -220,9 +222,9 @@ public class PeerConnectorImpl implements PeerConnector {
 			send(datagramPacket, socket);
 
 			if (packet.getRequestMessage().getConnectionType().equals(ConnectionType.DOWNLOAD)) {
-				peer.setPeerStatus(PeerStatus.DOWNLOAD_CONNECTION);
-			} else {
 				peer.setPeerStatus(PeerStatus.UPLOAD_CONNECTION);
+			} else {
+				peer.setPeerStatus(PeerStatus.DOWNLOAD_CONNECTION);
 			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());

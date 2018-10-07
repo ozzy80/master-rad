@@ -41,9 +41,11 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 	@Override
 	public void loadVideo(String inputVideoPath, String outputVideoPath) throws FileNotFoundException {
 		int i = 0;
-		OutputStream os = new FileOutputStream(new File(outputVideoPath + "output.mov"));
+		// TODO skini posle true
+		OutputStream os = new FileOutputStream(new File(outputVideoPath + "/output.mov"), true);
 		while (true) {
-			File videoFile = new File(inputVideoPath + "izlaz" + i++ + ".mov");
+			File videoFile = new File(inputVideoPath + "/izlaz" + i++ + ".mov");
+			System.out.println("USAOOOO");
 			try (InputStream is = new FileInputStream(videoFile)) {
 				int chunkNum = (int) Math.ceil(videoFile.length() / videoBufferSize) - 1;
 				iterateOverFiles(is, os, chunkNum);

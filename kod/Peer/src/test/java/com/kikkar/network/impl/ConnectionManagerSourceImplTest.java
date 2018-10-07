@@ -103,7 +103,7 @@ class ConnectionManagerSourceImplTest {
 		connectionManagerImpl.maintainClubsConnection();
 
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(500);
 		} catch (Exception e) {
 		}
 
@@ -118,12 +118,11 @@ class ConnectionManagerSourceImplTest {
 	void testMaintainClubsConnection_checkDeleteNoActivePeer() throws IOException, InterruptedException {
 		testMaintainClubsConnection_setup(0);
 		List<PeerInformation> peerListExpected = DummyObjectCreator.createDummyPeers(0, 0, 6 * 3);
-		List<PeerInformation> peerListActual = connectionManagerImpl.getPeerList();
 
 		connectionManagerImpl.maintainClubsConnection();
 
 		Thread.sleep(300);
-		assertEquals(peerListExpected.size(), peerListActual.size());
+		assertEquals(peerListExpected.size(), connectionManagerImpl.getPeerList().size());
 	}
 
 	@Test
@@ -240,7 +239,7 @@ class ConnectionManagerSourceImplTest {
 
 		connectionManagerImpl.processPacket(packetPair);
 
-		assertFalse(peerList.contains(peer));
+		assertFalse(connectionManagerImpl.getPeerList().contains(peer));
 		assertEquals(0, peer.getUnorderPacketNumber());
 	}
 
@@ -341,7 +340,7 @@ class ConnectionManagerSourceImplTest {
 
 		connectionManagerImpl.processPacket(packetPair);
 
-		assertEquals(peerListExpected, peerListActual);
+		assertEquals(peerListExpected, connectionManagerImpl.getPeerList());
 	}
 
 	@Test

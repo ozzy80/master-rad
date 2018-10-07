@@ -31,6 +31,8 @@ public class PeerInformation {
 	public PeerInformation() {
 		this.peerStatus = PeerStatus.NOT_CONTACTED;
 		this.lastReceivedMessageTimeMilliseconds = ClockSingleton.getInstance().getcurrentTimeMilliseconds();
+		lastReceivedPacketNumber = -1;
+		
 	}
 
 	public PeerInformation(byte[] ipAddress, Integer portNumber, Short clubNumber) {

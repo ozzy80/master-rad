@@ -1,25 +1,82 @@
 package com.kikkar.Peer;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.FileNotFoundException;
+import java.net.DatagramPacket;
 
-import org.apache.commons.net.ntp.NTPUDPClient;
-import org.quartz.SchedulerException;
-
-import com.kikkar.network.impl.Channel;
-import com.kikkar.network.impl.PeerInformation;
-import com.kikkar.network.impl.ServerConnectorImpl;
-import com.kikkar.network.impl.SpeedTestImpl;
-
-import fr.bmartel.speedtest.SpeedTestSocket;
+import com.kikkar.global.Constants;
+import com.kikkar.network.ConnectionManager;
+import com.kikkar.network.impl.ConnectionManagerImpl;
+import com.kikkar.network.impl.ConnectionManagerSourceImpl;
+import com.kikkar.schedule.DownloadScheduler;
+import com.kikkar.schedule.UploadScheduler;
+import com.kikkar.schedule.impl.DownloadSchedulerImpl;
+import com.kikkar.schedule.impl.DownloadSchedulerSourceImpl;
+import com.kikkar.schedule.impl.UploadSchedulerImpl;
+import com.kikkar.schedule.impl.UploadSchedulerSourceImpl;
+import com.kikkar.video.SourceVideoLoader;
+import com.kikkar.video.impl.SourceVideoLoaderImpl;
 
 public class App {
 
-	public static void main(String[] args) throws InterruptedException, SchedulerException {
+	public static void main(String[] args) throws Exception {
+		//final PrintStream pst = new PrintStream("error.txt");
+		//Constants.setErrorPrintIntoFile(pst);
+		
+		// Obican parnjak
+		if(args[0].equals("Peer")) {
+			System.out.println("OBICAN PARNJAK");
+			ConnectionManager connectionManager = new ConnectionManagerImpl();
+			String rawJson = "{\"channelId\":1,\"chunkSize\":1500,\"bitrate\":1500,\"name\":\"BBC\",\"description\":null,\"ipAddress\":\"http://192.168.0.170:8080/Tracker\"}";
+			connectionManager.loadJson(rawJson);
+			//connectionManager.start();
+			
+			UploadScheduler uploadScheduler = new UploadSchedulerImpl(connectionManager);
+			DownloadScheduler downloadScheduler = new DownloadSchedulerImpl(connectionManager, uploadScheduler);	
+			downloadScheduler.startDownload();
+			uploadScheduler.scheduleCollectMissingVideo();
+			while (true) {
+				downloadScheduler.startDownload();
+				downloadScheduler.processPacket(downloadScheduler.getNextPacket());
+			}
+		}
+		
+		// Izvor
+		if(args[0].equals("Source")) {
+			System.out.println("IZVOR");
+			ConnectionManager connectionManager = new ConnectionManagerSourceImpl();
+			String rawJson = "{\"channelId\":1,\"chunkSize\":1500,\"bitrate\":1500,\"name\":\"BBC\",\"description\":null,\"ipAddress\":\"http://192.168.0.170:8080/Tracker\"}";
+			byte[] reciveData = new byte[Constants.DATAGRAM_PACKET_SIZE];
+			DatagramPacket reciveDatagramPacket = new DatagramPacket(reciveData, reciveData.length);
+			connectionManager.loadJson(rawJson);
+			//connectionManager.start();
+
+			UploadScheduler uploadScheduler = new UploadSchedulerSourceImpl(connectionManager);
+			DownloadScheduler downloadScheduler = new DownloadSchedulerSourceImpl(connectionManager, reciveDatagramPacket, uploadScheduler);
+			SourceVideoLoader sourceVideoLoader = new SourceVideoLoaderImpl(uploadScheduler);
+			
+			new Thread(() -> {
+				try {
+					sourceVideoLoader.loadVideo("./video/source", "./video/play");
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}).start();;
+			
+			downloadScheduler.startDownload();
+			uploadScheduler.scheduleCollectMissingVideo();
+			
+			while (true) {
+				System.out.println("*************************" + Thread.getAllStackTraces().keySet().size());
+				downloadScheduler.processPacket(downloadScheduler.getNextPacket());		
+			}
+			
+		}
+	
+		
+		
+		
+		
+		
 		/*
 		 * Server connector part
 		 */

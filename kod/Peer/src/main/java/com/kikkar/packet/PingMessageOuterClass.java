@@ -29,10 +29,11 @@ public final class PingMessageOuterClass {
   static {
     java.lang.String[] descriptorData = {
       "\n\021PingMessage.proto\022\021com.kikkar.packet\032\024" +
-      "ConnectionType.proto\"l\n\013PingMessage\022\016\n\006p" +
-      "ingId\030\001 \001(\005\022\022\n\nclubNumber\030\002 \001(\005\0229\n\016conne" +
-      "ctionType\030\003 \001(\0162!.com.kikkar.packet.Conn" +
-      "ectionTypeB\002P\001b\006proto3"
+      "ConnectionType.proto\"\200\001\n\013PingMessage\022\016\n\006" +
+      "pingId\030\001 \001(\005\022\022\n\nportNumber\030\002 \001(\005\022\022\n\nclub" +
+      "Number\030\003 \001(\005\0229\n\016connectionType\030\004 \001(\0162!.c" +
+      "om.kikkar.packet.ConnectionTypeB\002P\001b\006pro" +
+      "to3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -52,7 +53,7 @@ public final class PingMessageOuterClass {
     internal_static_com_kikkar_packet_PingMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_kikkar_packet_PingMessage_descriptor,
-        new java.lang.String[] { "PingId", "ClubNumber", "ConnectionType", });
+        new java.lang.String[] { "PingId", "PortNumber", "ClubNumber", "ConnectionType", });
     com.kikkar.packet.ConnectionTypeOuterClass.getDescriptor();
   }
 

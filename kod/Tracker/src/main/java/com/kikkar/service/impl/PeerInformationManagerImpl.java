@@ -23,11 +23,16 @@ public class PeerInformationManagerImpl implements PeerInformationManager {
 	private ChannelDao channelDao;
 
 	@Override
-	public List<PeerInformation> getPeersList(int limit, Long channelId) {
+	public List<PeerInformation> getPeersList(int limit, Long channelId, String ip) {
 		Channel channel = channelDao.getChannelByID(channelId);
-		return peerInformationDao.getPeersList(limit, channel);
+		return peerInformationDao.getPeersList(limit, ip.getBytes(), channel);
 	}
 
+	@Override
+	public PeerInformation getPeerById(String ip) {
+		return peerInformationDao.getPeerById(ip.getBytes());
+	}
+	
 	@Override
 	public void addPeer(PeerInformation peer) {
 		peerInformationDao.addPeer(peer);
@@ -52,12 +57,14 @@ public class PeerInformationManagerImpl implements PeerInformationManager {
 	@Override
 	public void stayAlive(String ipAddress) {
 		PeerInformation peerInformation = peerInformationDao.getPeerById(ipAddress.getBytes());
-		peerInformation.setLastActiveMessage(new Date());
-		peerInformationDao.addPeer(peerInformation);
+		if(peerInformation != null) {
+			peerInformation.setLastActiveMessage(new Date());
+			peerInformationDao.addPeer(peerInformation);			
+		}
 	}
 
 	// TODO Odkomentarisi kad se povezu parnjaci
-	@Scheduled(fixedRate = 600000)
+	@Scheduled(fixedRate = 1000000)
 	private void helloWorld() {
 		System.out.println("aaaaaaaaa" + new Date());
 		// peerInformationDao.deleteDeadPeers(10l);

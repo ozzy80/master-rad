@@ -87,11 +87,9 @@ class ConnectionManagerImplTest {
 		int numOfDownloadPeers = 3;
 		int numOfUploadPeers = 0;
 		int numOfOtherPeers = 0;
-		ServerConnector serverConnector = stubServerConnector(numOfDownloadPeers, numOfUploadPeers + newPeerNum + 1,
+		ServerConnector serverConnector = stubServerConnector(numOfUploadPeers, numOfDownloadPeers + 3,
 				numOfOtherPeers);
-		List<PeerInformation> oldPeerList = DummyObjectCreator.createDummyPeers(numOfDownloadPeers, numOfUploadPeers,
-				numOfOtherPeers);
-		List<PeerInformation> newPeerList = DummyObjectCreator.createDummyPeers(numOfDownloadPeers, numOfUploadPeers,
+		List<PeerInformation> newPeerList = DummyObjectCreator.createDummyPeers(numOfUploadPeers, numOfDownloadPeers,
 				numOfOtherPeers);
 		connectionManagerImpl.setServerConnector(serverConnector);
 		connectionManagerImpl.setPeerList(newPeerList);
@@ -99,10 +97,10 @@ class ConnectionManagerImplTest {
 
 		connectionManagerImpl.contactServerForMorePeers();
 
-		assertEquals(oldPeerList.size() + newPeerNum, newPeerList.size());
+		assertEquals(5, connectionManagerImpl.getPeerList().size());
 	}
 
-	private ServerConnector stubServerConnector(int numOfDownloadPeers, int numOfUploadPeers, int numOfOtherPeers) {
+	private ServerConnector stubServerConnector(int numOfUploadPeers, int numOfDownloadPeers, int numOfOtherPeers) {
 		return new ServerConnector() {
 			@Override
 			public void synchronizeTime(NTPUDPClient client, String ntpServer) throws UnknownHostException {
@@ -131,7 +129,7 @@ class ConnectionManagerImplTest {
 
 			@Override
 			public List<PeerInformation> getPeerInfoList(URL url) throws IOException {
-				return DummyObjectCreator.createDummyPeers(numOfDownloadPeers, numOfUploadPeers, numOfOtherPeers);
+				return DummyObjectCreator.createDummyPeers(numOfUploadPeers, numOfDownloadPeers, numOfOtherPeers);
 			}
 
 			@Override
@@ -360,13 +358,14 @@ class ConnectionManagerImplTest {
 	void testMaintainClubsConnection_checkNoConnection(short connInnerClubNum, short connOuterClubNum,
 			int downloadConnNUm, short totalConnInClub, short totalConnOuterClub) throws IOException {
 		testMaintainClubsConnection_setup(downloadConnNUm);
-		List<PeerInformation> peerListActual = connectionManagerImpl.getPeerList();
 
 		connectionManagerImpl.maintainClubsConnection();
+		
 		try {
 			Thread.sleep(500);
 		} catch (Exception e) {
 		}
+		List<PeerInformation> peerListActual = connectionManagerImpl.getPeerList();
 		for (int i = 0; i < 6; i++) {
 			long downloadClubConnetion = getConnectionCreatedNumber(peerListActual, (short) i,
 					PeerStatus.RESPONSE_WAIT_DOWNLOAD);
@@ -511,7 +510,7 @@ class ConnectionManagerImplTest {
 
 		connectionManagerImpl.removeConnection(packetPair);
 
-		assertFalse(peerList.contains(peer));
+		assertFalse(connectionManagerImpl.getPeerList().contains(peer));
 	}
 
 	@Test
@@ -655,7 +654,7 @@ class ConnectionManagerImplTest {
 
 		connectionManagerImpl.processPacket(packetPair);
 
-		assertFalse(peerList.contains(peer));
+		assertFalse(connectionManagerImpl.getPeerList().contains(peer));
 		assertEquals(0, peer.getUnorderPacketNumber());
 	}
 
@@ -767,7 +766,7 @@ class ConnectionManagerImplTest {
 
 		connectionManagerImpl.processPacket(packetPair);
 
-		assertEquals(peerListExpected, peerListActual);
+		assertEquals(peerListExpected, connectionManagerImpl.getPeerList());
 	}
 
 	@Test

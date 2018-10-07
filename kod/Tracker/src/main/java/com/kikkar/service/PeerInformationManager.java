@@ -6,7 +6,7 @@ import com.kikkar.model.PeerInformation;
 
 public interface PeerInformationManager {
 
-	List<PeerInformation> getPeersList(int limit, Long channelId);
+	List<PeerInformation> getPeersList(int limit, Long channelId, String ip);
 
 	void addPeer(PeerInformation peer);
 
@@ -16,4 +16,5 @@ public interface PeerInformationManager {
 
 	void stayAlive(String ipAddress);
 
+	PeerInformation getPeerById(String ip);
 }

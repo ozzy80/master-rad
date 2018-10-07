@@ -43,7 +43,7 @@ public interface PeerConnector {
 
 	void sendRequestMessage(List<PeerInformation> neighbourPeers, DatagramSocket socket, ConnectionType connectionType);
 
-	void sendPingMessages(List<PeerInformation> peers, ConnectionType connectionType, DatagramSocket socket);
+	void sendPingMessages(List<PeerInformation> peers, ConnectionType connectionType, DatagramSocket socket, Short clubNum);
 
 	void sendPongMessage(List<PeerInformation> neighbourPeers, PeerInformation peer, PingMessage pingMessage,
 			DatagramSocket socket);

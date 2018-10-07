@@ -13,16 +13,21 @@ public interface PingMessageOrBuilder extends
   int getPingId();
 
   /**
-   * <code>int32 clubNumber = 2;</code>
+   * <code>int32 portNumber = 2;</code>
+   */
+  int getPortNumber();
+
+  /**
+   * <code>int32 clubNumber = 3;</code>
    */
   int getClubNumber();
 
   /**
-   * <code>.com.kikkar.packet.ConnectionType connectionType = 3;</code>
+   * <code>.com.kikkar.packet.ConnectionType connectionType = 4;</code>
    */
   int getConnectionTypeValue();
   /**
-   * <code>.com.kikkar.packet.ConnectionType connectionType = 3;</code>
+   * <code>.com.kikkar.packet.ConnectionType connectionType = 4;</code>
    */
   com.kikkar.packet.ConnectionType getConnectionType();
 }

@@ -17,6 +17,7 @@ private static final long serialVersionUID = 0L;
   }
   private PingMessage() {
     pingId_ = 0;
+    portNumber_ = 0;
     clubNumber_ = 0;
     connectionType_ = 0;
   }
@@ -52,10 +53,15 @@ private static final long serialVersionUID = 0L;
           }
           case 16: {
 
-            clubNumber_ = input.readInt32();
+            portNumber_ = input.readInt32();
             break;
           }
           case 24: {
+
+            clubNumber_ = input.readInt32();
+            break;
+          }
+          case 32: {
             int rawValue = input.readEnum();
 
             connectionType_ = rawValue;
@@ -102,25 +108,34 @@ private static final long serialVersionUID = 0L;
     return pingId_;
   }
 
-  public static final int CLUBNUMBER_FIELD_NUMBER = 2;
+  public static final int PORTNUMBER_FIELD_NUMBER = 2;
+  private int portNumber_;
+  /**
+   * <code>int32 portNumber = 2;</code>
+   */
+  public int getPortNumber() {
+    return portNumber_;
+  }
+
+  public static final int CLUBNUMBER_FIELD_NUMBER = 3;
   private int clubNumber_;
   /**
-   * <code>int32 clubNumber = 2;</code>
+   * <code>int32 clubNumber = 3;</code>
    */
   public int getClubNumber() {
     return clubNumber_;
   }
 
-  public static final int CONNECTIONTYPE_FIELD_NUMBER = 3;
+  public static final int CONNECTIONTYPE_FIELD_NUMBER = 4;
   private int connectionType_;
   /**
-   * <code>.com.kikkar.packet.ConnectionType connectionType = 3;</code>
+   * <code>.com.kikkar.packet.ConnectionType connectionType = 4;</code>
    */
   public int getConnectionTypeValue() {
     return connectionType_;
   }
   /**
-   * <code>.com.kikkar.packet.ConnectionType connectionType = 3;</code>
+   * <code>.com.kikkar.packet.ConnectionType connectionType = 4;</code>
    */
   public com.kikkar.packet.ConnectionType getConnectionType() {
     @SuppressWarnings("deprecation")
@@ -145,11 +160,14 @@ private static final long serialVersionUID = 0L;
     if (pingId_ != 0) {
       output.writeInt32(1, pingId_);
     }
+    if (portNumber_ != 0) {
+      output.writeInt32(2, portNumber_);
+    }
     if (clubNumber_ != 0) {
-      output.writeInt32(2, clubNumber_);
+      output.writeInt32(3, clubNumber_);
     }
     if (connectionType_ != com.kikkar.packet.ConnectionType.UPLOAD.getNumber()) {
-      output.writeEnum(3, connectionType_);
+      output.writeEnum(4, connectionType_);
     }
     unknownFields.writeTo(output);
   }
@@ -164,13 +182,17 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(1, pingId_);
     }
+    if (portNumber_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(2, portNumber_);
+    }
     if (clubNumber_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(2, clubNumber_);
+        .computeInt32Size(3, clubNumber_);
     }
     if (connectionType_ != com.kikkar.packet.ConnectionType.UPLOAD.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
-        .computeEnumSize(3, connectionType_);
+        .computeEnumSize(4, connectionType_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -190,6 +212,8 @@ private static final long serialVersionUID = 0L;
     boolean result = true;
     result = result && (getPingId()
         == other.getPingId());
+    result = result && (getPortNumber()
+        == other.getPortNumber());
     result = result && (getClubNumber()
         == other.getClubNumber());
     result = result && connectionType_ == other.connectionType_;
@@ -206,6 +230,8 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + PINGID_FIELD_NUMBER;
     hash = (53 * hash) + getPingId();
+    hash = (37 * hash) + PORTNUMBER_FIELD_NUMBER;
+    hash = (53 * hash) + getPortNumber();
     hash = (37 * hash) + CLUBNUMBER_FIELD_NUMBER;
     hash = (53 * hash) + getClubNumber();
     hash = (37 * hash) + CONNECTIONTYPE_FIELD_NUMBER;
@@ -345,6 +371,8 @@ private static final long serialVersionUID = 0L;
       super.clear();
       pingId_ = 0;
 
+      portNumber_ = 0;
+
       clubNumber_ = 0;
 
       connectionType_ = 0;
@@ -376,6 +404,7 @@ private static final long serialVersionUID = 0L;
     public com.kikkar.packet.PingMessage buildPartial() {
       com.kikkar.packet.PingMessage result = new com.kikkar.packet.PingMessage(this);
       result.pingId_ = pingId_;
+      result.portNumber_ = portNumber_;
       result.clubNumber_ = clubNumber_;
       result.connectionType_ = connectionType_;
       onBuilt();
@@ -428,6 +457,9 @@ private static final long serialVersionUID = 0L;
       if (other == com.kikkar.packet.PingMessage.getDefaultInstance()) return this;
       if (other.getPingId() != 0) {
         setPingId(other.getPingId());
+      }
+      if (other.getPortNumber() != 0) {
+        setPortNumber(other.getPortNumber());
       }
       if (other.getClubNumber() != 0) {
         setClubNumber(other.getClubNumber());
@@ -490,15 +522,41 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private int portNumber_ ;
+    /**
+     * <code>int32 portNumber = 2;</code>
+     */
+    public int getPortNumber() {
+      return portNumber_;
+    }
+    /**
+     * <code>int32 portNumber = 2;</code>
+     */
+    public Builder setPortNumber(int value) {
+      
+      portNumber_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 portNumber = 2;</code>
+     */
+    public Builder clearPortNumber() {
+      
+      portNumber_ = 0;
+      onChanged();
+      return this;
+    }
+
     private int clubNumber_ ;
     /**
-     * <code>int32 clubNumber = 2;</code>
+     * <code>int32 clubNumber = 3;</code>
      */
     public int getClubNumber() {
       return clubNumber_;
     }
     /**
-     * <code>int32 clubNumber = 2;</code>
+     * <code>int32 clubNumber = 3;</code>
      */
     public Builder setClubNumber(int value) {
       
@@ -507,7 +565,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int32 clubNumber = 2;</code>
+     * <code>int32 clubNumber = 3;</code>
      */
     public Builder clearClubNumber() {
       
@@ -518,13 +576,13 @@ private static final long serialVersionUID = 0L;
 
     private int connectionType_ = 0;
     /**
-     * <code>.com.kikkar.packet.ConnectionType connectionType = 3;</code>
+     * <code>.com.kikkar.packet.ConnectionType connectionType = 4;</code>
      */
     public int getConnectionTypeValue() {
       return connectionType_;
     }
     /**
-     * <code>.com.kikkar.packet.ConnectionType connectionType = 3;</code>
+     * <code>.com.kikkar.packet.ConnectionType connectionType = 4;</code>
      */
     public Builder setConnectionTypeValue(int value) {
       connectionType_ = value;
@@ -532,7 +590,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.com.kikkar.packet.ConnectionType connectionType = 3;</code>
+     * <code>.com.kikkar.packet.ConnectionType connectionType = 4;</code>
      */
     public com.kikkar.packet.ConnectionType getConnectionType() {
       @SuppressWarnings("deprecation")
@@ -540,7 +598,7 @@ private static final long serialVersionUID = 0L;
       return result == null ? com.kikkar.packet.ConnectionType.UNRECOGNIZED : result;
     }
     /**
-     * <code>.com.kikkar.packet.ConnectionType connectionType = 3;</code>
+     * <code>.com.kikkar.packet.ConnectionType connectionType = 4;</code>
      */
     public Builder setConnectionType(com.kikkar.packet.ConnectionType value) {
       if (value == null) {
@@ -552,7 +610,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.com.kikkar.packet.ConnectionType connectionType = 3;</code>
+     * <code>.com.kikkar.packet.ConnectionType connectionType = 4;</code>
      */
     public Builder clearConnectionType() {
       

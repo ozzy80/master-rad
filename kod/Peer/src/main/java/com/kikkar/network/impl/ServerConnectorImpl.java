@@ -11,37 +11,33 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.http.HTTPException;
 
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
-import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SimpleScheduleBuilder;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
-import org.quartz.impl.StdSchedulerFactory;
 
 import com.google.gson.Gson;
 import com.kikkar.global.ClockSingleton;
 import com.kikkar.network.ServerConnector;
 import com.kikkar.network.SpeedTest;
 
-public class ServerConnectorImpl implements ServerConnector, Job {
+public class ServerConnectorImpl implements ServerConnector {
 
 	private Channel channel;
-
+	private ScheduledExecutorService executor;
+	private String lastModified;
+	
 	public ServerConnectorImpl() {
+		executor = Executors.newSingleThreadScheduledExecutor();
 	}
 
 	@Override
@@ -76,6 +72,9 @@ public class ServerConnectorImpl implements ServerConnector, Job {
 		connect.setDoInput(true);
 		connect.setRequestProperty("User-Agent", "Mozilla/5.0");
 		connect.setRequestProperty("Accept-Charset", "UTF-8");
+		if(lastModified != null) {
+			connect.setRequestProperty("If-Unmodified-Since", lastModified);
+		}
 		connect.setConnectTimeout(5000);
 		connect.setReadTimeout(5000);
 
@@ -129,8 +128,9 @@ public class ServerConnectorImpl implements ServerConnector, Job {
 
 	public List<PeerInformation> getPeerInfoList(URL url) throws IOException {
 		HttpURLConnection connect = getURLConnection(url);
-
 		int status = connect.getResponseCode();
+		lastModified = connect.getHeaderField("Last-Modified");
+		
 		BufferedReader in = new BufferedReader(new InputStreamReader(connect.getInputStream()));
 		String inputLine;
 		StringBuffer content = new StringBuffer();
@@ -142,6 +142,8 @@ public class ServerConnectorImpl implements ServerConnector, Job {
 		if (status == 200) {
 			PeerInformation[] peerInformation = new Gson().fromJson(content.toString(), PeerInformation[].class);
 			return Arrays.asList(peerInformation);
+		} else if (status == 509) {
+			return new ArrayList<>();
 		} else {
 			throw new HTTPException(status);
 		}
@@ -195,37 +197,19 @@ public class ServerConnectorImpl implements ServerConnector, Job {
 		this.channel = channel;
 	}
 
-	public void schedulerAliveAndNTPMessage(int repeatInterval) {
-		try {
-			JobDetail j = JobBuilder.newJob(ServerConnectorImpl.class).build();
-
-			Trigger t = TriggerBuilder.newTrigger().withIdentity("CroneTrigger").withSchedule(
-					SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(repeatInterval).repeatForever())
-					.build();
-			Scheduler s = StdSchedulerFactory.getDefaultScheduler();
-			s.getContext().put("serverObj", this);
-			s.start();
-			s.scheduleJob(j, t);
-
-		} catch (SchedulerException se) {
-			se.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
-		try {
-			ServerConnectorImpl obj = (ServerConnectorImpl) context.getScheduler().getContext().get("serverObj");
-			URL url = new URL(obj.getChannel().getIpAddress() + "/connect/stayAlive");
-			obj.sendStayAliveMessage(url);
-			obj.synchronizeTime(new NTPUDPClient(), "0.pool.ntp.org");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Throwable t) {
-			t.printStackTrace();
-		}
+	public void schedulerAliveAndNTPMessage(int repeatIntervalSecond) {
+		executor.scheduleAtFixedRate(() -> {
+			try {
+				URL url = new URL(getChannel().getIpAddress() + "/connect/stayAlive");
+				sendStayAliveMessage(url);
+				synchronizeTime(new NTPUDPClient(), "0.pool.ntp.org");		
+				System.out.println("Pozvao");
+			} catch (MalformedURLException e) {
+				System.err.println(e.getMessage());
+			} catch (IOException e) {
+				System.err.println(e.getMessage());
+			}
+		}, repeatIntervalSecond, repeatIntervalSecond, TimeUnit.SECONDS);
 	}
 
 }

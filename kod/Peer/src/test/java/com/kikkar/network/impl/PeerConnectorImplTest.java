@@ -63,7 +63,7 @@ class PeerConnectorImplTest {
 		short pingNum = 0;
 		ConnectionType connectionType = ConnectionType.BOTH;
 		
-		PingMessage ping = PingMessage.newBuilder().setClubNumber(clubNum).setPingId(pingNum)
+		PingMessage ping = PingMessage.newBuilder().setClubNumber(clubNum).setPingId(pingNum).setPortNumber(portNum)
 				.setConnectionType(connectionType).build();
 		PacketWrapper packet = MessageWrapper.wrapMessage(ping, peerInformation);
 		resetCounters(peerInformation);
@@ -231,11 +231,11 @@ class PeerConnectorImplTest {
 	@EnumSource(value = ConnectionType.class,
 			names = {"DOWNLOAD", "UPLOAD"})
 	void testSendPingMessages_checkChangingPeerStatus(ConnectionType connectionType) throws SocketException {
-		 int expectedNum = 6 + 6;
+		 int expectedNum = 6 + 1;
 		 List<PeerInformation> peerInformations = DummyObjectCreator.createDummyPeers(3, 1, 6);
 		 DatagramSocket socket = new DatagramSocket();
 		 
-		 peerConnectorImpl.sendPingMessages(peerInformations, connectionType, socket);
+		 peerConnectorImpl.sendPingMessages(peerInformations, connectionType, socket, (short) 0);
 		 
 	    if(connectionType.equals(ConnectionType.DOWNLOAD)) {
 			assertEquals(expectedNum, peerInformations.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.PONG_WAIT_DOWNLOAD)).count());

@@ -7,6 +7,8 @@ import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +34,7 @@ import com.kikkar.network.SpeedTest;
 import com.kikkar.packet.ConnectionType;
 import com.kikkar.packet.PacketWrapper;
 import com.kikkar.packet.Pair;
+import com.kikkar.packet.PingMessage;
 import com.kikkar.packet.PongMessage;
 import com.kikkar.packet.TerminatedReason;
 
@@ -51,6 +54,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	private Short token;
 
 	public ConnectionManagerImpl() {
+		peerList = new ArrayList<>();
 		dataWaitSecond = Constants.DATA_WAIT_SECOND;
 		serverConnector = new ServerConnectorImpl();
 		peerConnector = new PeerConnectorImpl();
@@ -75,13 +79,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	@Override
 	public void start() throws Exception {
-		token = initialServerConnection(new SpeedTestImpl(new SpeedTestSocket()));
-		serverConnector.synchronizeTime(new NTPUDPClient(), "0.pool.ntp.org");
-		clock = ClockSingleton.getInstance();
-		peerList = getServersPeerInformations(token);
-		setClubNum(peerList);
-		serverConnector.schedulerAliveAndNTPMessage(10);
-
+		serverConnect();
+		
 		new Thread(() -> {
 			try {
 				peerConnector.startRecivePacketLoop(socket);
@@ -92,14 +91,22 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 		Pair<String, PacketWrapper> packetPair = null;
 		while (true) {
-			if (!hasNotContactedPeer()) {
+			if (false && !hasNotContactedPeer()) {
 				contactServerForMorePeers();
 			}
 			congestionControl();
 			keepAliveUploadConnection();
 			maintainClubsConnection();
 
+		/*	System.out.println("Prosao");
+			peerList.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.DOWNLOAD_CONNECTION))
+					.map(PeerInformation::getIpAddress).map(String::new).forEach(System.out::println);
+			peerList.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.UPLOAD_CONNECTION))
+					.map(PeerInformation::getIpAddress).map(String::new).forEach(System.out::println);
+		*/
 			packetPair = peerConnector.getPacketsWaitingForProcessing();
+
+			System.out.println("Paket od " + packetPair.getLeft());
 
 			if (packetPair == null) {
 				System.err.println("null packet");
@@ -110,6 +117,15 @@ public class ConnectionManagerImpl implements ConnectionManager {
 			}
 		}
 	}
+	
+	private void serverConnect() throws MalformedURLException, Exception {
+		token = initialServerConnection(new SpeedTestImpl(new SpeedTestSocket()));
+		serverConnector.synchronizeTime(new NTPUDPClient(), "0.pool.ntp.org");
+		clock = ClockSingleton.getInstance();
+		peerList = getServersPeerInformations(token);
+		setClubNum(peerList);
+		serverConnector.schedulerAliveAndNTPMessage(900);		
+	}
 
 	public void processPacket(Pair<String, PacketWrapper> packetPair) {
 
@@ -117,28 +133,44 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		updateLastReceiveMessageNum(packetPair);
 
 		if (packetPair.getRight().hasPingMessage()) {
+			System.out.println("Ping poruka od " + packetPair.getRight());
+			PingMessage ping = packetPair.getRight().getPingMessage();
 			PeerInformation peer = getPeer(packetPair.getLeft());
-			if (peer != null) {
-				peerConnector.sendPongMessage(peerList, peer, packetPair.getRight().getPingMessage(), socket);
+			if (peer == null) {
+				peer = new PeerInformation(packetPair.getLeft().getBytes(), ping.getPortNumber(),
+						(short) ping.getClubNumber());
+				List<PeerInformation> modifiable = new ArrayList<>(peerList);
+				modifiable.add(peer);
+				peerList = Collections.unmodifiableList(modifiable);
+			} else {
+				peer.setPortNumber(ping.getPortNumber());
+				peer.setClubNumber(peer.getClubNumber());
 			}
+			peerConnector.sendPongMessage(peerList, peer, packetPair.getRight().getPingMessage(), socket);
 		} else if (packetPair.getRight().hasPongMessage()) {
+			System.out.println("Pong poruka od " + packetPair.getRight());
 			pongMessageMap.put(packetPair.getLeft(), packetPair.getRight().getPongMessage());
 		} else if (packetPair.getRight().hasRequestMessage()) {
+			System.out.println("Request poruka od " + packetPair.getRight());
 			PeerInformation peer = getPeer(packetPair.getLeft());
 			if (peer != null) {
 				peerConnector.sendResponseMessage(peer, packetPair.getRight(), socket);
 				updateLastTimeSentMessage(peer);
 			}
 		} else if (packetPair.getRight().hasResponseMessage()) {
+			System.out.println("Response poruka od " + packetPair.getRight());
 			PeerInformation peer = getPeer(packetPair.getLeft());
 			if (peer != null) {
 				assumePeerAreConnected(peer);
 			}
 		} else if (packetPair.getRight().hasTerminatedMessage()) {
+			System.out.println("Terminated poruka od " + packetPair.getRight());
 			removeConnection(packetPair);
 		} else if (packetPair.getRight().hasKeepAliveMessage()) {
+			System.out.println("KeepAlive poruka od " + packetPair.getRight());
 			// All is done upper with updateLastTimeReciveMessage()
 		} else {
+			System.out.println(packetPair.getRight());
 			packetsForHigherLevel.add(packetPair);
 		}
 	}
@@ -163,7 +195,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	private void setClubNum(List<PeerInformation> peers) {
 		peerConnector.setThisPeer(peerList.get(peerList.size() - 1));
-		peerList.remove(peerList.size() - 1);
+		List<PeerInformation> modifiable = new ArrayList<>(peerList);
+		modifiable.remove(peerList.size() - 1);
+		peerList = Collections.unmodifiableList(modifiable);
 	}
 
 	private boolean hasNotContactedPeer() {
@@ -172,12 +206,26 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	@Override
 	public void contactServerForMorePeers() {
+		System.out.println("Terazenje jos parnjaka od servera");
 		try {
 			List<PeerInformation> newPeerList = getServersPeerInformations(token);
 			newPeerList.remove(newPeerList.size() - 1);
-			for (PeerInformation p : newPeerList) {
-				if (!peerList.contains(p))
-					peerList.add(p);
+			boolean notExist = true;
+			for (PeerInformation p1 : newPeerList) {
+				for (PeerInformation p2 : peerList) {
+					if (Arrays.equals(p1.getIpAddress(), p2.getIpAddress())) {
+						notExist = false;
+						p2.setClubNumber(p1.getClubNumber());
+						p2.setPortNumber(p1.getPortNumber());
+						break;
+					}
+				}
+				if (notExist) {
+					List<PeerInformation> modifiable = new ArrayList<>(peerList);
+					modifiable.add(p1);
+					peerList = Collections.unmodifiableList(modifiable);
+				}
+				notExist = true;
 			}
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -216,10 +264,12 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	@Override
 	public void terminateConnections(List<PeerInformation> peerInformations, TerminatedReason terminatedReason) {
+
 		List<PeerInformation> peers = getConnectedPeers(peerInformations);
 		peers.stream().forEach(p -> {
 			DatagramPacket packet;
 			try {
+				System.out.println("Terminirajuca poruka za parnjaka " + new String(p.getIpAddress()));
 				packet = peerConnector.createTerminateConnectionMessage(p, terminatedReason);
 				peerConnector.send(packet, socket);
 				p.setPeerStatus(PeerStatus.NOT_CONTACTED);
@@ -236,6 +286,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 				.filter(p -> p.getLastSentMessageTimeMilliseconds()
 						+ Constants.WAIT_NEIGHBOUR_PACKETS_MILLISECOND / 2 < clock.getcurrentTimeMilliseconds())
 				.forEach(p -> {
+					System.out.println("KeepAlive poruka za parnjaka " + new String(p.getIpAddress()));
 					peerConnector.sendKeepAliveMessage(p, socket);
 					updateLastTimeSentMessage(p);
 				});
@@ -246,8 +297,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		int downloadConnectionNum;
 		int uploadConnectionNum;
 		for (int i = 0; i < Constants.NUMBER_OF_CLUB; i++) {
-			downloadConnectionNum = peerConnectionNum(i, PeerStatus.DOWNLOAD_CONNECTION);
 			uploadConnectionNum = peerConnectionNum(i, PeerStatus.UPLOAD_CONNECTION);
+			downloadConnectionNum = peerConnectionNum(i, PeerStatus.DOWNLOAD_CONNECTION);
 			if (i == belongClubNum) {
 				maintainInnerClubConnection(downloadConnectionNum, ConnectionType.DOWNLOAD, (short) i);
 				maintainInnerClubConnection(uploadConnectionNum, ConnectionType.UPLOAD, (short) i);
@@ -287,7 +338,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	}
 
 	private void exchangePingPongMessage(short wantedConnections, ConnectionType connectionType, int clubNum) {
-		peerConnector.sendPingMessages(peerList, connectionType, socket);
+		peerConnector.sendPingMessages(peerList, connectionType, socket, (short) clubNum);
 
 		if (connectionType.equals(ConnectionType.DOWNLOAD)) {
 			executor.schedule(() -> {
@@ -305,6 +356,10 @@ public class ConnectionManagerImpl implements ConnectionManager {
 	public void sendRequestMessage(short wantedConnections, PeerStatus peerStatus, ConnectionType connectedType,
 			int clubNum) {
 		List<PeerInformation> bestFitPeers = takePeersForConnection(wantedConnections, peerStatus, (short) clubNum);
+
+		bestFitPeers.stream()
+				.forEach(p -> System.out.println("Request poruka za parnjaka " + new String(p.getIpAddress())));
+
 		peerConnector.sendRequestMessage(bestFitPeers, socket, connectedType);
 		bestFitPeers.stream().forEach(p -> p.setLastSentMessageTimeMilliseconds(clock.getcurrentTimeMilliseconds()));
 	}
@@ -384,20 +439,20 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	public boolean checkPackageNumberASCOrder(Pair<String, PacketWrapper> packetPair) {
 		PeerInformation peer = getPeer(packetPair.getLeft());
-		if (peer == null) {
-			return false;
+		if (peer != null) {
+			int receivedPacketNumber = packetPair.getRight().getPacketId();
+			if (peer.getLastReceivedPacketNumber() + 1 == receivedPacketNumber) {
+				peer.decrementUnorderPacketNumber();
+				return true;
+			} else if (peer.getLastReceivedPacketNumber() < receivedPacketNumber) {
+				peer.incrementUnorderPacketNumber();
+				return true;
+			} else {
+				peer.incrementUnorderPacketNumber();
+				return false;
+			}
 		}
-		int receivedPacketNumber = packetPair.getRight().getPacketId();
-		if (peer.getLastReceivedPacketNumber() + 1 == receivedPacketNumber) {
-			peer.decrementUnorderPacketNumber();
-			return true;
-		} else if (peer.getLastReceivedPacketNumber() < receivedPacketNumber) {
-			peer.incrementUnorderPacketNumber();
-			return true;
-		} else {
-			peer.incrementUnorderPacketNumber();
-			return false;
-		}
+		return true;
 	}
 
 	public void assumePeerAreConnected(PeerInformation peer) {
@@ -437,7 +492,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
 				.filter(p -> new String(p.getIpAddress()).equals(packetPair.getLeft())).findFirst();
 
 		if (peerInformation.isPresent()) {
-			peerList.remove(peerInformation.get());
+			ArrayList<PeerInformation> modified = new ArrayList<>(peerList);
+			modified.remove(peerInformation.get());
+			peerList = Collections.unmodifiableList(modified);
 		}
 	}
 

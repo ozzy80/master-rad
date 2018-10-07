@@ -7,7 +7,7 @@ import com.kikkar.model.PeerInformation;
 
 public interface PeerInformationDao {
 
-	List<PeerInformation> getPeersList(int limit, Channel channel);
+	List<PeerInformation> getPeersList(int limit, byte[] ipAddress, Channel channel);
 
 	void addPeer(PeerInformation peer);
 

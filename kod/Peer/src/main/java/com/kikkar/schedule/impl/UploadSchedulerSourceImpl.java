@@ -39,6 +39,7 @@ public class UploadSchedulerSourceImpl extends UploadSchedulerImpl {
 		super.getConnectionManager().sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, clubNum);
 		
 		if(video.getFirstFrame()) {
+			System.out.println("-----------");
 			sendControlMessage();
 		}
 		this.currentVideoNum = currentVideoNum;
@@ -53,6 +54,12 @@ public class UploadSchedulerSourceImpl extends UploadSchedulerImpl {
 		PacketWrapper.Builder controlWrap = PacketWrapper.newBuilder().setControlMessage(controlMessage);
 		
 		super.getConnectionManager().sendAll(controlWrap, new ArrayList<>(), PeerStatus.UPLOAD_CONNECTION);	
+		System.out.println("--");
+	}
+	
+	@Override
+	public void scheduleCollectMissingVideo() {
+		return;
 	}
 
 	public int getCurrentVideoNum() {
