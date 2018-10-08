@@ -66,9 +66,11 @@ public class UploadSchedulerImpl implements UploadScheduler {
 	public void sendVideo(int currentVideoNum, List<String> currentVideoNotInterestedIpAddresses) {
 		if (sharingBufferSingleton.isVideoPresent(currentVideoNum)) {
 			VideoPacket video = sharingBufferSingleton.getVideoPacket(currentVideoNum);
-			PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setVideoPacket(video);
-
-			connectionManager.sendAll(wrap, currentVideoNotInterestedIpAddresses, PeerStatus.DOWNLOAD_CONNECTION);
+			int videoBelongClub = video.getVideoNum() % Constants.NUMBER_OF_CLUB;
+			if(connectionManager.getPeerConnector().getThisPeer().getClubNumber() == videoBelongClub) {
+				PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setVideoPacket(video);
+				connectionManager.sendAll(wrap, currentVideoNotInterestedIpAddresses, PeerStatus.DOWNLOAD_CONNECTION);
+			}
 		}
 	}
 
@@ -131,6 +133,10 @@ public class UploadSchedulerImpl implements UploadScheduler {
 		return videoNum;
 	}
 
+	@Override
+	public void sendControlMessage(int currentVideoNum) {
+	}
+	
 	public ConnectionManager getConnectionManager() {
 		return connectionManager;
 	}
@@ -146,5 +152,6 @@ public class UploadSchedulerImpl implements UploadScheduler {
 	public void setSharingBufferSingleton(SharingBufferSingleton sharingBufferSingleton) {
 		this.sharingBufferSingleton = sharingBufferSingleton;
 	}
+
 
 }

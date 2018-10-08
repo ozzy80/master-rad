@@ -154,12 +154,39 @@ class DownloadSchedulerImplTest {
 	}
 
 	@Test
-	void testProcessPacket_checkVideoPacket() {
+	void testProcessPacket_checkVideoPacketInClub() {
+		int videoNum = 6;
+		int chunkNum = 123545;
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(12, 12, 4);
+		connectionManagerImpl.setPeerList(peerList);
+		PeerInformation peer = peerList.get(5);
+		VideoPacket video = VideoPacket.newBuilder().setVideoNum(videoNum).setChunkNum(chunkNum).build();
+		PacketWrapper wrap = MessageWrapper.wrapMessage(video, peer);
+		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
+		downloadSchedulerImpl.setWAIT_MILLISECOND(0);
+		downloadSchedulerImpl.setLastVideoNumberSent(6);
+
+		downloadSchedulerImpl.processPacket(packetPair);
+
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			return;
+		}
+
+		assertEquals(video, sharingBufferSingleton.getVideoPacket(videoNum));
+		assertEquals(2, peer.getLastSentPacketNumber());
+		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
+		assertEquals(7, downloadSchedulerImpl.getLastVideoNumberSent());
+	}
+	
+	@Test
+	void testProcessPacket_checkVideoPacketOutCub() {
 		int videoNum = 5;
 		int chunkNum = 123545;
-		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2, 3, 4);
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(12, 12, 4);
 		connectionManagerImpl.setPeerList(peerList);
-		PeerInformation peer = peerList.get(2);
+		PeerInformation peer = peerList.get(5);
 		VideoPacket video = VideoPacket.newBuilder().setVideoNum(videoNum).setChunkNum(chunkNum).build();
 		PacketWrapper wrap = MessageWrapper.wrapMessage(video, peer);
 		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
@@ -175,8 +202,8 @@ class DownloadSchedulerImplTest {
 		}
 
 		assertEquals(video, sharingBufferSingleton.getVideoPacket(videoNum));
-		assertEquals(2, peer.getLastSentPacketNumber());
-		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
+		assertEquals(1, peer.getLastSentPacketNumber());
+		assertEquals(0, peer.getLastSentMessageTimeMilliseconds());
 		assertEquals(6, downloadSchedulerImpl.getLastVideoNumberSent());
 	}
 

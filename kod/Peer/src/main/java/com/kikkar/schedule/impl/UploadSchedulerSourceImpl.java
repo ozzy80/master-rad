@@ -36,14 +36,10 @@ public class UploadSchedulerSourceImpl extends UploadSchedulerImpl {
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setVideoPacket(video);
 		int clubNum = currentVideoNum % Constants.NUMBER_OF_CLUB;
 		super.getConnectionManager().sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, clubNum);
-		
-		if(video.getFirstFrame()) {
-			System.out.println("-----------");
-			sendControlMessage(currentVideoNum);
-		}
 	}
 	
-	private void sendControlMessage(int currentVideoNum) {
+	@Override
+	public void sendControlMessage(int currentVideoNum) {
 		ControlMessage.Builder controlMessage = ControlMessage.newBuilder();
 		controlMessage.setMessageId(controlMessageId++);
 		controlMessage.setCurrentChunkVideoNum(currentVideoNum);

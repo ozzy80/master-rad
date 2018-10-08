@@ -63,6 +63,7 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 			if(passTime < videoDutarionMillisecond) {
 				Thread.sleep(videoDutarionMillisecond - passTime);
 			}
+			uploadScheduler.sendControlMessage(videoNum);
 			sharingBufferSingleton.saveVideoPack(os);
 			// TODO sinhronizuj video plejer
 			// Neka python prebaci u .mxf i poveze sa prethodnim		

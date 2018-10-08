@@ -21,4 +21,6 @@ public interface UploadScheduler {
 	void getMissingVideoNum();
 
 	void scheduleCollectMissingVideo();
+	
+	void sendControlMessage(int currentVideoNum);
 }

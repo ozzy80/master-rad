@@ -29,4 +29,6 @@ public interface ConnectionManager {
 	void sendOne(PacketWrapper.Builder wrap, String IpAddress);
 
 	void sendToClub(PacketWrapper.Builder wrap, PeerStatus peerStatus, int clubNum);
+	
+	PeerConnector getPeerConnector();
 }

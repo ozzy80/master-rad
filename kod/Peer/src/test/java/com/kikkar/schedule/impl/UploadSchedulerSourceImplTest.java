@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -40,30 +41,45 @@ public class UploadSchedulerSourceImplTest {
 	@ParameterizedTest
 	@ValueSource(ints = { 0, 15, 132, 1524588, 210 })
 	void testSendVideo_checkDefaultBehaviour(int videoNum) {
-		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2*6, 2, 4);
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2 * 6, 2, 4);
 		connectionManagerImpl.setPeerList(peerList);
 		VideoPacket video = VideoPacket.newBuilder().setVideoNum(videoNum).build();
 		sharingBufferSingleton.addVideoPacket(videoNum, video);
-		
+
 		uploadSchedulerImpl.sendVideo(videoNum, null);
-		
+
 		assertEquals(2, peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
 		assertEquals(2, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count());
 	}
-	
+
+	@Test
+	void testSendVideo_checkSendVideoToDefaultClub() {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2 * 6, 2, 4);
+		connectionManagerImpl.setPeerList(peerList);
+
+		for (int videoNum = 0; videoNum < Constants.NUMBER_OF_CLUB; videoNum++) {
+			VideoPacket video = VideoPacket.newBuilder().setVideoNum(videoNum).build();
+			sharingBufferSingleton.addVideoPacket(videoNum, video);
+			uploadSchedulerImpl.sendVideo(videoNum, null);
+
+			assertEquals((videoNum+1) * 2,
+					peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count(),
+					"Error in club " + videoNum);
+			assertEquals((videoNum+1) * 2, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count(),
+					"Error in club " + videoNum);
+		}
+	}
+
 	@ParameterizedTest
 	@ValueSource(ints = { 0, 15, 132, 1524588, 210 })
-	void testSendVideo_checkControlMessage(int videoNum) {
-		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2*6, 2, 4);
+	void testSendControlMessage_checkDefaultBehaviour(int videoNum) {
+		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2 * 6, 2, 4);
 		connectionManagerImpl.setPeerList(peerList);
-		//uploadSchedulerImpl.setCurrentVideoNum(videoNum);
-		VideoPacket video = VideoPacket.newBuilder().setVideoNum(videoNum).setFirstFrame(true).build();
-		sharingBufferSingleton.addVideoPacket(videoNum, video);
-		
-		uploadSchedulerImpl.sendVideo(videoNum, null);
-		
+
+		uploadSchedulerImpl.sendControlMessage(videoNum);
+
 		assertEquals(12, peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
 		assertEquals(12, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count());
 	}
-	
+
 }
