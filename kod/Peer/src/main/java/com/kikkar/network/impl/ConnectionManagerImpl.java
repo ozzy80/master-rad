@@ -102,6 +102,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
 			packetPair = peerConnector.getPacketsWaitingForProcessing();
 
 			System.out.println("Paket od " + packetPair.getLeft());
+			System.out.println(packetPair.getRight());
+			System.out.println("Download kon: " + peerList.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.DOWNLOAD_CONNECTION)).count());
+			System.out.println("Upload kon: " + peerList.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.UPLOAD_CONNECTION)).count());
 
 			if (packetPair == null) {
 				System.err.println("null packet");
@@ -274,7 +277,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		List<PeerInformation> connectedPeers = getConnectedPeers(peerList);
 		connectedPeers.stream()
 				.filter(p -> p.getLastSentMessageTimeMilliseconds()
-						+ Constants.WAIT_NEIGHBOUR_PACKETS_MILLISECOND / 2 > clock.getcurrentTimeMilliseconds())
+						+ Constants.WAIT_NEIGHBOUR_PACKETS_MILLISECOND / 2 < clock.getcurrentTimeMilliseconds())
 				.forEach(p -> {
 					peerConnector.sendKeepAliveMessage(p, socket);
 					updateLastTimeSentMessage(p);
@@ -289,8 +292,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
 			uploadConnectionNum = peerConnectionNum(i, PeerStatus.UPLOAD_CONNECTION);
 			downloadConnectionNum = peerConnectionNum(i, PeerStatus.DOWNLOAD_CONNECTION);
 			if (i == belongClubNum) {
-				maintainInnerClubConnection(downloadConnectionNum, ConnectionType.DOWNLOAD, (short) i);
 				maintainInnerClubConnection(uploadConnectionNum, ConnectionType.UPLOAD, (short) i);
+				maintainInnerClubConnection(downloadConnectionNum, ConnectionType.DOWNLOAD, (short) i);
 			} else {
 				maintainOuterClubConnectedPeers(downloadConnectionNum, i);
 			}
@@ -627,6 +630,10 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		this.packetsForHigherLevel = packetsForHigherLevel;
 	}
 
+	public void addPacketsForHigherLevel(Pair<String, PacketWrapper> packetsForHigherLevel) {
+		this.packetsForHigherLevel.add(packetsForHigherLevel);
+	}
+	
 	public Short getToken() {
 		return token;
 	}

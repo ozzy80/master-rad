@@ -21,7 +21,6 @@ public class DownloadSchedulerSourceImpl extends DownloadSchedulerImpl {
 		if (packetPair == null) {
 			return;
 		} else if (packetPair.getRight().hasRequestVideoMessage()) {
-			System.out.println("request poruka");
 			RequestVideoMessage request = packetPair.getRight().getRequestVideoMessage();
 			int[] videoNum = request.getVideoNumList().stream().mapToInt(i -> i).toArray();
 			super.getUploadScheduler().sendResponseMessage(packetPair, videoNum);

@@ -64,24 +64,20 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 		if (packetPair == null) {
 			return;
 		} else if (packetPair.getRight().hasHaveMessage()) {
-			System.out.println("Have poruka");
 			HaveMessage haveMessage = packetPair.getRight().getHaveMessage();
 			if (sharingBufferSingleton.isVideoPresent(haveMessage.getVideoNum())) {
 				uploadScheduler.sendNotInterested(packetPair);
 			}
 		} else if (packetPair.getRight().hasControlMessage()) {
-			System.out.println("Control poruka");
 			ControlMessage controlMessage = packetPair.getRight().getControlMessage();
 			if (lastControlMessageId < controlMessage.getMessageId()) {
 				processControlMessage(packetPair.getRight().getControlMessage());
 				lastControlMessageId = controlMessage.getMessageId();
 			}
 		} else if (packetPair.getRight().hasNotInterestedMessage()) {
-			System.out.println("Not interested poruka");
 			notInterestList.add(new Pair<String, Integer>(packetPair.getLeft(),
 					packetPair.getRight().getNotInterestedMessage().getVideoNum()));
 		} else if (packetPair.getRight().hasVideoPacket()) {
-			System.out.println("video poruka");
 			VideoPacket video = packetPair.getRight().getVideoPacket();
 			if (!sharingBufferSingleton.isVideoPresent(video.getVideoNum())) {
 				uploadScheduler.sendHaveMessage(video.getVideoNum());
@@ -89,12 +85,10 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 				sendVideoOther();
 			}
 		} else if (packetPair.getRight().hasRequestVideoMessage()) {
-			System.out.println("request poruka");
 			RequestVideoMessage request = packetPair.getRight().getRequestVideoMessage();
 			int[] videoNum = request.getVideoNumList().stream().mapToInt(i -> i).toArray();
 			uploadScheduler.sendResponseMessage(packetPair, videoNum);
 		} else if (packetPair.getRight().hasResponseVideoMessage()) {
-			System.out.println("response poruka");
 			ResponseVideoMessage response = packetPair.getRight().getResponseVideoMessage();
 			if (!sharingBufferSingleton.isVideoPresent(response.getVideoNum())) {
 				VideoPacket.Builder videoBuilder = VideoPacket.newBuilder();

@@ -41,7 +41,6 @@ public class ConnectionManagerSourceImpl extends ConnectionManagerImpl {
 		super.updateLastReceiveMessageNum(packetPair);
 
 		if (packetPair.getRight().hasPingMessage()) {
-			System.out.println(packetPair.getRight().getPingMessage().getConnectionType());
 			if (packetPair.getRight().getPingMessage().getConnectionType().equals(ConnectionType.DOWNLOAD)) {
 				PeerInformation peer = super.processPingMessage(packetPair);
 				super.getPeerConnector().sendPongMessage(super.getPeerList(), peer,
@@ -50,7 +49,7 @@ public class ConnectionManagerSourceImpl extends ConnectionManagerImpl {
 		} else if (packetPair.getRight().hasPongMessage()) {
 			super.getPongMessageMap().put(packetPair.getLeft(), packetPair.getRight().getPongMessage());
 		} else if (packetPair.getRight().hasRequestMessage()) {
-			if (packetPair.getRight().getRequestMessage().getConnectionType().equals(ConnectionType.UPLOAD)) {
+			if (packetPair.getRight().getRequestMessage().getConnectionType().equals(ConnectionType.DOWNLOAD)) {
 				PeerInformation peer = getPeer(packetPair.getLeft());
 				if (peer != null) {
 					super.getPeerConnector().sendResponseMessage(peer, packetPair.getRight(), super.getSocket());
@@ -67,7 +66,7 @@ public class ConnectionManagerSourceImpl extends ConnectionManagerImpl {
 		} else if (packetPair.getRight().hasKeepAliveMessage()) {
 			// All is done upper with updateLastTimeReciveMessage()
 		} else {
-			super.getPacketsForHigherLevel().add(packetPair);
+			super.addPacketsForHigherLevel(packetPair);
 		}
 	}
 

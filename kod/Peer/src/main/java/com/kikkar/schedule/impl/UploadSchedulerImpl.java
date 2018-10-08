@@ -41,7 +41,7 @@ public class UploadSchedulerImpl implements UploadScheduler {
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
 		wrap.setControlMessage(message);
 
-		connectionManager.sendAll(wrap, new ArrayList<>(), PeerStatus.DOWNLOAD_CONNECTION);
+		connectionManager.sendAll(wrap, new ArrayList<>(), PeerStatus.UPLOAD_CONNECTION);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class UploadSchedulerImpl implements UploadScheduler {
 		HaveMessage haveMessage = HaveMessage.newBuilder().setVideoNum(videoNum).build();
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setHaveMessage(haveMessage);
 
-		connectionManager.sendToClub(wrap, PeerStatus.DOWNLOAD_CONNECTION, -1);
+		connectionManager.sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, -1);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class UploadSchedulerImpl implements UploadScheduler {
 			int videoBelongClub = video.getVideoNum() % Constants.NUMBER_OF_CLUB;
 			if(connectionManager.getPeerConnector().getThisPeer().getClubNumber() == videoBelongClub) {
 				PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setVideoPacket(video);
-				connectionManager.sendAll(wrap, currentVideoNotInterestedIpAddresses, PeerStatus.DOWNLOAD_CONNECTION);
+				connectionManager.sendAll(wrap, currentVideoNotInterestedIpAddresses, PeerStatus.UPLOAD_CONNECTION);
 			}
 		}
 	}
@@ -93,8 +93,8 @@ public class UploadSchedulerImpl implements UploadScheduler {
 	}
 
 	public void scheduleCollectMissingVideo() {
-		executor.scheduleAtFixedRate(() -> getMissingVideoNum(), Constants.INITIA_MISSING_VIDEO_COLLECT_DELAY_SECOND,
-				Constants.VIDEO_DURATION_SECOND / 2, TimeUnit.SECONDS);
+		executor.scheduleAtFixedRate(() -> getMissingVideoNum(), Constants.VIDEO_DURATION_SECOND - 700,
+				Constants.VIDEO_DURATION_SECOND - 700, TimeUnit.SECONDS);
 	}
 
 	public void getMissingVideoNum() {
@@ -103,7 +103,7 @@ public class UploadSchedulerImpl implements UploadScheduler {
 
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setRequestVideoMessage(request.build());
 
-		connectionManager.sendAll(wrap, new ArrayList<>(), PeerStatus.UPLOAD_CONNECTION);
+		connectionManager.sendAll(wrap, new ArrayList<>(), PeerStatus.DOWNLOAD_CONNECTION);
 	}
 
 	private List<Integer> getMissingVideos() {
@@ -113,10 +113,10 @@ public class UploadSchedulerImpl implements UploadScheduler {
 
 		int iterationNUm = 0;
 		while (true) {
-			VideoPacket video = sharingBufferSingleton.getVideoPacket(sharingBufferSingleton.getMinVideoNum());
+			VideoPacket video = sharingBufferSingleton.getVideoPacket(currentPos);
 			if (video == null) {
 				videoNum.add(currentPos);
-			} else if (previousChunkNum >= 0 && video.getChunkNum() > previousChunkNum) {
+			} else if (previousChunkNum >= 20 && video.getChunkNum() > previousChunkNum) {
 				break;
 			} else {
 				previousChunkNum = video.getChunkNum();

@@ -40,6 +40,8 @@ public class SpeedTestImpl implements SpeedTest {
 	}
 
 	private void runSpeedTest(boolean testDownloadSpeed, int measureTime) {
+		bitePerSecond = 123456789l;
+		/*
 		speedTestSocket.addSpeedTestListener(new ISpeedTestListener() {
 			@Override
 			public void onCompletion(SpeedTestReport report) {
@@ -58,7 +60,7 @@ public class SpeedTestImpl implements SpeedTest {
 		if (testDownloadSpeed)
 			speedTestSocket.startFixedDownload("http://ipv4.ikoula.testdebit.info/100M.iso", measureTime);
 		else
-			speedTestSocket.startFixedUpload("http://ipv4.ikoula.testdebit.info/", 10000000, measureTime);
+			speedTestSocket.startFixedUpload("http://ipv4.ikoula.testdebit.info/", 10000000, measureTime);*/
 	}
 
 }
