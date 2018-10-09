@@ -34,7 +34,6 @@ public class App {
 			DownloadScheduler downloadScheduler = new DownloadSchedulerImpl(connectionManager, uploadScheduler);
 			downloadScheduler.startDownload();
 			//uploadScheduler.scheduleCollectMissingVideo();
-			downloadScheduler.startDownload();
 			while (true) {
 				downloadScheduler.processPacket(downloadScheduler.getNextPacket());
 			}
@@ -55,6 +54,8 @@ public class App {
 					reciveDatagramPacket, uploadScheduler);
 			SourceVideoLoader sourceVideoLoader = new SourceVideoLoaderImpl(uploadScheduler);
 
+
+			downloadScheduler.startDownload();
 			new Thread(() -> {
 				try {
 					sourceVideoLoader.loadVideo("./video/source", "./video/play");
@@ -62,10 +63,6 @@ public class App {
 					e.printStackTrace();
 				}
 			}).start();
-
-			downloadScheduler.startDownload();
-			uploadScheduler.scheduleCollectMissingVideo();
-
 			while (true) {
 				downloadScheduler.processPacket(downloadScheduler.getNextPacket());
 			}

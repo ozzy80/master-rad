@@ -8,11 +8,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import com.google.protobuf.ByteString;
 import com.kikkar.global.ClockSingleton;
 import com.kikkar.global.Constants;
 import com.kikkar.global.SharingBufferSingleton;
+import com.kikkar.packet.Pair;
 import com.kikkar.packet.VideoPacket;
 import com.kikkar.schedule.UploadScheduler;
 import com.kikkar.video.SourceVideoLoader;
@@ -25,12 +31,14 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 	private UploadScheduler uploadScheduler;
 	private ClockSingleton clock;
 	private SharingBufferSingleton sharingBufferSingleton;
+	private ScheduledExecutorService executor;
 
 	public SourceVideoLoaderImpl() {
 		videoBufferSize = 1450;
 		videoDutarionMillisecond = Constants.VIDEO_DURATION_SECOND * 1000;
 		clock = ClockSingleton.getInstance();
 		sharingBufferSingleton = SharingBufferSingleton.getInstance();
+		executor = Executors.newSingleThreadScheduledExecutor();
 	}
 
 	public SourceVideoLoaderImpl(UploadScheduler uploadScheduler) {
@@ -62,8 +70,7 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 			if (passTime < videoDutarionMillisecond) {
 				Thread.sleep(videoDutarionMillisecond - passTime);
 			}
-			uploadScheduler.sendControlMessage(videoNum);
-			sharingBufferSingleton.saveVideoPack(os, videoNum);
+			notifySwarm(videoNum, os);
 			// TODO sinhronizuj video plejer
 			// Neka python prebaci u .mxf i poveze sa prethodnim
 		} catch (IOException e) {
@@ -71,6 +78,18 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 		} catch (InterruptedException e) {
 			System.err.println(e.getMessage());
 		}
+	}
+
+	private void notifySwarm(int videoNum, OutputStream os) {
+		executor.schedule(() -> {
+			try {
+				uploadScheduler.sendControlMessage(videoNum);
+				sharingBufferSingleton.saveVideoPack(os, videoNum);
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.err.println(e.getMessage());
+			}				
+		}, Constants.VIDEO_DURATION_SECOND/2, TimeUnit.SECONDS);
 	}
 
 	public void readChunk(InputStream is, int chunkNum) throws IOException {
