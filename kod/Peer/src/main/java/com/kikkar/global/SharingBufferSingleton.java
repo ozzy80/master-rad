@@ -41,7 +41,7 @@ public class SharingBufferSingleton {
 		if (i < 0) {
 			throw new ArrayIndexOutOfBoundsException(i);
 		}
-		if (videoArray[i % Constants.BUFFER_SIZE] == null || videoArray[i % Constants.BUFFER_SIZE].getVideoNum() != i) {
+		if (videoArray[i % Constants.BUFFER_SIZE] == null) {
 			return false;
 		}
 		return true;
@@ -61,41 +61,29 @@ public class SharingBufferSingleton {
 		return videoArray[i % Constants.BUFFER_SIZE];
 	}
 
-	public void saveVideoPack(OutputStream os) throws IOException {
+	public void saveVideoPack(OutputStream os, int lastControlMessageVideNum) throws IOException {
 		if (!isHeadAtChunkStart()) {
 			return;
 		}
 
-		int previousChunkNum = videoArray[minVideoNum].getChunkNum();
-		int i = 0;
+		int currentVideoNum = videoArray[minVideoNum].getVideoNum();
 		while (true) {
-			if (previousChunkNum > 0) {
-				processMissingChunk(minVideoNum);
-			}
-
-			if (checkExitCondition(i, previousChunkNum)) {
+			if (currentVideoNum == lastControlMessageVideNum) {
+				cleanPreviousValue();
 				break;
+			}
+			
+			if (videoArray[minVideoNum] == null) {
+				processMissingChunk(minVideoNum);
 			}
 
 			byte[] video = videoArray[minVideoNum].getVideo().toByteArray();
 			os.write(video, 0, video.length);
 
 			cleanPreviousValue();
-			previousChunkNum = videoArray[minVideoNum].getChunkNum();
 			minVideoNum = (minVideoNum + 1) % Constants.BUFFER_SIZE;
-			i++;
+			currentVideoNum = (currentVideoNum + 1) < 0 ? 0 : currentVideoNum + 1;
 		}
-	}
-
-	private boolean checkExitCondition(int i, int previousChunkNum) {
-		if (videoArray[minVideoNum] == null) {
-			return true;
-		} else if (videoArray[minVideoNum].getChunkNum() > previousChunkNum) {
-			return true;
-		} else if (i > Constants.BUFFER_SIZE) {
-			return true;
-		}
-		return false;
 	}
 
 	private void cleanPreviousValue() {
@@ -106,17 +94,21 @@ public class SharingBufferSingleton {
 	}
 
 	private void processMissingChunk(int videoNum) {
-		if (videoArray[videoNum] == null) {
-			int previousVideoNum = getPreviousIndex();
-			if (previousVideoNum >= 0) {
-				videoArray[videoNum] = videoArray[previousVideoNum];
-				videoArray[previousVideoNum] = null;
-			}
+		int previousVideoNum = getPreviousIndex();
+		if (previousVideoNum >= 0) {
+			videoArray[videoNum] = videoArray[previousVideoNum];
+			videoArray[previousVideoNum] = null;
 		}
 	}
 
 	private int getPreviousIndex() {
-		int previousVideoNum = minVideoNum - 1 < 0 ? Constants.BUFFER_SIZE - 1 : minVideoNum - 1;
+		int previousVideoNum = 0;
+		if(minVideoNum == 0) {
+			previousVideoNum = Constants.BUFFER_SIZE - 1;
+		} else {
+			previousVideoNum = minVideoNum - 1;
+		}
+		
 		if (videoArray[previousVideoNum] == null) {
 			return -1;
 		}
@@ -169,9 +161,10 @@ public class SharingBufferSingleton {
 		return true;
 	}
 
-	public void saveVideoPackIntoFile() {
-		try (OutputStream os = new FileOutputStream(new File(Constants.OUTPUT_VIDEO_FILE_PATH), true)) {
-			saveVideoPack(os);
+	public void saveVideoPackIntoFile(int num, int lastControlMessageVideNum) {
+		try (OutputStream os = new FileOutputStream(new File(Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + num + ".mov"), true)) {
+			saveVideoPack(os, lastControlMessageVideNum);
+			os.flush();
 		} catch (FileNotFoundException e) {
 			System.err.println(e.getMessage());
 		} catch (IOException e) {

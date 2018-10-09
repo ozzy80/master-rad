@@ -431,13 +431,10 @@ public class ConnectionManagerImpl implements ConnectionManager {
 			int receivedPacketNumber = packetPair.getRight().getPacketId();
 			if (peer.getLastReceivedPacketNumber() + 1 == receivedPacketNumber) {
 				peer.decrementUnorderPacketNumber();
-				return true;
-			} else if (peer.getLastReceivedPacketNumber() < receivedPacketNumber) {
-				peer.incrementUnorderPacketNumber();
-				return true;
+			} else if (peer.getLastReceivedPacketNumber() + Constants.MAX_NUMBER_OF_LATE_PACKET < receivedPacketNumber) {
+				return false;
 			} else {
 				peer.incrementUnorderPacketNumber();
-				return false;
 			}
 		}
 		return true;

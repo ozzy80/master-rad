@@ -96,7 +96,6 @@ class SharingBufferSingletonTest {
 		sharingBufferSingleton.addVideoPacket(videoNum, videoPack);
 		videoNum += Constants.BUFFER_SIZE;
 
-		assertFalse(sharingBufferSingleton.isVideoPresent(videoNum));
 		assertFalse(sharingBufferSingleton.isVideoPresent(videoNum + 50));
 	}
 
@@ -151,12 +150,12 @@ class SharingBufferSingletonTest {
 		setVideo(15, 8);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		sharingBufferSingleton.saveVideoPack(baos);
+		sharingBufferSingleton.saveVideoPack(baos, 15);
 
 		assertArrayEquals(repeat(video.toByteArray(), 15), baos.toByteArray());
 		long onlySecondChunkExist = Arrays.asList(sharingBufferSingleton.getVideoArray()).stream()
 				.filter(v -> v != null).count();
-		assertEquals(9, onlySecondChunkExist);
+		assertEquals(8, onlySecondChunkExist);
 	}
 
 	@Test
@@ -164,7 +163,7 @@ class SharingBufferSingletonTest {
 		setVideo(0, 10);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		sharingBufferSingleton.saveVideoPack(baos);
+		sharingBufferSingleton.saveVideoPack(baos, 10);
 
 		assertTrue(true);
 	}
@@ -175,7 +174,7 @@ class SharingBufferSingletonTest {
 		sharingBufferSingleton.setMinVideoNum(150);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		sharingBufferSingleton.saveVideoPack(baos);
+		sharingBufferSingleton.saveVideoPack(baos, 10);
 
 		assertTrue(true);
 	}
@@ -193,11 +192,22 @@ class SharingBufferSingletonTest {
 		setVideo(16, 10);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		sharingBufferSingleton.saveVideoPack(baos);
+		sharingBufferSingleton.saveVideoPack(baos, 16);
 
 		assertArrayEquals(repeat(video.toByteArray(), 16), baos.toByteArray());
 	}
 
+	@Test
+	void testSaveVideoPack_checkCleaningOldData() throws IOException {
+		setVideo(0, 10);
+		setVideo(10, 5);
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		sharingBufferSingleton.saveVideoPack(baos, 10);
+
+		assertEquals(5, sharingBufferSingleton.getNumberOfBufferedVideoContent());
+	}
+	
 	@Test
 	void testGetNumberOfBufferedVideoContent_checkAllIsMissing() {
 		sharingBufferSingleton.setVideoArray(new VideoPacket[10]);

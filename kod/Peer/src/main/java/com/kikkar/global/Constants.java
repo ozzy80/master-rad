@@ -10,7 +10,7 @@ public final class Constants {
 	private Constants() {
 	}
 
-	public static final int BUFFER_SIZE = 6_000;
+	public static final int BUFFER_SIZE = 10_000;
 
 	public static final int VIDEO_DURATION_SECOND = 6;
 
@@ -18,7 +18,9 @@ public final class Constants {
 
 	public static final int WAIT_NEIGHBOUR_PACKETS_MILLISECOND = 5000;
 
-	public static final short MAX_NUMBER_OF_UNORDER_PACKET = 15;
+	public static final short MAX_NUMBER_OF_UNORDER_PACKET = 60;
+	
+	public static final short MAX_NUMBER_OF_LATE_PACKET = 50;
 
 	public static final int MAX_NUMBER_OF_WAIT_PACKET = 150;
 
@@ -30,7 +32,7 @@ public final class Constants {
 	
 	public static final int DATAGRAM_PACKET_SIZE = 1500;
 
-	public static final String OUTPUT_VIDEO_FILE_PATH = "./video/play/movie.mov";
+	public static final String OUTPUT_VIDEO_FILE_PATH = "./video/play";
 
 	public static void setErrorPrintIntoFile(PrintStream pst) {
 		System.setErr(pst);

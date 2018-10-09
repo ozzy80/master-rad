@@ -93,8 +93,8 @@ public class UploadSchedulerImpl implements UploadScheduler {
 	}
 
 	public void scheduleCollectMissingVideo() {
-		executor.scheduleAtFixedRate(() -> getMissingVideoNum(), Constants.VIDEO_DURATION_SECOND - 700,
-				Constants.VIDEO_DURATION_SECOND - 700, TimeUnit.SECONDS);
+		executor.scheduleAtFixedRate(() -> getMissingVideoNum(), Constants.VIDEO_DURATION_SECOND - 1,
+				Constants.VIDEO_DURATION_SECOND - 1, TimeUnit.SECONDS);
 	}
 
 	public void getMissingVideoNum() {

@@ -32,22 +32,21 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 		clock = ClockSingleton.getInstance();
 		sharingBufferSingleton = SharingBufferSingleton.getInstance();
 	}
-	
+
 	public SourceVideoLoaderImpl(UploadScheduler uploadScheduler) {
 		this();
 		this.uploadScheduler = uploadScheduler;
 	}
-	
+
 	@Override
 	public void loadVideo(String inputVideoPath, String outputVideoPath) throws FileNotFoundException {
 		int i = 0;
-		// TODO skini posle true
-		OutputStream os = new FileOutputStream(new File(outputVideoPath + "/output.mov"), true);
 		while (true) {
-			File videoFile = new File(inputVideoPath + "/izlaz" + i++ + ".mov");
-			System.out.println("USAOOOO");
-			try (InputStream is = new FileInputStream(videoFile)) {
-				int chunkNum = (int) Math.ceil(videoFile.length() / videoBufferSize) - 1;
+			File inputVideoFile = new File(inputVideoPath + "/izlaz" + i + ".mov");
+			File outputVideoFile = new File(outputVideoPath + "/output" + i++ + ".mov");
+			try (InputStream is = new FileInputStream(inputVideoFile);
+					OutputStream os = new FileOutputStream(outputVideoFile);) {
+				int chunkNum = (int) Math.ceil(inputVideoFile.length() / videoBufferSize) - 1;
 				iterateOverFiles(is, os, chunkNum);
 			} catch (IOException e) {
 				System.err.println(e.getMessage());
@@ -60,20 +59,20 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 		try {
 			readChunk(is, chunkNum);
 			long passTime = clock.getcurrentTimeMilliseconds() - startTime;
-			if(passTime < videoDutarionMillisecond) {
+			if (passTime < videoDutarionMillisecond) {
 				Thread.sleep(videoDutarionMillisecond - passTime);
 			}
 			uploadScheduler.sendControlMessage(videoNum);
-			sharingBufferSingleton.saveVideoPack(os);
+			sharingBufferSingleton.saveVideoPack(os, videoNum);
 			// TODO sinhronizuj video plejer
-			// Neka python prebaci u .mxf i poveze sa prethodnim		
+			// Neka python prebaci u .mxf i poveze sa prethodnim
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		} catch (InterruptedException e) {
 			System.err.println(e.getMessage());
 		}
 	}
-	
+
 	public void readChunk(InputStream is, int chunkNum) throws IOException {
 		byte[] buffer = new byte[videoBufferSize];
 		int waitMilliseconds = (videoDutarionMillisecond - 1000) / chunkNum;
@@ -82,7 +81,7 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 		System.out.println("Chunk readed");
 		while (is.read(buffer) > 0) {
 			addVideoToBuffer(buffer, isFirstChunk, chunkNum--);
-			
+
 			try {
 				Thread.sleep(waitMilliseconds);
 			} catch (InterruptedException e) {
