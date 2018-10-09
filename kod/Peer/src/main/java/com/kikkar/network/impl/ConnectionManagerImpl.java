@@ -160,6 +160,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		if (peer == null) {
 			peer = new PeerInformation(packetPair.getLeft().getBytes(), ping.getPortNumber(),
 					(short) ping.getClubNumber());
+			peer.setPeerStatus(PeerStatus.PING_PONG_EXCHANGE);
 			List<PeerInformation> modifiable = new ArrayList<>(peerList);
 			modifiable.add(peer);
 			peerList = Collections.unmodifiableList(modifiable);

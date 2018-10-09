@@ -2,6 +2,7 @@ package com.kikkar.network.impl;
 
 public enum PeerStatus {
 	NOT_CONTACTED,
+	PING_PONG_EXCHANGE,
 	PONG_WAIT_DOWNLOAD,
 	PONG_WAIT_UPLOAD,
 	RESPONSE_WAIT_DOWNLOAD,
