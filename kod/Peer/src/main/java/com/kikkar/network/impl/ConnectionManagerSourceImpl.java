@@ -47,7 +47,7 @@ public class ConnectionManagerSourceImpl extends ConnectionManagerImpl {
 						packetPair.getRight().getPingMessage(), super.getSocket());
 			}
 		} else if (packetPair.getRight().hasPongMessage()) {
-			super.getPongMessageMap().put(packetPair.getLeft(), packetPair.getRight().getPongMessage());
+			super.addPongMessageMap(packetPair.getLeft(), packetPair.getRight().getPongMessage());
 		} else if (packetPair.getRight().hasRequestMessage()) {
 			if (packetPair.getRight().getRequestMessage().getConnectionType().equals(ConnectionType.DOWNLOAD)) {
 				PeerInformation peer = getPeer(packetPair.getLeft());

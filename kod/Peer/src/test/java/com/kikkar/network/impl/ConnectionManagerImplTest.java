@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -346,13 +347,15 @@ class ConnectionManagerImplTest {
 	@Test
 	void testMaintainClubsConnection_checkDeleteNoActivePeer() throws IOException, InterruptedException {
 		testMaintainClubsConnection_setup(0);
-		List<PeerInformation> peerListExpected = DummyObjectCreator.createDummyPeers(0, 0, 6 * 3);
 		List<PeerInformation> peerListActual = connectionManagerImpl.getPeerList();
-
+		Map<String, PongMessage> mapPongMessage = connectionManagerImpl.getPongMessageMap();
+		mapPongMessage.keySet().removeAll(Arrays.asList(mapPongMessage.keySet().toArray()).subList(0, 7));
+		connectionManagerImpl.setPongMessageMap(mapPongMessage);
+		
 		connectionManagerImpl.maintainClubsConnection();
 
 		Thread.sleep(300);
-		assertEquals(peerListExpected.size(), peerListActual.size());
+		assertEquals(6*3*5 - 7, peerListActual.size());
 	}
 
 	@ParameterizedTest

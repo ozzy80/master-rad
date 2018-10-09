@@ -186,4 +186,12 @@ public class PeerInformation {
 		this.lastSentMessageTimeMilliseconds = lastSentMessageTimeMilliseconds;
 	}
 
+	public void resetCounters() {
+		lastReceivedPacketNumber = 0;
+		lastSentPacketNumber = 0;
+		unorderPacketNumber = 0;
+		pingMessageNumber = 0;
+		requestMessageNumber = 0;
+	}
+
 }

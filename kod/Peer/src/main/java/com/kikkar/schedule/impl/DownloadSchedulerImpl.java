@@ -28,7 +28,7 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 	private int lastVideoNumberSent;
 	private int lastControlMessageId;
 
-	private long WAIT_MILLISECOND = 300;
+	private long WAIT_MILLISECOND = 500;
 
 	public DownloadSchedulerImpl() {
 		executor = Executors.newSingleThreadScheduledExecutor();
@@ -82,7 +82,7 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 			if (!sharingBufferSingleton.isVideoPresent(video.getVideoNum())) {
 				uploadScheduler.sendHaveMessage(video.getVideoNum());
 				sharingBufferSingleton.addVideoPacket(video.getVideoNum(), video);
-				sendVideoOther();
+				sendVideoOther(video.getVideoNum());
 			}
 		} else if (packetPair.getRight().hasRequestVideoMessage()) {
 			RequestVideoMessage request = packetPair.getRight().getRequestVideoMessage();
@@ -109,16 +109,15 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 		sharingBufferSingleton.setMinVideoNum(controlMessage.getCurrentChunkVideoNum());
 	}
 
-	private void sendVideoOther() {
+	private void sendVideoOther(int videoNum) {
 		executor.schedule(() -> {
 			List<String> currentVideoNotInterestedIpAddresses = notInterestList.stream()
 					.filter(p -> p.getRight().equals(lastVideoNumberSent)).map(Pair::getLeft)
 					.collect(Collectors.toList());
-			lastVideoNumberSent++;
-			int currentVideoNum = lastVideoNumberSent - 1;
-			notInterestList.removeIf(p -> p.getRight() < lastVideoNumberSent);
-			uploadScheduler.sendVideo(currentVideoNum, currentVideoNotInterestedIpAddresses);
+			notInterestList.removeIf(p -> p.getRight() < videoNum - 1);
+			uploadScheduler.sendVideo(videoNum, currentVideoNotInterestedIpAddresses);
 		}, WAIT_MILLISECOND, TimeUnit.MILLISECONDS);
+		
 	}
 
 	public SharingBufferSingleton getSharingBufferSingleton() {

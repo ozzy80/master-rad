@@ -34,7 +34,7 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 	private ScheduledExecutorService executor;
 
 	public SourceVideoLoaderImpl() {
-		videoBufferSize = 1450;
+		videoBufferSize = 1430;
 		videoDutarionMillisecond = Constants.VIDEO_DURATION_SECOND * 1000;
 		clock = ClockSingleton.getInstance();
 		sharingBufferSingleton = SharingBufferSingleton.getInstance();
@@ -54,7 +54,7 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 			File outputVideoFile = new File(outputVideoPath + "/output" + i++ + ".mov");
 			try (InputStream is = new FileInputStream(inputVideoFile);
 					OutputStream os = new FileOutputStream(outputVideoFile);) {
-				int chunkNum = (int) Math.ceil(inputVideoFile.length() / videoBufferSize) - 1;
+				int chunkNum = (int) Math.ceil(inputVideoFile.length() / videoBufferSize);
 				iterateOverFiles(is, os, chunkNum);
 			} catch (IOException e) {
 				System.err.println(e.getMessage());
@@ -82,14 +82,9 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 
 	private void notifySwarm(int videoNum, OutputStream os) {
 		executor.schedule(() -> {
-			try {
-				uploadScheduler.sendControlMessage(videoNum);
-				sharingBufferSingleton.saveVideoPack(os, videoNum);
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.err.println(e.getMessage());
-			}				
-		}, Constants.VIDEO_DURATION_SECOND/2, TimeUnit.SECONDS);
+			uploadScheduler.sendControlMessage(videoNum);
+			//sharingBufferSingleton.saveVideoPack(os, videoNum);				
+		}, Constants.VIDEO_DURATION_SECOND, TimeUnit.SECONDS);
 	}
 
 	public void readChunk(InputStream is, int chunkNum) throws IOException {

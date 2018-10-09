@@ -14,7 +14,7 @@ public final class Constants {
 
 	public static final int VIDEO_DURATION_SECOND = 6;
 
-	public static final int NUMBER_OF_CLUB = 6;
+	public static final int NUMBER_OF_CLUB = 2;
 
 	public static final int WAIT_NEIGHBOUR_PACKETS_MILLISECOND = 5000;
 
@@ -28,7 +28,7 @@ public final class Constants {
 
 	public static final int INITIA_MISSING_VIDEO_COLLECT_DELAY_SECOND = 5;
 
-	public static final int DATA_WAIT_SECOND = 1;
+	public static final int DATA_WAIT_SECOND = 2;
 	
 	public static final int DATAGRAM_PACKET_SIZE = 1500;
 

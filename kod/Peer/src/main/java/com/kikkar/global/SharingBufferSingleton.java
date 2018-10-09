@@ -63,6 +63,7 @@ public class SharingBufferSingleton {
 
 	public void saveVideoPack(OutputStream os, int lastControlMessageVideNum) throws IOException {
 		if (!isHeadAtChunkStart()) {
+			resetOldVideoContent(lastControlMessageVideNum);
 			return;
 		}
 
@@ -80,6 +81,19 @@ public class SharingBufferSingleton {
 			byte[] video = videoArray[minVideoNum].getVideo().toByteArray();
 			os.write(video, 0, video.length);
 
+			cleanPreviousValue();
+			minVideoNum = (minVideoNum + 1) % Constants.BUFFER_SIZE;
+			currentVideoNum = (currentVideoNum + 1) < 0 ? 0 : currentVideoNum + 1;
+		}
+	}
+
+	private void resetOldVideoContent(int lastControlMessageVideNum) {
+		int currentVideoNum = videoArray[minVideoNum].getVideoNum();
+		while (true) {
+			if (currentVideoNum == lastControlMessageVideNum) {
+				cleanPreviousValue();
+				break;
+			}
 			cleanPreviousValue();
 			minVideoNum = (minVideoNum + 1) % Constants.BUFFER_SIZE;
 			currentVideoNum = (currentVideoNum + 1) < 0 ? 0 : currentVideoNum + 1;
