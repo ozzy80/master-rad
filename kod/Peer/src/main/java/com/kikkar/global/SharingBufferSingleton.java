@@ -87,16 +87,15 @@ public class SharingBufferSingleton {
 		}
 	}
 
-	private void resetOldVideoContent(int lastControlMessageVideNum) {
-		int currentVideoNum = videoArray[minVideoNum].getVideoNum();
+	public void resetOldVideoContent(int lastControlMessageVideNum) {
+		int nextMinVideoNumPosition = lastControlMessageVideNum % Constants.BUFFER_SIZE;
 		while (true) {
-			if (currentVideoNum == lastControlMessageVideNum) {
+			if (minVideoNum == nextMinVideoNumPosition) {
 				cleanPreviousValue();
 				break;
 			}
 			cleanPreviousValue();
 			minVideoNum = (minVideoNum + 1) % Constants.BUFFER_SIZE;
-			currentVideoNum = (currentVideoNum + 1) < 0 ? 0 : currentVideoNum + 1;
 		}
 	}
 

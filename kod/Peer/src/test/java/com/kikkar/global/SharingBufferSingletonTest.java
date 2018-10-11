@@ -247,6 +247,21 @@ class SharingBufferSingletonTest {
 	}
 
 	@Test
+	void testResetOldVideoContent_checkDefaultBehaviour() {
+		int chunkNum = 120;
+		for (int videoNum = Constants.BUFFER_SIZE - 50; videoNum < Constants.BUFFER_SIZE + 70; videoNum++) {
+			VideoPacket videoPack = VideoPacket.newBuilder().setVideoNum(videoNum).setChunkNum(chunkNum--).setVideo(video).build();
+			sharingBufferSingleton.addVideoPacket(videoNum, videoPack);
+		}
+		setVideo(70, 10);
+		sharingBufferSingleton.setMinVideoNum(Constants.BUFFER_SIZE - 50);
+		
+		sharingBufferSingleton.resetOldVideoContent(Constants.BUFFER_SIZE + 70);
+		
+		assertEquals(10, sharingBufferSingleton.getNumberOfBufferedVideoContent());
+	}
+	
+	@Test
 	void testSynchronizeVideoPlayTime() {
 		fail("Not implemented");
 	}
