@@ -14,7 +14,7 @@ public final class Constants {
 
 	public static final int VIDEO_DURATION_SECOND = 6;
 
-	public static final int NUMBER_OF_CLUB = 2;
+	public static final int NUMBER_OF_CLUB = 3;
 
 	public static final int WAIT_NEIGHBOUR_PACKETS_MILLISECOND = 5000;
 

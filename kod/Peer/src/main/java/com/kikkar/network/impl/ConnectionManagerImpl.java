@@ -104,11 +104,13 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 			System.out.println("Paket od " + packetPair.getLeft());
 			System.out.println(packetPair.getRight());
-			System.out.println("Download kon: "
-					+ peerList.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.DOWNLOAD_CONNECTION)).count());
-			System.out.println("Upload kon: "
-					+ peerList.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.UPLOAD_CONNECTION)).count());
-			peerList.stream().map(p -> p.getIpAddress()).map(String::new).forEach(System.out::println);
+			System.out.println("Download kon: ");
+			peerList.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.DOWNLOAD_CONNECTION))
+					.map(PeerInformation::getIpAddress).map(String::new).forEach(System.out::println);
+			System.out.println("Upload kon: ");
+			peerList.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.UPLOAD_CONNECTION))
+					.map(PeerInformation::getIpAddress).map(String::new).forEach(System.out::println);
+			//peerList.stream().map(p -> p.getIpAddress()).map(String::new).forEach(System.out::println);
 
 			if (packetPair == null) {
 				System.err.println("null packet");

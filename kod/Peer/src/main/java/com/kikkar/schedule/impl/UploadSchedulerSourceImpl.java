@@ -34,7 +34,7 @@ public class UploadSchedulerSourceImpl extends UploadSchedulerImpl {
 	public void sendVideo(int currentVideoNum, List<String> currentVideoNotInterestedIpAddresses) {
 		VideoPacket video = sharingBufferSingleton.getVideoPacket(currentVideoNum);
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setVideoPacket(video);
-		int clubNum = currentVideoNum % Constants.NUMBER_OF_CLUB;
+		int clubNum = currentVideoNum % (Constants.NUMBER_OF_CLUB - 1);
 		super.getConnectionManager().sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, clubNum);
 	}
 	

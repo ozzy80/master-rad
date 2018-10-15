@@ -67,7 +67,7 @@ public class UploadSchedulerImpl implements UploadScheduler {
 		if (sharingBufferSingleton.isVideoPresent(currentVideoNum)) {
 			VideoPacket video = sharingBufferSingleton.getVideoPacket(currentVideoNum);
 			PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setVideoPacket(video);
-			int videoBelongClub = video.getVideoNum() % Constants.NUMBER_OF_CLUB;
+			int videoBelongClub = video.getVideoNum() % (Constants.NUMBER_OF_CLUB - 1);
 			int peerClubNum = connectionManager.getPeerConnector().getThisPeer().getClubNumber();
 			if (peerClubNum == videoBelongClub) {
 				connectionManager.sendAll(wrap, currentVideoNotInterestedIpAddresses, PeerStatus.UPLOAD_CONNECTION);

@@ -31,6 +31,8 @@ import com.kikkar.service.TokenManager;
 @RequestMapping(value = "/connect")
 public class PeerConnectionController {
 
+	private short numberOfClub = 2;
+	
 	@Autowired
 	private PeerConnectionMenager peerConnectionMenager;
 
@@ -87,7 +89,7 @@ public class PeerConnectionController {
 		PeerInformation currentPeer = peerInformationManager.getPeerById(ip);
 		Short clubNumber;
 		if (currentPeer == null) {
-			clubNumber = (short) ((peerInformationManager.getLastChannelClubNumber(channelId) + 1) % 6);
+			clubNumber = (short) ((peerInformationManager.getLastChannelClubNumber(channelId) + 1) % numberOfClub);
 		} else {
 			clubNumber = currentPeer.getClubNumber();
 		}
