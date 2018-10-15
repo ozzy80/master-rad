@@ -33,7 +33,7 @@ public class App {
 			UploadScheduler uploadScheduler = new UploadSchedulerImpl(connectionManager);
 			DownloadScheduler downloadScheduler = new DownloadSchedulerImpl(connectionManager, uploadScheduler);
 			downloadScheduler.startDownload();
-			//uploadScheduler.scheduleCollectMissingVideo();
+			uploadScheduler.scheduleCollectMissingVideo();
 			while (true) {
 				downloadScheduler.processPacket(downloadScheduler.getNextPacket());
 			}

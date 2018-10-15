@@ -30,12 +30,12 @@ public class UploadSchedulerImpl implements UploadScheduler {
 		sharingBufferSingleton = SharingBufferSingleton.getInstance();
 		executor = Executors.newSingleThreadScheduledExecutor();
 	}
-	
+
 	public UploadSchedulerImpl(ConnectionManager connectionManager) {
 		this();
 		this.connectionManager = connectionManager;
 	}
-	
+
 	@Override
 	public void sendControlMessage(ControlMessage message) {
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder();
@@ -69,7 +69,7 @@ public class UploadSchedulerImpl implements UploadScheduler {
 			PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setVideoPacket(video);
 			int videoBelongClub = video.getVideoNum() % Constants.NUMBER_OF_CLUB;
 			int peerClubNum = connectionManager.getPeerConnector().getThisPeer().getClubNumber();
-			if(peerClubNum == videoBelongClub) {
+			if (peerClubNum == videoBelongClub) {
 				connectionManager.sendAll(wrap, currentVideoNotInterestedIpAddresses, PeerStatus.UPLOAD_CONNECTION);
 			}
 		}
@@ -94,12 +94,17 @@ public class UploadSchedulerImpl implements UploadScheduler {
 	}
 
 	public void scheduleCollectMissingVideo() {
-		executor.scheduleAtFixedRate(() -> getMissingVideoNum(), Constants.VIDEO_DURATION_SECOND - 1,
-				Constants.VIDEO_DURATION_SECOND - 1, TimeUnit.SECONDS);
+		executor.scheduleAtFixedRate(() -> getMissingVideoNum(),
+				Constants.VIDEO_DURATION_SECOND + Constants.VIDEO_DURATION_SECOND / 2, Constants.VIDEO_DURATION_SECOND,
+				TimeUnit.SECONDS);
 	}
 
 	public void getMissingVideoNum() {
 		List<Integer> videoNum = getMissingVideos();
+		if(videoNum.size() == 0) {
+			return;
+		}
+		
 		RequestVideoMessage.Builder request = RequestVideoMessage.newBuilder().setMessageId(0).addAllVideoNum(videoNum);
 
 		PacketWrapper.Builder wrap = PacketWrapper.newBuilder().setRequestVideoMessage(request.build());
@@ -109,35 +114,37 @@ public class UploadSchedulerImpl implements UploadScheduler {
 
 	private List<Integer> getMissingVideos() {
 		int currentPos = sharingBufferSingleton.getMinVideoNum();
-		List<Integer> videoNum = new ArrayList<>();
-		int previousChunkNum = -1;
+		List<Integer> videoMissingNum = new ArrayList<>();
+		int previousChunkNum = 12345;
+		int previousVideoNum = -1;
 
-		int iterationNUm = 0;
-		while (true) {
+		int iterationNum = 0;
+		while (iterationNum <= Constants.BUFFER_SIZE) {
 			VideoPacket video = sharingBufferSingleton.getVideoPacket(currentPos);
 			if (video == null) {
-				videoNum.add(currentPos);
-			} else if (previousChunkNum >= 20 && video.getChunkNum() > previousChunkNum) {
+				videoMissingNum.add(previousVideoNum);
+			} else if (video.getChunkNum() > previousChunkNum) {
 				break;
 			} else {
 				previousChunkNum = video.getChunkNum();
+				previousVideoNum = video.getVideoNum();
 			}
 
-			if (iterationNUm > Constants.BUFFER_SIZE || videoNum.size() > Constants.MAX_REUQEST_VIDEO_SIZE) {
+			if (videoMissingNum.size() > Constants.MAX_REUQEST_VIDEO_SIZE) {
 				break;
 			}
 
 			currentPos = (currentPos + 1) % Constants.BUFFER_SIZE;
-			iterationNUm++;
+			iterationNum++;
 		}
 
-		return videoNum;
+		return videoMissingNum;
 	}
 
 	@Override
 	public void sendControlMessage(int currentVideoNum) {
 	}
-	
+
 	public ConnectionManager getConnectionManager() {
 		return connectionManager;
 	}
@@ -153,6 +160,5 @@ public class UploadSchedulerImpl implements UploadScheduler {
 	public void setSharingBufferSingleton(SharingBufferSingleton sharingBufferSingleton) {
 		this.sharingBufferSingleton = sharingBufferSingleton;
 	}
-
 
 }

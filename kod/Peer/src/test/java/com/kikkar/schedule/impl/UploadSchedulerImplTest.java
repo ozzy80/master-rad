@@ -45,10 +45,10 @@ class UploadSchedulerImplTest {
 
 		uploadSchedulerImpl.getMissingVideoNum();
 
-		assertTrue(peerListActual.get(2).getLastSentMessageTimeMilliseconds() > 1000);
-		assertEquals(1, peerListActual.get(2).getLastSentPacketNumber());
-		assertTrue(peerListActual.get(3).getLastSentMessageTimeMilliseconds() > 1000);
-		assertEquals(1, peerListActual.get(3).getLastSentPacketNumber());
+		assertTrue(peerListActual.get(0).getLastSentMessageTimeMilliseconds() > 1000);
+		assertEquals(1, peerListActual.get(0).getLastSentPacketNumber());
+		assertTrue(peerListActual.get(1).getLastSentMessageTimeMilliseconds() > 1000);
+		assertEquals(1, peerListActual.get(1).getLastSentPacketNumber());
 	}
 	
 
