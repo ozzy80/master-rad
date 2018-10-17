@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.DatagramPacket;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import javax.swing.JButton;
@@ -64,6 +65,8 @@ public class App {
 		openFileButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				String rawJson = openFile(evt);
+				
+				Arrays.stream(new File(Constants.VIDEO_PLAY_FILE_PATH ).listFiles()).forEach(File::delete);
 				
 				VLCPlayer player = new VLCPlayer();
 				player.setupVLCPlayer(canvas);

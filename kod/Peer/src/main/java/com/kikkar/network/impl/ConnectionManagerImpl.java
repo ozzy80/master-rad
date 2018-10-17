@@ -101,7 +101,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 			maintainClubsConnection();
 
 			packetPair = peerConnector.getPacketsWaitingForProcessing();
-
+/*
 			System.out.println("Paket od " + packetPair.getLeft());
 			System.out.println(packetPair.getRight());
 			System.out.println("Download kon: ");
@@ -111,7 +111,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 			peerList.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.UPLOAD_CONNECTION))
 					.map(PeerInformation::getIpAddress).map(String::new).forEach(System.out::println);
 			//peerList.stream().map(p -> p.getIpAddress()).map(String::new).forEach(System.out::println);
-
+*/
 			if (packetPair == null) {
 				System.err.println("null packet");
 			} else if (!checkPackageNumberASCOrder(packetPair)) {

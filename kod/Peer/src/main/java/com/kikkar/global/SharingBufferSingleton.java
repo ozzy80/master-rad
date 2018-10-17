@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import com.kikkar.packet.ControlMessage;
 import com.kikkar.packet.VideoPacket;
@@ -157,16 +158,13 @@ public class SharingBufferSingleton {
 
 			int messageDelayTime = (int) (clock.getcurrentTimeMilliseconds() - controlMessage.getTimeInMilliseconds());
 			if (player.isVideoPlaying()) {
-				System.out.println("Ide");
 				player.synchronizeVideo(
 						controlMessage.getPlayerElapsedTime() - sourcePlayerPastTime + messageDelayTime);
 			} else {
-				System.out.println("Ne ide");
-
 				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime();
 				player.setMediaPath(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf");
 				player.playVideo();
-				player.synchronizeVideo(sourcePlayerPastTime % 6000);
+				player.synchronizeVideo(sourcePlayerPastTime % 6000 + messageDelayTime);
 			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -177,13 +175,18 @@ public class SharingBufferSingleton {
 
 	private void prepareVideoForPlaying(int currentChunkVideoNum) throws IOException, InterruptedException {
 		String[] argsFFMPEG = new String[] { "ffmpeg", "-i",
-				Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + currentChunkVideoNum + ".mov", "-vcodec", "mpeg2video",
+				Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + (currentChunkVideoNum-1) + ".mov", "-vcodec", "mpeg2video",
 				"-qscale", "1", "-qmin", "1", "-intra", "-ar", "48000", "-y",
 				Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf" };
 		Process procFFMPEG = new ProcessBuilder(argsFFMPEG).start();
-		procFFMPEG.waitFor();
+		boolean destroyFFMPEG = false;
+		if(!procFFMPEG.waitFor(500, TimeUnit.MILLISECONDS)) {
+			procFFMPEG.destroy(); 
+			destroyFFMPEG = true;
+		}
 
-		if (videoNotContainError(procFFMPEG)) {
+		if (videoNotContainError(procFFMPEG) && !destroyFFMPEG) {
+			System.out.println("Video stoji");
 			File source = new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf");
 			File destination = new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.mxf");
 			Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -195,15 +198,6 @@ public class SharingBufferSingleton {
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
-
-		// File source = new File(Constants.VIDEO_PLAY_FILE_PATH + "/play.xmf");
-		// Files.write(source.getPath(), contentToAppend.getBytes(),
-		// StandardOpenOption.APPEND);
-		/*
-		 * String[] argsCat = new String[] { "cat", Constants.VIDEO_PLAY_FILE_PATH +
-		 * "/izlaz.mxf", ">>", Constants.VIDEO_PLAY_FILE_PATH + "/play.xmf" }; new
-		 * ProcessBuilder(argsCat).start().waitFor();
-		 */
 
 		System.out.println("Zavrsio " + new Date());
 	}
