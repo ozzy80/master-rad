@@ -2,12 +2,17 @@ package com.kikkar.global;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Date;
 
 import com.kikkar.packet.ControlMessage;
 import com.kikkar.packet.VideoPacket;
@@ -144,15 +149,20 @@ public class SharingBufferSingleton {
 		return presentVideoNum;
 	}
 
-	public void synchronizeVideoPlayTime(ControlMessage controlMessage) {
+	public void synchronizeVideoPlayTime(int currentVideoNum, ControlMessage controlMessage) {
 		try {
-			prepareVideoForPlaying(controlMessage.getCurrentChunkVideoNum());
+			System.out.println("Usao " + new Date());
+
+			prepareVideoForPlaying(currentVideoNum);
 
 			int messageDelayTime = (int) (clock.getcurrentTimeMilliseconds() - controlMessage.getTimeInMilliseconds());
 			if (player.isVideoPlaying()) {
+				System.out.println("Ide");
 				player.synchronizeVideo(
 						controlMessage.getPlayerElapsedTime() - sourcePlayerPastTime + messageDelayTime);
 			} else {
+				System.out.println("Ne ide");
+
 				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime();
 				player.setMediaPath(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf");
 				player.playVideo();
@@ -160,20 +170,50 @@ public class SharingBufferSingleton {
 			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
+		} catch (InterruptedException e) {
+			System.err.println(e.getMessage());
 		}
 	}
 
-	private void prepareVideoForPlaying(int currentChunkVideoNum) throws IOException {
-		String[] argsFFMPEG = new String[] { "ffmpeg", "-i", Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + currentChunkVideoNum + ".mov", "-vcodec",
-				"mpeg2video", "-qscale", "1", "-qmin", "1", "-intra", "-ar", "48000", Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf" };
+	private void prepareVideoForPlaying(int currentChunkVideoNum) throws IOException, InterruptedException {
+		String[] argsFFMPEG = new String[] { "ffmpeg", "-i",
+				Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + currentChunkVideoNum + ".mov", "-vcodec", "mpeg2video",
+				"-qscale", "1", "-qmin", "1", "-intra", "-ar", "48000", "-y",
+				Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf" };
 		Process procFFMPEG = new ProcessBuilder(argsFFMPEG).start();
+		procFFMPEG.waitFor();
 
-		if(videoNotContainError(procFFMPEG)) {
-			String[] argsCat = new String[] { "cat", Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf", ">", Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.xmf" };
-			new ProcessBuilder(argsCat).start();
-		}	
-		String[] argsCat = new String[] { "cat", Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.mxf", ">>", Constants.VIDEO_PLAY_FILE_PATH + "/play.xmf" };
-		new ProcessBuilder(argsCat).start();
+		if (videoNotContainError(procFFMPEG)) {
+			File source = new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf");
+			File destination = new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.mxf");
+			Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
+
+		try (InputStream is = new FileInputStream(new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.mxf"));
+				OutputStream os = new FileOutputStream(new File(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf"), true);) {
+			appendFiles(is, os);
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+
+		// File source = new File(Constants.VIDEO_PLAY_FILE_PATH + "/play.xmf");
+		// Files.write(source.getPath(), contentToAppend.getBytes(),
+		// StandardOpenOption.APPEND);
+		/*
+		 * String[] argsCat = new String[] { "cat", Constants.VIDEO_PLAY_FILE_PATH +
+		 * "/izlaz.mxf", ">>", Constants.VIDEO_PLAY_FILE_PATH + "/play.xmf" }; new
+		 * ProcessBuilder(argsCat).start().waitFor();
+		 */
+
+		System.out.println("Zavrsio " + new Date());
+	}
+
+	private void appendFiles(InputStream is, OutputStream os) throws IOException {
+		int length;
+		byte[] buffer = new byte[4096];
+		while ((length = is.read(buffer)) > 0) {
+			os.write(buffer, 0, length);
+		}
 	}
 
 	private boolean videoNotContainError(Process process) throws IOException {

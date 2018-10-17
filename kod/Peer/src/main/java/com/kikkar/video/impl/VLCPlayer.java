@@ -57,7 +57,8 @@ public class VLCPlayer {
 	}
 	
 	public boolean isVideoPlaying() {
-		return mediaPlayer.getMediaPlayerState().equals(libvlc_state_t.libvlc_Ended);
+		System.out.println(mediaPlayer.getMediaPlayerState().toString());
+		return mediaPlayer.getMediaPlayerState().equals(libvlc_state_t.libvlc_Playing);
 	}
 
 	private void setVideoSpeed(float rate, int changeDurationMilliseconds) {

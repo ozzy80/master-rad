@@ -104,7 +104,7 @@ public class DownloadSchedulerImpl implements DownloadScheduler {
 
 		if (sharingBufferSingleton.isHeadAtChunkStart()) {
 			sharingBufferSingleton.saveVideoPackIntoFile(lastControlMessageId, controlMessage.getCurrentChunkVideoNum());
-			sharingBufferSingleton.synchronizeVideoPlayTime(controlMessage);
+			new Thread(() -> sharingBufferSingleton.synchronizeVideoPlayTime(lastControlMessageId, controlMessage)).start();
 		} else {
 			sharingBufferSingleton.resetOldVideoContent(controlMessage.getCurrentChunkVideoNum());			
 		}

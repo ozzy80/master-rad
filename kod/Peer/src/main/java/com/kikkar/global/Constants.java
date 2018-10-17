@@ -32,9 +32,9 @@ public final class Constants {
 	
 	public static final int DATAGRAM_PACKET_SIZE = 1500;
 
-	public static final String OUTPUT_VIDEO_FILE_PATH = "./video/play";
+	public static final String OUTPUT_VIDEO_FILE_PATH = "video/play";
 	
-	public static final String VIDEO_PLAY_FILE_PATH = "./video/record";
+	public static final String VIDEO_PLAY_FILE_PATH = "video/record";
 
 	public static void setErrorPrintIntoFile(PrintStream pst) {
 		System.setErr(pst);
