@@ -1,9 +1,22 @@
 package com.kikkar.Peer;
 
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.DatagramPacket;
+import java.util.Scanner;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.kikkar.global.Constants;
+import com.kikkar.global.SharingBufferSingleton;
 import com.kikkar.network.ConnectionManager;
 import com.kikkar.network.impl.ConnectionManagerImpl;
 import com.kikkar.network.impl.ConnectionManagerSourceImpl;
@@ -15,58 +28,114 @@ import com.kikkar.schedule.impl.UploadSchedulerImpl;
 import com.kikkar.schedule.impl.UploadSchedulerSourceImpl;
 import com.kikkar.video.SourceVideoLoader;
 import com.kikkar.video.impl.SourceVideoLoaderImpl;
+import com.kikkar.video.impl.VLCPlayer;
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
+
+import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class App {
 
 	public static void main(String[] args) throws Exception {
 		// final PrintStream pst = new PrintStream("error.txt");
 		// Constants.setErrorPrintIntoFile(pst);
+		JFrame frame = new JFrame();
 
-		// Obican parnjak
-		if (args[0].equals("Peer")) {
-			System.out.println("OBICAN PARNJAK");
-			ConnectionManager connectionManager = new ConnectionManagerImpl();
-			String rawJson = "{\"channelId\":1,\"chunkSize\":1500,\"bitrate\":1500,\"name\":\"BBC\",\"description\":null,\"ipAddress\":\"http://192.168.0.170:8080/Tracker\"}";
-			connectionManager.loadJson(rawJson);
-			// connectionManager.start();
+		Canvas canvas = new Canvas();
+		canvas.setBackground(Color.black);
+		JPanel panel = new JPanel();
+		canvas.setBounds(100, 500, 1050, 500);
+		panel.setLayout(new BorderLayout());
+		panel.add(canvas, BorderLayout.CENTER);
+		panel.setBounds(100, 50, 1050, 600);
+		frame.add(panel, BorderLayout.NORTH);
 
-			UploadScheduler uploadScheduler = new UploadSchedulerImpl(connectionManager);
-			DownloadScheduler downloadScheduler = new DownloadSchedulerImpl(connectionManager, uploadScheduler);
-			downloadScheduler.startDownload();
-			//uploadScheduler.scheduleCollectMissingVideo();
-			while (true) {
-				downloadScheduler.processPacket(downloadScheduler.getNextPacket());
-			}
-		}
+		frame.setLocation(100, 100);
+		frame.setSize(1050, 600);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 
-		// Izvor
-		if (args[0].equals("Source")) {
-			System.out.println("IZVOR");
-			ConnectionManager connectionManager = new ConnectionManagerSourceImpl();
-			String rawJson = "{\"channelId\":1,\"chunkSize\":1500,\"bitrate\":1500,\"name\":\"BBC\",\"description\":null,\"ipAddress\":\"http://192.168.0.170:8080/Tracker\"}";
-			byte[] reciveData = new byte[Constants.DATAGRAM_PACKET_SIZE];
-			DatagramPacket reciveDatagramPacket = new DatagramPacket(reciveData, reciveData.length);
-			connectionManager.loadJson(rawJson);
-			// connectionManager.start();
-
-			UploadScheduler uploadScheduler = new UploadSchedulerSourceImpl(connectionManager);
-			DownloadScheduler downloadScheduler = new DownloadSchedulerSourceImpl(connectionManager,
-					reciveDatagramPacket, uploadScheduler);
-			SourceVideoLoader sourceVideoLoader = new SourceVideoLoaderImpl(uploadScheduler);
-
-
-			downloadScheduler.startDownload();
-			new Thread(() -> {
-				try {
-					sourceVideoLoader.loadVideo("./video/source", "./video/play");
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
+		JButton openFileButton = new JButton("Load channel");
+		openFileButton.setBounds(50,100,95,30);
+		openFileButton.setLayout(null);
+		openFileButton.setVisible(true);
+		frame.add(openFileButton);
+		openFileButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				String rawJson = openFile(evt);
+				
+				VLCPlayer player = new VLCPlayer();
+				player.setupVLCPlayer(canvas);
+				SharingBufferSingleton.getInstance().setPlayer(player);
+				
+				if (args[0].equals("Peer")) {
+					new Thread(() -> startPeer(rawJson, canvas)).start();
+				} else {
+					new Thread(() -> startSource(rawJson, canvas)).start();
 				}
-			}).start();
-			while (true) {
-				downloadScheduler.processPacket(downloadScheduler.getNextPacket());
+			}
+		});
+	}
+
+	private static String openFile(ActionEvent event) {
+		JFileChooser fileChooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Json Files(*.json)", "json");
+		fileChooser.setFileFilter(filter);
+		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+		int result = fileChooser.showOpenDialog(null);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File selectedFile = fileChooser.getSelectedFile();
+			try (Scanner inScanner = new Scanner(selectedFile)) {
+				StringBuilder sb = new StringBuilder();
+				while (inScanner.hasNext()) {
+					sb.append(inScanner.nextLine());
+					sb.append("\n");
+				}
+				return new String(sb);
+			} catch (FileNotFoundException e) {
+				System.err.println(e.getMessage());
 			}
 		}
+		return null;
+	}
 
+	private static void startPeer(String rawJson, Canvas canvas) {
+		System.out.println("OBICAN PARNJAK");
+		ConnectionManager connectionManager = new ConnectionManagerImpl();
+		connectionManager.loadJson(rawJson);
+
+		UploadScheduler uploadScheduler = new UploadSchedulerImpl(connectionManager);
+		DownloadScheduler downloadScheduler = new DownloadSchedulerImpl(connectionManager, uploadScheduler);
+		downloadScheduler.startDownload();
+		// uploadScheduler.scheduleCollectMissingVideo();
+		while (true) {
+			downloadScheduler.processPacket(downloadScheduler.getNextPacket());
+		}
+	}
+
+	private static void startSource(String rawJson, Canvas canvas) {
+		System.out.println("IZVOR");
+		ConnectionManager connectionManager = new ConnectionManagerSourceImpl();
+		byte[] reciveData = new byte[Constants.DATAGRAM_PACKET_SIZE];
+		DatagramPacket reciveDatagramPacket = new DatagramPacket(reciveData, reciveData.length);
+		connectionManager.loadJson(rawJson);
+
+		UploadScheduler uploadScheduler = new UploadSchedulerSourceImpl(connectionManager);
+		DownloadScheduler downloadScheduler = new DownloadSchedulerSourceImpl(connectionManager, reciveDatagramPacket,
+				uploadScheduler);
+		SourceVideoLoader sourceVideoLoader = new SourceVideoLoaderImpl(uploadScheduler);
+
+		downloadScheduler.startDownload();
+		new Thread(() -> {
+			try {
+				sourceVideoLoader.loadVideo("./video/source", "./video/play");
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}).start();
+		while (true) {
+			downloadScheduler.processPacket(downloadScheduler.getNextPacket());
+		}
 	}
 }

@@ -43,10 +43,11 @@ public class UploadSchedulerSourceImpl extends UploadSchedulerImpl {
 		ControlMessage.Builder controlMessage = ControlMessage.newBuilder();
 		controlMessage.setMessageId(controlMessageId++);
 		controlMessage.setCurrentChunkVideoNum(currentVideoNum);
-		//controlMessage.setPlayerElapsedTime();
+		controlMessage.setPlayerElapsedTime(sharingBufferSingleton.getPlayer().getCurrentPlayTime());
 		controlMessage.setTimeInMilliseconds(clock.getcurrentTimeMilliseconds());
 		PacketWrapper.Builder controlWrap = PacketWrapper.newBuilder().setControlMessage(controlMessage);
 		
+		sharingBufferSingleton.synchronizeVideoPlayTime(controlMessage.build());
 		super.getConnectionManager().sendAll(controlWrap, new ArrayList<>(), PeerStatus.UPLOAD_CONNECTION);	
 	}
 	

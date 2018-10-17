@@ -71,8 +71,6 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 				Thread.sleep(videoDutarionMillisecond - passTime);
 			}
 			notifySwarm(videoNum, os);
-			// TODO sinhronizuj video plejer
-			// Neka python prebaci u .mxf i poveze sa prethodnim
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		} catch (InterruptedException e) {
@@ -82,8 +80,7 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 
 	private void notifySwarm(int videoNum, OutputStream os) {
 		executor.schedule(() -> {
-			uploadScheduler.sendControlMessage(videoNum);
-			//sharingBufferSingleton.saveVideoPack(os, videoNum);				
+			uploadScheduler.sendControlMessage(videoNum);		
 		}, Constants.VIDEO_DURATION_SECOND, TimeUnit.SECONDS);
 	}
 

@@ -1,22 +1,26 @@
 package com.kikkar.global;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Arrays;
 
 import com.kikkar.packet.ControlMessage;
 import com.kikkar.packet.VideoPacket;
+import com.kikkar.video.impl.VLCPlayer;
 
 public class SharingBufferSingleton {
 	private ClockSingleton clock;
-	private long sourcePlayerPastTime;
+	private int sourcePlayerPastTime;
 
 	private VideoPacket[] videoArray;
 	private int minVideoNum;
 	private static SharingBufferSingleton firstInstance;
+	private VLCPlayer player;
 
 	private SharingBufferSingleton() {
 		clock = ClockSingleton.getInstance();
@@ -73,7 +77,7 @@ public class SharingBufferSingleton {
 				cleanPreviousValue();
 				break;
 			}
-			
+
 			if (videoArray[minVideoNum] == null) {
 				processMissingChunk(minVideoNum);
 			}
@@ -116,12 +120,12 @@ public class SharingBufferSingleton {
 
 	private int getPreviousIndex() {
 		int previousVideoNum = 0;
-		if(minVideoNum == 0) {
+		if (minVideoNum == 0) {
 			previousVideoNum = Constants.BUFFER_SIZE - 1;
 		} else {
 			previousVideoNum = minVideoNum - 1;
 		}
-		
+
 		if (videoArray[previousVideoNum] == null) {
 			return -1;
 		}
@@ -141,12 +145,46 @@ public class SharingBufferSingleton {
 	}
 
 	public void synchronizeVideoPlayTime(ControlMessage controlMessage) {
-		long currentPlayerDelay = clock.getcurrentTimeMilliseconds() - controlMessage.getTimeInMilliseconds();
-		// if() Proveri da li je plejer pusten
-		// ubrzava/usporava/ne dira se plejer da stigne do prethodno dobijene vrednosti
-		// else
-		sourcePlayerPastTime = controlMessage.getPlayerElapsedTime();
-		// pokreni plejer
+		try {
+			prepareVideoForPlaying(controlMessage.getCurrentChunkVideoNum());
+
+			int messageDelayTime = (int) (clock.getcurrentTimeMilliseconds() - controlMessage.getTimeInMilliseconds());
+			if (player.isVideoPlaying()) {
+				player.synchronizeVideo(
+						controlMessage.getPlayerElapsedTime() - sourcePlayerPastTime + messageDelayTime);
+			} else {
+				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime();
+				player.setMediaPath(Constants.OUTPUT_VIDEO_FILE_PATH + "/play.mxf");
+				player.playVideo();
+				player.synchronizeVideo(sourcePlayerPastTime % 6000);
+			}
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
+	private void prepareVideoForPlaying(int currentChunkVideoNum) throws IOException {
+		String[] argsFFMPEG = new String[] { "ffmpeg", "-i", "movie" + currentChunkVideoNum + ".mov", "-vcodec",
+				"mpeg2video", "-qscale", "1", "-qmin", "1", "-intra", "-ar", "48000", "izlaz-novi.mxf" };
+		Process procFFMPEG = new ProcessBuilder(argsFFMPEG).start();
+
+		if(videoNotContainError(procFFMPEG)) {
+			String[] argsCat = new String[] { "cat", "izlaz-novi.mxf", ">", "izlaz.xmf" };
+			new ProcessBuilder(argsCat).start();
+		}	
+		String[] argsCat = new String[] { "cat", "izlaz.mxf", ">>", "play.xmf" };
+		new ProcessBuilder(argsCat).start();
+	}
+
+	private boolean videoNotContainError(Process process) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			if (line.contains("Error")) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -175,7 +213,8 @@ public class SharingBufferSingleton {
 	}
 
 	public void saveVideoPackIntoFile(int num, int lastControlMessageVideNum) {
-		try (OutputStream os = new FileOutputStream(new File(Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + num + ".mov"), true)) {
+		try (OutputStream os = new FileOutputStream(
+				new File(Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + num + ".mov"), true)) {
 			saveVideoPack(os, lastControlMessageVideNum);
 			os.flush();
 		} catch (FileNotFoundException e) {
@@ -201,12 +240,20 @@ public class SharingBufferSingleton {
 		this.minVideoNum = minVideoNum % Constants.BUFFER_SIZE;
 	}
 
-	public long getSourcePlayerPastTime() {
+	public int getSourcePlayerPastTime() {
 		return sourcePlayerPastTime;
 	}
 
-	public void setSourcePlayerPastTime(long sourcePlayerPastTime) {
+	public void setSourcePlayerPastTime(int sourcePlayerPastTime) {
 		this.sourcePlayerPastTime = sourcePlayerPastTime;
+	}
+
+	public VLCPlayer getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(VLCPlayer player) {
+		this.player = player;
 	}
 
 }
