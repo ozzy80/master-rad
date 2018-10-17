@@ -154,7 +154,7 @@ public class SharingBufferSingleton {
 						controlMessage.getPlayerElapsedTime() - sourcePlayerPastTime + messageDelayTime);
 			} else {
 				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime();
-				player.setMediaPath(Constants.OUTPUT_VIDEO_FILE_PATH + "/play.mxf");
+				player.setMediaPath(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf");
 				player.playVideo();
 				player.synchronizeVideo(sourcePlayerPastTime % 6000);
 			}
@@ -164,15 +164,15 @@ public class SharingBufferSingleton {
 	}
 
 	private void prepareVideoForPlaying(int currentChunkVideoNum) throws IOException {
-		String[] argsFFMPEG = new String[] { "ffmpeg", "-i", "movie" + currentChunkVideoNum + ".mov", "-vcodec",
-				"mpeg2video", "-qscale", "1", "-qmin", "1", "-intra", "-ar", "48000", "izlaz-novi.mxf" };
+		String[] argsFFMPEG = new String[] { "ffmpeg", "-i", Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + currentChunkVideoNum + ".mov", "-vcodec",
+				"mpeg2video", "-qscale", "1", "-qmin", "1", "-intra", "-ar", "48000", Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf" };
 		Process procFFMPEG = new ProcessBuilder(argsFFMPEG).start();
 
 		if(videoNotContainError(procFFMPEG)) {
-			String[] argsCat = new String[] { "cat", "izlaz-novi.mxf", ">", "izlaz.xmf" };
+			String[] argsCat = new String[] { "cat", Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf", ">", Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.xmf" };
 			new ProcessBuilder(argsCat).start();
 		}	
-		String[] argsCat = new String[] { "cat", "izlaz.mxf", ">>", "play.xmf" };
+		String[] argsCat = new String[] { "cat", Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.mxf", ">>", Constants.VIDEO_PLAY_FILE_PATH + "/play.xmf" };
 		new ProcessBuilder(argsCat).start();
 	}
 

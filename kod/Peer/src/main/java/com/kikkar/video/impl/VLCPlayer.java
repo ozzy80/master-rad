@@ -20,7 +20,7 @@ public class VLCPlayer {
 	private String mediaPath;
 
 	public VLCPlayer() {
-		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
+		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/usr/bin/vlc");
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 	}
 	
