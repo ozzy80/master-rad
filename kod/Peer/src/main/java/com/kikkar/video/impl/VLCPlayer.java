@@ -37,7 +37,9 @@ public class VLCPlayer {
 	}
 
 	public void playVideo() {
-		mediaPlayer.playMedia(mediaPath);
+		if(!isVideoPlaying()) {
+			mediaPlayer.playMedia(mediaPath);			
+		}
 	}
 
 	public int getCurrentPlayTime() {
@@ -55,7 +57,6 @@ public class VLCPlayer {
 	}
 	
 	public boolean isVideoPlaying() {
-		System.out.println(mediaPlayer.getMediaPlayerState().toString());
 		return mediaPlayer.getMediaPlayerState().equals(libvlc_state_t.libvlc_Playing);
 	}
 
@@ -76,6 +77,10 @@ public class VLCPlayer {
 
 	public void setMediaPath(String mediaPath) {
 		this.mediaPath = mediaPath;
+	}
+	
+	public void setPlayTime(long time) {
+		mediaPlayer.setTime(time);
 	}
 
 }

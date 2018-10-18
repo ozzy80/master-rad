@@ -13,7 +13,11 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.crypto.Data;
 
 import com.kikkar.packet.ControlMessage;
 import com.kikkar.packet.VideoPacket;
@@ -26,11 +30,15 @@ public class SharingBufferSingleton {
 	private VideoPacket[] videoArray;
 	private int minVideoNum;
 	private static SharingBufferSingleton firstInstance;
+
 	private VLCPlayer player;
+	private long videoDuration;
+	private ScheduledExecutorService executor;
 
 	private SharingBufferSingleton() {
 		clock = ClockSingleton.getInstance();
 		videoArray = new VideoPacket[Constants.BUFFER_SIZE];
+		executor = Executors.newSingleThreadScheduledExecutor();
 	}
 
 	public static SharingBufferSingleton getInstance() {
@@ -152,8 +160,6 @@ public class SharingBufferSingleton {
 
 	public void synchronizeVideoPlayTime(int currentVideoNum, ControlMessage controlMessage) {
 		try {
-			System.out.println("Usao " + new Date());
-
 			prepareVideoForPlaying(currentVideoNum);
 
 			int messageDelayTime = (int) (clock.getcurrentTimeMilliseconds() - controlMessage.getTimeInMilliseconds());
@@ -163,8 +169,12 @@ public class SharingBufferSingleton {
 			} else {
 				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime();
 				player.setMediaPath(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf");
-				player.playVideo();
-				player.synchronizeVideo(sourcePlayerPastTime % 6000 + messageDelayTime);
+				executor.schedule(() -> {
+					if(!player.isVideoPlaying()) {
+						player.playVideo();
+						player.synchronizeVideo(sourcePlayerPastTime % 6000 + messageDelayTime);						
+					}
+				}, Constants.VIDEO_DURATION_SECOND - 1, TimeUnit.SECONDS);
 			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -175,31 +185,30 @@ public class SharingBufferSingleton {
 
 	private void prepareVideoForPlaying(int currentChunkVideoNum) throws IOException, InterruptedException {
 		String[] argsFFMPEG = new String[] { "ffmpeg", "-i",
-				Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + (currentChunkVideoNum-1) + ".mov", "-vcodec", "mpeg2video",
-				"-qscale", "1", "-qmin", "1", "-intra", "-ar", "48000", "-y",
+				Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + (currentChunkVideoNum - 1) + ".mov", "-vcodec",
+				"mpeg2video", "-qscale", "1", "-qmin", "1", "-intra", "-ar", "48000", "-y",
 				Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf" };
+
 		Process procFFMPEG = new ProcessBuilder(argsFFMPEG).start();
 		boolean destroyFFMPEG = false;
-		if(!procFFMPEG.waitFor(500, TimeUnit.MILLISECONDS)) {
-			procFFMPEG.destroy(); 
+		if (!procFFMPEG.waitFor(500, TimeUnit.MILLISECONDS)) {
+			procFFMPEG.destroy();
 			destroyFFMPEG = true;
 		}
 
 		if (videoNotContainError(procFFMPEG) && !destroyFFMPEG) {
-			System.out.println("Video stoji");
 			File source = new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf");
 			File destination = new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.mxf");
 			Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
 
 		try (InputStream is = new FileInputStream(new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.mxf"));
-				OutputStream os = new FileOutputStream(new File(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf"), true);) {
+				OutputStream os = new FileOutputStream(new File(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf"), true)) {
 			appendFiles(is, os);
+			videoDuration += Constants.VIDEO_DURATION_SECOND * 1000;
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
-
-		System.out.println("Zavrsio " + new Date());
 	}
 
 	private void appendFiles(InputStream is, OutputStream os) throws IOException {
