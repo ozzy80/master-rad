@@ -32,7 +32,6 @@ public class SharingBufferSingleton {
 	private static SharingBufferSingleton firstInstance;
 
 	private VLCPlayer player;
-	private long videoDuration;
 	private ScheduledExecutorService executor;
 
 	private SharingBufferSingleton() {
@@ -174,7 +173,7 @@ public class SharingBufferSingleton {
 						player.playVideo();
 						player.synchronizeVideo(sourcePlayerPastTime % 6000 + messageDelayTime);						
 					}
-				}, Constants.VIDEO_DURATION_SECOND - 1, TimeUnit.SECONDS);
+				}, Constants.VIDEO_DURATION_SECOND, TimeUnit.SECONDS);
 			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -205,7 +204,6 @@ public class SharingBufferSingleton {
 		try (InputStream is = new FileInputStream(new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.mxf"));
 				OutputStream os = new FileOutputStream(new File(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf"), true)) {
 			appendFiles(is, os);
-			videoDuration += Constants.VIDEO_DURATION_SECOND * 1000;
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

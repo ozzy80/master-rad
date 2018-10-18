@@ -46,19 +46,19 @@ public class App {
 		Canvas canvas = new Canvas();
 		canvas.setBackground(Color.black);
 		JPanel panel = new JPanel();
-		canvas.setBounds(100, 500, 1050, 500);
+		canvas.setBounds(100, 400, 800, 400);
 		panel.setLayout(new BorderLayout());
 		panel.add(canvas, BorderLayout.CENTER);
-		panel.setBounds(100, 50, 1050, 600);
+		panel.setBounds(100, 50, 800, 480);
 		frame.add(panel, BorderLayout.NORTH);
 
 		frame.setLocation(100, 100);
-		frame.setSize(1050, 600);
+		frame.setSize(800, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 
 		JButton openFileButton = new JButton("Load channel");
-		openFileButton.setBounds(50,100,95,30);
+		openFileButton.setBounds(50,80,65,30);
 		openFileButton.setLayout(null);
 		openFileButton.setVisible(true);
 		frame.add(openFileButton);
