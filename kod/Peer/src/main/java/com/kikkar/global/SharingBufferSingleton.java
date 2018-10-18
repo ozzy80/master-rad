@@ -167,18 +167,25 @@ public class SharingBufferSingleton {
 						controlMessage.getPlayerElapsedTime() - sourcePlayerPastTime + messageDelayTime);
 			} else {
 				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime();
+				int currentChunkPlay = Math.round(sourcePlayerPastTime/6000);
+				int waitApropriateChunk = currentVideoNum - 1 - currentChunkPlay;
+				
+				if(waitApropriateChunk <= 0) {
+					waitApropriateChunk = Constants.VIDEO_DURATION_SECOND;
+				}
 				player.setMediaPath(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf");
-				executor.schedule(() -> {
-					if(!player.isVideoPlaying()) {
-						player.playVideo();
-						player.synchronizeVideo(sourcePlayerPastTime % 6000 + messageDelayTime);						
-					}
-				}, Constants.VIDEO_DURATION_SECOND, TimeUnit.SECONDS);
+				executor.schedule(() -> startPlayVideo(), waitApropriateChunk, TimeUnit.SECONDS);
 			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		} catch (InterruptedException e) {
 			System.err.println(e.getMessage());
+		}
+	}
+	
+	private void startPlayVideo() {
+		if(!player.isVideoPlaying()) {
+			player.playVideo();
 		}
 	}
 
@@ -190,7 +197,7 @@ public class SharingBufferSingleton {
 
 		Process procFFMPEG = new ProcessBuilder(argsFFMPEG).start();
 		boolean destroyFFMPEG = false;
-		if (!procFFMPEG.waitFor(500, TimeUnit.MILLISECONDS)) {
+		if (!procFFMPEG.waitFor(1000, TimeUnit.MILLISECONDS)) {
 			procFFMPEG.destroy();
 			destroyFFMPEG = true;
 		}
