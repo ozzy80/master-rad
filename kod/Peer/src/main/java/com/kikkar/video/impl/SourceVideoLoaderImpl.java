@@ -50,8 +50,8 @@ public class SourceVideoLoaderImpl implements SourceVideoLoader {
 	public void loadVideo(String inputVideoPath, String outputVideoPath) throws FileNotFoundException {
 		int i = 0;
 		while (true) {
-			File inputVideoFile = new File(inputVideoPath + "/izlaz" + i + ".mov");
-			File outputVideoFile = new File(outputVideoPath + "/output" + i++ + ".mov");
+			File inputVideoFile = new File(inputVideoPath + "/izlaz" + i + ".mxf");
+			File outputVideoFile = new File(outputVideoPath + "/output" + i++ + ".mxf");
 			try (InputStream is = new FileInputStream(inputVideoFile);
 					OutputStream os = new FileOutputStream(outputVideoFile);) {
 				int chunkNum = (int) Math.ceil(inputVideoFile.length() / videoBufferSize);

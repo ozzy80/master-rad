@@ -9,15 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import javax.xml.crypto.Data;
 
 import com.kikkar.packet.ControlMessage;
 import com.kikkar.packet.VideoPacket;
@@ -159,22 +154,18 @@ public class SharingBufferSingleton {
 
 	public void synchronizeVideoPlayTime(int currentVideoNum, ControlMessage controlMessage) {
 		try {
-			prepareVideoForPlaying(currentVideoNum);
+			prepareVideoForPlaying(currentVideoNum - 1);
 
 			int messageDelayTime = (int) (clock.getcurrentTimeMilliseconds() - controlMessage.getTimeInMilliseconds());
 			if (player.isVideoPlaying()) {
-				player.synchronizeVideo(
-						controlMessage.getPlayerElapsedTime() - sourcePlayerPastTime + messageDelayTime);
+				int sourcePlayerCurrentTime = (controlMessage.getPlayerElapsedTime() + messageDelayTime
+						- sourcePlayerPastTime);
+				System.out.println("Izracunato: " + (player.getCurrentPlayTime() - sourcePlayerCurrentTime));
+				player.synchronizeVideo(player.getCurrentPlayTime() - sourcePlayerCurrentTime);
 			} else {
-				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime();
-				int currentChunkPlay = Math.round(sourcePlayerPastTime/6000);
-				int waitApropriateChunk = currentVideoNum - 1 - currentChunkPlay;
-				
-				if(waitApropriateChunk <= 0) {
-					waitApropriateChunk = Constants.VIDEO_DURATION_SECOND;
-				}
+				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime() + messageDelayTime;
 				player.setMediaPath(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf");
-				executor.schedule(() -> startPlayVideo(), waitApropriateChunk, TimeUnit.SECONDS);
+				executor.schedule(() -> startPlayVideo(), Constants.VIDEO_DURATION_SECOND, TimeUnit.SECONDS);
 			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -182,33 +173,16 @@ public class SharingBufferSingleton {
 			System.err.println(e.getMessage());
 		}
 	}
-	
+
 	private void startPlayVideo() {
-		if(!player.isVideoPlaying()) {
+		if (!player.isVideoPlaying()) {
 			player.playVideo();
 		}
 	}
 
 	private void prepareVideoForPlaying(int currentChunkVideoNum) throws IOException, InterruptedException {
-		String[] argsFFMPEG = new String[] { "ffmpeg", "-i",
-				Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + (currentChunkVideoNum - 1) + ".mov", "-vcodec",
-				"mpeg2video", "-qscale", "1", "-qmin", "1", "-intra", "-ar", "48000", "-y",
-				Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf" };
-
-		Process procFFMPEG = new ProcessBuilder(argsFFMPEG).start();
-		boolean destroyFFMPEG = false;
-		if (!procFFMPEG.waitFor(1000, TimeUnit.MILLISECONDS)) {
-			procFFMPEG.destroy();
-			destroyFFMPEG = true;
-		}
-
-		if (videoNotContainError(procFFMPEG) && !destroyFFMPEG) {
-			File source = new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz-novi.mxf");
-			File destination = new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.mxf");
-			Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		}
-
-		try (InputStream is = new FileInputStream(new File(Constants.VIDEO_PLAY_FILE_PATH + "/izlaz.mxf"));
+		try (InputStream is = new FileInputStream(
+				new File(Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + currentChunkVideoNum + ".mxf"));
 				OutputStream os = new FileOutputStream(new File(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf"), true)) {
 			appendFiles(is, os);
 		} catch (IOException e) {
@@ -262,7 +236,7 @@ public class SharingBufferSingleton {
 
 	public void saveVideoPackIntoFile(int num, int lastControlMessageVideNum) {
 		try (OutputStream os = new FileOutputStream(
-				new File(Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + num + ".mov"), true)) {
+				new File(Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + num + ".mxf"), true)) {
 			saveVideoPack(os, lastControlMessageVideNum);
 			os.flush();
 		} catch (FileNotFoundException e) {

@@ -12,7 +12,7 @@ public final class Constants {
 
 	public static final int BUFFER_SIZE = 10_000;
 
-	public static final int VIDEO_DURATION_SECOND = 5;
+	public static final int VIDEO_DURATION_SECOND = 6;
 
 	public static final int NUMBER_OF_CLUB = 3;
 
