@@ -28,11 +28,13 @@ public class SharingBufferSingleton {
 
 	private VLCPlayer player;
 	private ScheduledExecutorService executor;
+	private boolean videoFirstPlay;
 
 	private SharingBufferSingleton() {
 		clock = ClockSingleton.getInstance();
 		videoArray = new VideoPacket[Constants.BUFFER_SIZE];
 		executor = Executors.newSingleThreadScheduledExecutor();
+		videoFirstPlay = true;
 	}
 
 	public static SharingBufferSingleton getInstance() {
@@ -163,7 +165,6 @@ public class SharingBufferSingleton {
 				System.out.println("Izracunato: " + (player.getCurrentPlayTime() - sourcePlayerCurrentTime));
 				player.synchronizeVideo(player.getCurrentPlayTime() - sourcePlayerCurrentTime);
 			} else {
-				Arrays.stream(new File(Constants.VIDEO_PLAY_FILE_PATH ).listFiles()).forEach(File::delete);
 				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime() + messageDelayTime + 1600;
 				player.setMediaPath(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf");
 				executor.schedule(() -> startPlayVideo(), Constants.VIDEO_DURATION_SECOND + 1, TimeUnit.SECONDS);
@@ -193,6 +194,7 @@ public class SharingBufferSingleton {
 	private void startPlayVideo() {
 		if (!player.isVideoPlaying()) {
 			player.playVideo();
+			videoFirstPlay = false;
 		}
 	}
 
@@ -200,6 +202,10 @@ public class SharingBufferSingleton {
 		File file = new File(Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + currentChunkVideoNum + ".mxf");
 		if(!file.exists() && !file.isDirectory()) { 
 			currentChunkVideoNum--;
+		}
+		
+		if (!player.isVideoPlaying() && !videoFirstPlay) {
+			Arrays.stream(new File(Constants.VIDEO_PLAY_FILE_PATH ).listFiles()).forEach(File::delete);
 		}
 		
 		try (InputStream is = new FileInputStream(
