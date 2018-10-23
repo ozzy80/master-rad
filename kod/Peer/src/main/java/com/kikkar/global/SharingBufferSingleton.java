@@ -175,6 +175,21 @@ public class SharingBufferSingleton {
 		}
 	}
 
+	public void synchronizeVideoPlayTime(int currentVideoNum) {
+		try {
+			prepareVideoForPlaying(currentVideoNum);
+
+			if (!player.isVideoPlaying()) {
+				player.setMediaPath(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf");
+				executor.schedule(() -> startPlayVideo(), Constants.VIDEO_DURATION_SECOND + 1, TimeUnit.SECONDS);
+			}					
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		} catch (InterruptedException e) {
+			System.err.println(e.getMessage());
+		}
+	}
+	
 	private void startPlayVideo() {
 		if (!player.isVideoPlaying()) {
 			player.playVideo();
