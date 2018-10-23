@@ -163,6 +163,7 @@ public class SharingBufferSingleton {
 				System.out.println("Izracunato: " + (player.getCurrentPlayTime() - sourcePlayerCurrentTime));
 				player.synchronizeVideo(player.getCurrentPlayTime() - sourcePlayerCurrentTime);
 			} else {
+				Arrays.stream(new File(Constants.VIDEO_PLAY_FILE_PATH ).listFiles()).forEach(File::delete);
 				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime() + messageDelayTime + 1600;
 				player.setMediaPath(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf");
 				executor.schedule(() -> startPlayVideo(), Constants.VIDEO_DURATION_SECOND + 1, TimeUnit.SECONDS);
@@ -181,6 +182,11 @@ public class SharingBufferSingleton {
 	}
 
 	private void prepareVideoForPlaying(int currentChunkVideoNum) throws IOException, InterruptedException {
+		File file = new File(Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + currentChunkVideoNum + ".mxf");
+		if(!file.exists() && !file.isDirectory()) { 
+			currentChunkVideoNum--;
+		}
+		
 		try (InputStream is = new FileInputStream(
 				new File(Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + currentChunkVideoNum + ".mxf"));
 				OutputStream os = new FileOutputStream(new File(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf"), true)) {
