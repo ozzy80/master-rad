@@ -163,9 +163,9 @@ public class SharingBufferSingleton {
 				System.out.println("Izracunato: " + (player.getCurrentPlayTime() - sourcePlayerCurrentTime));
 				player.synchronizeVideo(player.getCurrentPlayTime() - sourcePlayerCurrentTime);
 			} else {
-				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime() + messageDelayTime;
+				sourcePlayerPastTime = controlMessage.getPlayerElapsedTime() + messageDelayTime + 1600;
 				player.setMediaPath(Constants.VIDEO_PLAY_FILE_PATH + "/play.mxf");
-				executor.schedule(() -> startPlayVideo(), Constants.VIDEO_DURATION_SECOND, TimeUnit.SECONDS);
+				executor.schedule(() -> startPlayVideo(), Constants.VIDEO_DURATION_SECOND + 1, TimeUnit.SECONDS);
 			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());

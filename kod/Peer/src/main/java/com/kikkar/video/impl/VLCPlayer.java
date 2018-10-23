@@ -47,11 +47,11 @@ public class VLCPlayer {
 	}
 
 	public void synchronizeVideo(int sourceVideoTime) {
-		int timeDiff = sourceVideoTime;
+		int timeDiff = sourceVideoTime/2;
 
-		if(timeDiff < -200) {
+		if(timeDiff < -500) {
 			setVideoSpeed(2f, -timeDiff);
-		} else if (timeDiff > 200) {
+		} else if (timeDiff > 500) {
 			setVideoSpeed(0.5f, timeDiff);
 		} 
 	}
