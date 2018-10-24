@@ -262,7 +262,7 @@ public class SharingBufferSingleton {
 
 	public void saveVideoPackIntoFile(int num, int lastControlMessageVideNum) {
 		try (OutputStream os = new FileOutputStream(
-				new File(Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + num + ".mxf"), true)) {
+				new File(Constants.OUTPUT_VIDEO_FILE_PATH + "/movie" + num + ".mxf"))) {
 			saveVideoPack(os, lastControlMessageVideNum);
 			os.flush();
 		} catch (FileNotFoundException e) {
