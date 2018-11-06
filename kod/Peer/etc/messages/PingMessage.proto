@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package com.kikkar.packet;
+option java_multiple_files = true;
+
+import "ConnectionType.proto";
+
+message PingMessage{
+    int32 pingId = 1;
+    int32 portNumber = 2;
+    int32 clubNumber = 3;
+    ConnectionType connectionType = 4;
+}

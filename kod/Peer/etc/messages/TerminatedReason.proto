@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package com.kikkar.packet;
+option java_multiple_files = true;
+
+enum TerminatedReason {
+    LEAVE_PROGRAM = 0;
+    BLOCK_TIMEOUT = 1;  
+    PACKET_NUMBER_DISORDER = 2;
+    DEAD_PEER = 3;
+    NEW_CONNECTION = 4;
+  }

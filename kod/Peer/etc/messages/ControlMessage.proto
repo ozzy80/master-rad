@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package com.kikkar.packet;
+option java_multiple_files = true;
+
+message ControlMessage{
+    int32 messageId = 1;
+    int32 currentChunkVideoNum = 2;
+    int32 playerElapsedTime = 3;
+    int64 timeInMilliseconds = 4;
+}

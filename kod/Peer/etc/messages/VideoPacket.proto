@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package com.kikkar.packet;
+option java_multiple_files = true;
+
+message VideoPacket{
+    int32 videoNum = 1;
+    int32 chunkNum = 2;
+    bool firstFrame = 3;
+    bytes video = 4;
+}

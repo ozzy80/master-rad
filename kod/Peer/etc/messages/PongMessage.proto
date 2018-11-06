@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package com.kikkar.packet;
+option java_multiple_files = true;
+
+message PongMessage{
+    int32 responsePingId = 1;
+    int32 uploadLinkNum = 2;
+    int32 downloadLinkNum = 3;
+    int32 bufferVideoNum = 4;
+}
