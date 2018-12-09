@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package com.kikkar.packet;
+option java_multiple_files = true;
+
+enum ConnectionType {
+    UPLOAD = 0;
+    DOWNLOAD = 1;
+    BOTH = 2;
+}

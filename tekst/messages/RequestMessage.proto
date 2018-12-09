@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package com.kikkar.packet;
+option java_multiple_files = true;
+
+import "ConnectionType.proto";
+
+message RequestMessage{
+    int32 requestId = 1;
+    int32 clubNumber = 2;
+    ConnectionType connectionType = 3;
+}

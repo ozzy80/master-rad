@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package com.kikkar.packet;
+option java_multiple_files = true;
+
+message HaveMessage{
+    int32 videoNum = 1;
+}

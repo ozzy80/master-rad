@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package com.kikkar.packet;
+option java_multiple_files = true;
+
+import "ControlMessage.proto";
+import "HaveMessage.proto";
+import "KeepAliveMessage.proto";
+import "NotInterestedMessage.proto";
+import "PingMessage.proto";
+import "PongMessage.proto";
+import "RequestMessage.proto";
+import "RequestVideoMessage.proto";
+import "ResponseMessage.proto";
+import "ResponseVideoMessage.proto";
+import "TerminatedMessage.proto";
+import "VideoPacket.proto";
+
+message PacketWrapper{
+    int32 packetId = 1;
+    oneof message {
+        ControlMessage controlMessage = 2;
+        HaveMessage haveMessage = 3;
+        KeepAliveMessage keepAliveMessage = 4;
+        NotInterestedMessage notInterestedMessage = 5;
+        PingMessage pingMessage = 6;
+        PongMessage pongMessage = 7;
+        RequestMessage requestMessage = 8;
+        RequestVideoMessage requestVideoMessage = 9;
+        ResponseMessage responseMessage = 10;
+        ResponseVideoMessage responseVideoMessage = 11;
+        TerminatedMessage terminatedMessage = 12;
+        VideoPacket videoPacket = 13;
+    }
+}

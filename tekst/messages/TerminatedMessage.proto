@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package com.kikkar.packet;
+option java_multiple_files = true;
+
+import "TerminatedReason.proto";
+
+message TerminatedMessage{
+    int32 terminatedId = 1;
+    TerminatedReason terminatedReason = 2;
+}

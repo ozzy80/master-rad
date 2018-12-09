@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package com.kikkar.packet;
+option java_multiple_files = true;
+
+message RequestVideoMessage{
+    int32 messageId = 1;
+    repeated int32 videoNum = 2 [packed=true];
+}
