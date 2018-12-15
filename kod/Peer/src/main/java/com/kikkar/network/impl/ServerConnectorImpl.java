@@ -11,7 +11,6 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +30,6 @@ import com.kikkar.network.ServerConnector;
 import com.kikkar.network.SpeedTest;
 
 public class ServerConnectorImpl implements ServerConnector {
-
 	private Channel channel;
 	private ScheduledExecutorService executor;
 	private String lastModified;

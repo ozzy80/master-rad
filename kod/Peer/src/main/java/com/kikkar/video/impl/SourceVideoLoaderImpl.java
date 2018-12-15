@@ -8,23 +8,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import com.google.protobuf.ByteString;
 import com.kikkar.global.ClockSingleton;
 import com.kikkar.global.Constants;
 import com.kikkar.global.SharingBufferSingleton;
-import com.kikkar.packet.Pair;
 import com.kikkar.packet.VideoPacket;
 import com.kikkar.schedule.UploadScheduler;
 import com.kikkar.video.SourceVideoLoader;
 
 public class SourceVideoLoaderImpl implements SourceVideoLoader {
-
 	private int videoBufferSize;
 	private int videoNum;
 	private int videoDutarionMillisecond;

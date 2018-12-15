@@ -5,27 +5,16 @@ import java.util.Arrays;
 import com.kikkar.global.ClockSingleton;
 
 public class PeerInformation {
-
 	private byte[] ipAddress;
-
 	private Integer portNumber;
-
 	private Short clubNumber;
-
 	private PeerStatus peerStatus;
-
 	private long lastReceivedMessageTimeMilliseconds;
-
 	private long lastSentMessageTimeMilliseconds;
-
 	private int lastSentPacketNumber;
-
 	private int lastReceivedPacketNumber;
-
 	private short unorderPacketNumber;
-
 	private short pingMessageNumber;
-
 	private short requestMessageNumber;
 
 	public PeerInformation() {

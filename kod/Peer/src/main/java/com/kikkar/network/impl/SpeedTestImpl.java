@@ -2,10 +2,7 @@ package com.kikkar.network.impl;
 
 import com.kikkar.network.SpeedTest;
 
-import fr.bmartel.speedtest.SpeedTestReport;
 import fr.bmartel.speedtest.SpeedTestSocket;
-import fr.bmartel.speedtest.inter.ISpeedTestListener;
-import fr.bmartel.speedtest.model.SpeedTestError;
 
 public class SpeedTestImpl implements SpeedTest {
 
@@ -41,26 +38,6 @@ public class SpeedTestImpl implements SpeedTest {
 
 	private void runSpeedTest(boolean testDownloadSpeed, int measureTime) {
 		bitePerSecond = 123456789l;
-		/*
-		speedTestSocket.addSpeedTestListener(new ISpeedTestListener() {
-			@Override
-			public void onCompletion(SpeedTestReport report) {
-				bitePerSecond = report.getTransferRateBit().longValue();
-			}
-
-			@Override
-			public void onError(SpeedTestError speedTestError, String errorMessage) {
-			}
-
-			@Override
-			public void onProgress(float percent, SpeedTestReport report) {
-			}
-		});
-
-		if (testDownloadSpeed)
-			speedTestSocket.startFixedDownload("http://ipv4.ikoula.testdebit.info/100M.iso", measureTime);
-		else
-			speedTestSocket.startFixedUpload("http://ipv4.ikoula.testdebit.info/", 10000000, measureTime);*/
 	}
 
 }

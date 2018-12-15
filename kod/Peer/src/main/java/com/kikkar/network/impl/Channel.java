@@ -1,17 +1,11 @@
 package com.kikkar.network.impl;
 
 public class Channel {
-
 	private Long channelId;
-
 	private Integer chunkSize;
-
 	private Long bitrate;
-
 	private String name;
-
 	private String description;
-
 	private String ipAddress;
 
 	public Long getChannelId() {

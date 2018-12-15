@@ -3,7 +3,6 @@ package com.kikkar.global;
 import java.util.TimeZone;
 
 public class ClockSingleton {
-
 	private static ClockSingleton firstInstance;
 	private Long offsetValue;
 	private TimeZone timeZone;

@@ -21,7 +21,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.net.ntp.NTPUDPClient;
 
@@ -91,27 +90,15 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 		Pair<String, PacketWrapper> packetPair = null;
 		while (true) {
-			// Zakomentarisano jer pri testiranju ima jako malo parnjaka pa preterano
-			// opterecuje server
-			/*
-			 * if (!hasNotContactedPeer()) { contactServerForMorePeers(); }
-			 */
+			if (!hasNotContactedPeer()) { 
+				contactServerForMorePeers(); 
+			}
+			 
 			congestionControl();
 			keepAliveUploadConnection();
 			maintainClubsConnection();
 
 			packetPair = peerConnector.getPacketsWaitingForProcessing();
-/*
-			System.out.println("Paket od " + packetPair.getLeft());
-			System.out.println(packetPair.getRight());
-			System.out.println("Download kon: ");
-			peerList.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.DOWNLOAD_CONNECTION))
-					.map(PeerInformation::getIpAddress).map(String::new).forEach(System.out::println);
-			System.out.println("Upload kon: ");
-			peerList.stream().filter(p -> p.getPeerStatus().equals(PeerStatus.UPLOAD_CONNECTION))
-					.map(PeerInformation::getIpAddress).map(String::new).forEach(System.out::println);
-			//peerList.stream().map(p -> p.getIpAddress()).map(String::new).forEach(System.out::println);
-*/
 			if (packetPair == null) {
 				System.err.println("null packet");
 			} else if (!checkPackageNumberASCOrder(packetPair)) {
@@ -515,7 +502,6 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		}
 	}
 
-	// TODO: RASTAVI NA DVE METODE
 	@Override
 	public void sendToClub(PacketWrapper.Builder wrap, PeerStatus peerStatus, int clubNum) {
 		if (clubNum == -1) {

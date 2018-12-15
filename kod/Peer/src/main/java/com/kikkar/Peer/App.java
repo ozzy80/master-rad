@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -30,17 +31,12 @@ import com.kikkar.schedule.impl.UploadSchedulerSourceImpl;
 import com.kikkar.video.SourceVideoLoader;
 import com.kikkar.video.impl.SourceVideoLoaderImpl;
 import com.kikkar.video.impl.VLCPlayer;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-
-import uk.co.caprica.vlcj.binding.LibVlc;
-import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class App {
 
 	public static void main(String[] args) throws Exception {
-		// final PrintStream pst = new PrintStream("error.txt");
-		// Constants.setErrorPrintIntoFile(pst);
+		final PrintStream pst = new PrintStream("error.txt");
+		Constants.setErrorPrintIntoFile(pst);
 		JFrame frame = new JFrame();
 
 		Canvas canvas = new Canvas();

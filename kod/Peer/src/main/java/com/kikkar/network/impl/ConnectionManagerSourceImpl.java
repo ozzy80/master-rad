@@ -1,8 +1,5 @@
 package com.kikkar.network.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -11,7 +8,6 @@ import com.kikkar.global.Constants;
 import com.kikkar.packet.ConnectionType;
 import com.kikkar.packet.PacketWrapper;
 import com.kikkar.packet.Pair;
-import com.kikkar.packet.PingMessage;
 
 public class ConnectionManagerSourceImpl extends ConnectionManagerImpl {
 	private ScheduledExecutorService executor;
