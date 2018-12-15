@@ -63,10 +63,8 @@ public class PeerInformationManagerImpl implements PeerInformationManager {
 		}
 	}
 
-	// TODO Odkomentarisi kad se povezu parnjaci
 	@Scheduled(fixedRate = 1000000)
-	private void helloWorld() {
-		System.out.println("aaaaaaaaa" + new Date());
-		// peerInformationDao.deleteDeadPeers(10l);
+	private void deleteDeadPeers() {
+		peerInformationDao.deleteDeadPeers(10l);
 	}
 }

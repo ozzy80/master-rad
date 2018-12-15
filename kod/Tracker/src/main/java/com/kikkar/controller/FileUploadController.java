@@ -19,14 +19,13 @@ public class FileUploadController {
 	@Autowired
 	private ChannelManager channelManager;
 
-	// Handling file upload request
 	@PostMapping("/channel/fileUpload")
 	public ResponseEntity<Object> fileUpload(@RequestParam(value = "name", required = true) String channelName,
 			@RequestParam(value = "chunkSize", required = true) Integer chunkSize,
 			@RequestParam(value = "bitrate", required = true) Long bitrate,
 			@RequestParam(value = "description", required = false) String description,
 			@RequestParam("file") MultipartFile file) throws IOException {
-
+		
 		Channel channel = new Channel();
 		channel.setName(channelName);
 		channel.setChunkSize(chunkSize);
@@ -44,6 +43,5 @@ public class FileUploadController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file");
 		}
-
 	}
 }

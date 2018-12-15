@@ -68,7 +68,6 @@ public class PeerConnectionController {
 
 		Short token = (short) ThreadLocalRandom.current().nextInt(Short.MIN_VALUE, Short.MAX_VALUE);
 		String ip = peerConnectionMenager.getClientIp(request);
-		System.out.println("*****************************" + ip);
 		tokenManager.addToken(token, ip);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
 	}

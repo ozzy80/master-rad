@@ -52,27 +52,6 @@ public class ChannelManagerImpl implements ChannelManager {
 	}
 
 	public String getServerIpAddress() throws UtilityException, IOException, MessageAttributeParsingException {
-		/*
-		 * MessageHeader sendMH = new
-		 * MessageHeader(MessageHeader.MessageHeaderType.BindingRequest); ChangeRequest
-		 * changeRequest = new ChangeRequest();
-		 * sendMH.addMessageAttribute(changeRequest);
-		 * 
-		 * byte[] data = sendMH.getBytes();
-		 * 
-		 * DatagramSocket s = new DatagramSocket(); DatagramPacket p = new
-		 * DatagramPacket(data, data.length, InetAddress.getByName("stun.l.google.com"),
-		 * 19302); s.setReuseAddress(true); s.send(p);
-		 * 
-		 * DatagramPacket rp; rp = new DatagramPacket(new byte[32], 32); s.receive(rp);
-		 * 
-		 * MessageHeader receiveMH = new
-		 * MessageHeader(MessageHeader.MessageHeaderType.BindingResponse);
-		 * receiveMH.parseAttributes(rp.getData()); MappedAddress ma = (MappedAddress)
-		 * receiveMH.getMessageAttribute(MessageAttributeType.MappedAddress);
-		 * 
-		 * return ma.getAddress().toString();
-		 */
 		return InetAddress.getLocalHost().getHostAddress();
 	}
 
@@ -102,9 +81,9 @@ public class ChannelManagerImpl implements ChannelManager {
 				extension = file.getOriginalFilename().substring(i);
 			}
 
+			String currentDir = System.getProperty("user.dir");
 			BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(
-					"C:\\Users\\Ozzy\\git\\master-rad\\Tracker\\src\\main\\webapp\\WEB-INF\\resources\\img\\channel",
-					channelName + extension)));
+					currentDir + "\\src\\main\\webapp\\WEB-INF\\resources\\img\\channel", channelName + extension)));
 			outputStream.write(file.getBytes());
 			outputStream.flush();
 			outputStream.close();
@@ -113,7 +92,6 @@ public class ChannelManagerImpl implements ChannelManager {
 		} else {
 			return false;
 		}
-
 	}
 
 }
