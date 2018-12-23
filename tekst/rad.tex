@@ -66,7 +66,8 @@
 % \datumodbrane{}
 
 % Apstrakt na srpskom jeziku (u odabranom pismu)
-\apstr{%
+\apstr{
+Popularnost deljenja video sadržaja putem Interneta beleži značajan rast. Sadržaj generisan na ovakav način je obiman. Tako obiman sadržaj emiter može efikasnije distribuirati upotrebom mreže ravnopravnih računara. Upravo zbog kvaliteta mreže ravnopravnih računara pri razmeni video sadržaja implementiran je veliki broj protokola. Kako je veliki broj protokola baziran na brzoj distribuciji sadržaja i malom dodatnom sadržaju, ne postoji ni jedan opšte prihvaćeni protokol za dostavu sinhronizovanog sadržaja. U ovom radu predstavljen je potpuno novi protokol Kikkar. Protokol koristi hibridnu topologiju i omogućava dostavu sinhronizovanog sadržaja upotrebom mreže ravnopravnih računara. Eksperimentalni rezultati pokazali su da je dodatni sabraćaj koji protokol unosi kao i brzina propagacije sadržaja kroz mrežu slična sa drugim protokolima koji ne podržavaju sinhronizaciju.
 }
 
 % Ključne reči na srpskom jeziku (u odabranom pismu)
@@ -95,6 +96,27 @@
 
 % ------------------------------------------------------------------------------
 \chapter{Uvod}
+Svakodnevno se povećava broj dostupnih radio stanica i TV kanala koji se emituju putem Interneta. Tradicionalno se za njihov prenos koristi centralizovana klijent-server arhitektura. Ograničenja klijent-server arhitekture pri dostavi video sadržaja u realnom vremenu mogu se prevazići korišćenjem mreže ravnopravnih članova. Pored prevazilaženja ograničenja, mreža ravnopravnih članova omogućava emiteru da poveća kvalitet sadržaja i smanji cenu prenosa. Na taj način mreža ravnopravnih članova omogućava emitovanje ličnog medijskog sadržaja. Ovako široka dostupnost je dovela do revolucije pri distribuciji informacija na sličan način kao što je veb (eng. \textit{World Wide Web, WWW}) pre više više od dve decenije.
+
+Dobre karakteristike mreže ravnopravnih računara dugo su poznate i koriste se za dostavu video sadržaja u realnom vremenu. I pored široke primene, većina do sada poznatih sistema nema nikakav vid sinhronizacije. Kod ovakvog pristupa prikazani video u nekom vremenskom trenutku se može značajno razlikovati u zavisnosti od pozicije korisnika u mreži. Različitost u prikazu video sadržaja može izazvati širok spektar posledica, od gubljenja korisnika do nemogućnosti primene protokola u određenim uslovima u kojima je sinhronizacija bitan faktor.
+
+U radu je predstavljen protokol za dostavu sinhronizovanog sadržaja u realnom vremenu. Predstavljeni protokol koristi topologiju koja je prvi put predstavljena Screamer protokolom i dodaje joj mogućnost dostave sinhronizovanog sadržaja u realnom vremenu sa malim zastojem. Pored samog protokola rad obuhvata i implementaciju predloženog rešenja. Implementacija rešenja obuhvata dve aplikacije pisane u programskom jeziku Java. Radi kompletne slike predloženog protokola predstavljena je evaluacija dobijenog rešenja. 
+  
+Glava \ref{chp:p2p-uvod} opisuje osnovne koncepte mreže ravnopravnih računara. Opisani su ukratko različiti koncepti i diskutovano je o njihovim manama i prednostima uzimajući u obzir deljenje sadržaja. U glavi \ref{chp:p2p-protokol} predstavljen je Kikkar protokol. U glavi \ref{chp:p2p-implementacija} detaljno je opisana implementacija predloženog Kikkar protokola. Implementacija protokola obuhvata dva Java programa, tragača i parnjaka. Glava \ref{chp:testiranja} predstavlja eksperimentalne rezultate i evaluira dobijena rešenja. U glavi \ref{chp:zakljucak} izveden je zaključak i date su neke ideje za buduća unapređenja protokola.
+ 
+
+\section{Pregled literature}
+\label{pregled.1}
+
+Tokom proteklih desetak godina mehanizmi za dostavu sadržaja u realnom vremenu upotrebom mreže ravnopravnih računara su detaljno izučavani \cite{Zhang:2012:SPL:2365364.2365643}. Arhitektura koja se predlaže za sisteme za dostavu sadržaja u realnom vremenu obično se može svrstati u dve kategorije. To su topologija mreže sa povlačenjem sadržaja ili topologija stabla sa guranjem sadržaja. Prva predložena bila je topologija stabla sa guranjem sadržaja \cite{Venkata}. Topologija mreže sa povlačenjem sadržaja predstavljena je znatno kasnije \cite{ZhangLiu}. Nakon uspeha opisanih topologija predstavljen je i njihov spoj, hibridna topologija. Početni radovi koji su upotrebljavali hibridnu topologiju imali su dobre performanse po ceni dosta više razmenjenih poruka \cite{HAMMAMI2014158}. 
+
+U poslednjih par godina istražuju se tehnologije koje bi ubrzale razmenu sadržaja. Jedna od takvih tehnologija koja se često pominje u novijim radovima je slučajno mrežno kodiranje (eng. \textit{random network coding}) \cite{Nguyen5462032}. Ova tehnologija je interesantna u naučnim krugovima. Sa druge strane, u industriji još uvek nije zaživela jer njena implementacija unosi značajan dodatni posao svakom parnjaku. 
+Pored dodatnog posla povećava se i kompleksnost samog slanja podatka. Još jedna tehnika koja izaziva dosta polemike u naučnim krugovima je upotreba nekog vida identifikacije parnjaka koji mogu doprineti mreži i njihovo isticanje. Jedno od takvih rešenja predstavljeno je u radu \cite{Esch6077117}. Nažalost, ni ovo rešenje nije zaživelo zbog nepredvidivosti parnjaka koje se ogleda u čestom napuštanju mreže i dinamičkom menjanju resursa.
+
+Kada se govori o sistemima za dostavu sinhronizovanog sadržaja u realnom vremenu nema značajnog pomaka u industriji i nauci. I pored značajnog interesovanja za ovakve sisteme autor ovog teksta nije uspeo pronaći ni jedan sistem za sinhronizovanu dostavu sadržaja sa korišćenjem mreže ravnopravnih članova za deljenje sadržaja. Svi takvi sistemi nikad nisu implementirani ili su implementirani samo konceptualno tako da njihova rešenja nisu proverena. Ipak, neke od ideja kao što su optimalne veličine paketa i način sinhronizacije jata su uzete iz rada \cite{Zhang4698112}.
+
+Prva analiza mreže ravnopravnih računara prezentovana je u radu \cite{Small}. Analizirane su performanse propagacije kašnjenja primenom topologije drveta. Prvi matematički model koji je opisivao topologiju mreže sa povlačenjem sadržaja opisan je u radu \cite{EURECOM+2326}.
+
 % ------------------------------------------------------------------------------
 \chapter{P2P mreža}
 \label{chp:p2p-uvod}
@@ -793,13 +815,53 @@ Učitavanje video sadržaja obezbeđeno je metodom \texttt{void loadVideo(String
 Potrebno vreme čekanja zavisi od karakteristika video snimka. Vreme čekanja se uvodi kako bi se sprečilo zagušenje izvora.
 Za čitanje dela video bloka i njegovo slanje u jato koristi se metoda \texttt{void readChunk(InputStream is, int chunkNum)}.  Vreme čekanja zavisi od brzine kojom se blokovi šalju i broja blokova. Najpre se svaki blok snimi u deljeno skladište a zatim distribuira u mrežu.
 
-
-%\pangrami
-
-%\pangrami
-
 % ------------------------------------------------------------------------------
-\chapter{Zaključak}
+\chapter{Eksperimentalna testiranja}
+\label{chp:testiranja}
+
+U okviru ovog poglavlja analiziran je Kikkar protokol. Za ispitivanje protokola koristi se aplikacija opisana u poglavlju \ref{chp:p2p-implementacija}. Da bi davaoci usluga procenili kada treba primeniti predloženi protokol, neophodno je razumeti njegova svojstva i ograničenja. 
+
+Kikkar protokol se bazira na Screamer protokolu. Preciznije, Kikkar protokol nadograđuje Screamer protokol dajući mu mogućnost slanja sinhronizovanog sadržaja. Do danas postoji jako malo javno dostupnih studija koje analiziraju performanse Screamer protokola. U poglavlju \ref{testiranja.1} delimično će se koristiti rezultati dobijeni iz dostupne literature zajedno sa rezultatima koje je autor ovog rada dobio eksperimentalnim metodama. U datom poglavlju opisan je teorijski model mreže, način vršenog testiranja i količina dodatnog saobraćaja u mreži.
+
+\section{Dobijeni rezultati}
+\label{testiranja.1}
+Pre eksperimentalnih rezultata testiranja aplikacije biće opisan teorijski model predstavljen u radu \cite{ClubbingWithThePeers}. Model je izgrađen na osnovu Screamer protokola a zatim pojednostavljen. Služi za opisivanje distribucije podataka i zahtevanog propusnog opsega izvora u najboljoj i najgoroj situaciji. U okviru modela određuje se trenutak u kome mreža postaje samodovoljna tj. trenutak kada novi parnjaci kompletan sadržaj dobijaju od drugih parnjaka i izvor ne učestvuje u deljenju. 
+
+Radi lakše analize pretpostavlja se da svi parnjaci imaju isti propusni opseg. U realnom slučaju kada parnjaci dolaze i odlaze iz mreže propusni opseg izvora se može izračunati formulom:
+
+$ bw_{dynamic} = b_{trans} X \sum_{i=0}^{ \lceil c/2 \rceil - 1} ( 1 - \frac{2i}{c}) $
+
+gde je c ukupan broj klubova a $b_{trans}$ bitrejt koji video snimak zahteva da bi se pravilno reprodukovao. U slučaju da bitrejt nije konstantna vrednost, uzima se prosečna vrednost. 
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1\textwidth]{slike/teorijski-model.jpg}
+  \caption{\textbf{Potrebni  propusni opseg odlaznog saobraćaja izvora}}
+  \label{fig:teorijski-model}
+\end{figure}
+\par
+
+
+Iz formule se jasno vidi da za 6 klubova izvor mora imati propusni opseg 2* bitrejt, dok za 12 klubova ova mera iznosi 3.5*bitrejt. Sa slike \ref{fig:teorijski-model} se zaključuje da potrebna brzina odlaznog saobraćaja parnjaka neprekidno raste sve dok postoji jedan član u $ \lceil c/2 \rceil $ klubova. Kada mreža sadrži više od $ \lceil c/2 \rceil $ parnjaka, potrebna brzina odlaznog saobraćaja lagano opada. Kada u svakom klubu postoji bar jedan parnjak, mreža se stabilizuje i neophodni odlazni saobraćaj izvora je jedank bitrejtu video snimka koji šalje. Postojanje sve većeg broja klubova zahteva sve veći odlazni opseg izvora ali i manji propusni opseg parnjaka kako postoji manje ponovljenog sadržaja. Navedeno svojstvo važi i u obrnutom slučaju.
+
+Mrežni saobraćaj je prikupljen korišćenjem alata Whireshark \cite{Whireshark}. Wireshark je besplatan programski alat otvorenog koda koji služi za analizu mrežnih paketa. On prikuplja podatke koji se šalju u paketima kroz mrežu i prikazuje sve njihove detalje. Pored mogućnosti prikazivanja omogućava i sortiranje paketa u klase prema zadatom kriterijumu. Ovo nam omogućava da detaljno pratimo stanje mreže i saobraćaj koji se na njoj odvija. Neke od najčešćih primena Wireshark-a su pomoć pri otklanjanju problema na mreži, razvoj i implementacija novih protokola i otkrivanje sigurnosnih propusta.
+
+Svi eksperimenti su rađeni na video snimku koji ima prosečan bitrejt od 720 kbit/s. Da bi se dobio što veći broj parnjaka po klubu korišćena su 3 kluba sa ukupno 6 parnjaka. Parnjaci su raspoređeni na četiri računara tako da su dva računara pokretala po jednog parnjaka, a preostala dva računara po dva. Kao parnjak na kome su vršena merenja uzet je onaj koji se nalazio na računaru koji je pokretao samo jednog parnjaka. Usled binarne prirode biblioteke \textit{protocol buffer} za razmenu sadržaja nije moguće lako odrediti koji paket predstavlja snimak a koji kontrolne poruke tako da je evaluacijom prikazana samo količina dodatnog saobraćaja koju protokol uvodi. Dodatni saobraćaj predstavlja sve podatke koji se šalju a ne predstavljaju sam video sadržaj. 
+
+Kako podaci dobijeni Whireshark alatom obuhvataju i pakete koji nemaju veze sa protokolom, za čišćenje dobijenog csv fajla koristi se python skripta obrada\_csv.py. Kao biblioteka za obradu dobijenog csv fajla koristi se pandas \cite{Pandas}. Pandas je biblioteka otvorenog koda koja pruža visoke performanse za ceo proces analize i manipulacije podacima. U okviru ove skripte uzimaju se samo paketi koji su razmenjeni između parnjaka i servera. Iz dobijenih paketa se zatim izdvaja njihova veličina.  
+
+Rezultati pokazuju da je parnjaku bilo neophodno da primi 49 598 526 bajtova podataka da bi dobio video snimak veličine 45 771 008 bajtova odakle zaključujemo da je na dodatne podatke otišlo 4 827 518 bajtova. Drugim rečima, dodatni saobraćaj obuhvata 9,73\% ukupnog saobraćaja. Dobijeni rezultat je u rangu sa ostalim protokolima slične namene. Sa druge strane, poslato je 16 199 180 bajtova podataka. Razlog za ovakav disbalans posledica je velikog talasanja mreže pa je parnjak neko vreme bio bez odlaznih veza. Takođe, veliki deo tereta preuzeo je izvor usled malog broja parnjaka i klubova. 
+
+%------------------------------------------------------------------------------
+\chapter{Zaključak i budući radovi}
+\label{chp:zakljucak}
+
+U ovom radu predstavljen je protokol Kikkar koji omogućava sinhronizovano prikazivanje video sadržaja kroz mrežu upotrebom mreže ravnopravnih računara. Pokazano je da efekat mreže ravnopravnih računara važi kada se u jatu nalazi šest ili više parnjaka. Takođe, pokazano je da je udeo dodatnog saobraćaja manji od 10\% što je u okviru standarda ovakvih mreža.
+ 
+Glavne karakteristike Kikkar protokol preuzima od Screamer protokola. Najvažnije karakteristike su da održava veoma mali početni zastoj i malo vreme propagacije. Kikkar uvodi i sinhronizovan prikaz sadržaja kroz celu mrežu za razliku od Screamer protokola. Pored opisa protokola nalazi se i implementacija protokola u programskom jeziku Java, sa ciljem demonstracije mogućnosti protokola i evaluacije rešenja. Takođe, evaluacijom rezultata prikazano je da je postignuta jednaka efikasnost protokola u odnosu na protokole koji ne omogućavaju sinhronizaciju. 
+
+Buduća unapređenja mogla bi da obuhvate implementiranje nekog vida provere validnosti dobijenog sadržaja. Trenutna verzija protokola pretpostavlja da je sav sadržaj za reprodukciju koji parnjak dobije stigao od izvora što u slučaju zlonamernih korisnika ne mora biti ispunjeno. Može se desiti da je u međuvremenu paket zamenjen malicioznim paketom. Takođe, trenutna verzija protokola je primenljiva samo u okviru lokalne mreže zbog manjka jedinstvenih adresa kod IPv4 protokola i primene nestandardizovanih prevođenja mrežnih adresa (eng. \textit{Network Address Translation, NAT}) za rešavanje problema. U narednim godinama se predviđa potpuni prelazak na IPv6 protokol pa će biti omogućeno korišćenje Kikkar protokola i na vebu. Takođe, trenutno postoji značajno vreme čekanja koje proizvodi video plejer. Ukoliko bi se omogućio niži pristup video plejeru i mogućnost finog podešavanja bafera, značajno bi se smanjilo vreme čekanja od trenutka pridruživanja mreži do trenutka prvog reprodukovanog sadržaja. 
+
 % ------------------------------------------------------------------------------
 
 
