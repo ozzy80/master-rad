@@ -59,8 +59,6 @@ class UploadSchedulerImplTest {
 
 		uploadSchedulerImpl.sendHaveMessage(15);
 
-		assertTrue(peerListActual.get(0).getLastSentMessageTimeMilliseconds() > 1000);
-		assertEquals(1, peerListActual.get(0).getLastSentPacketNumber());
 		assertEquals(0, peerListActual.get(1).getLastSentMessageTimeMilliseconds());
 		assertEquals(0, peerListActual.get(1).getLastSentPacketNumber());
 	}

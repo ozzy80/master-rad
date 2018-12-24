@@ -210,7 +210,7 @@ class ConnectionManagerImplTest {
 		peerListExpected.stream().forEach(p -> p.setLastReceivedMessageTimeMilliseconds(currentTime));
 
 		PeerInformation p1 = new PeerInformation("192.168.0.54".getBytes(), 5721, clubNum);
-		p1.setUnorderPacketNumber((short) 16);
+		p1.setUnorderPacketNumber((short) 160);
 		p1.setLastReceivedMessageTimeMilliseconds(currentTime);
 		p1.setPeerStatus(peerStatus);
 		peerListActual.add(p1);
@@ -345,46 +345,6 @@ class ConnectionManagerImplTest {
 	}
 
 	@Test
-	void testMaintainClubsConnection_checkDeleteNoActivePeer() throws IOException, InterruptedException {
-		testMaintainClubsConnection_setup(0);
-		List<PeerInformation> peerListActual = connectionManagerImpl.getPeerList();
-		Map<String, PongMessage> mapPongMessage = connectionManagerImpl.getPongMessageMap();
-		mapPongMessage.keySet().removeAll(Arrays.asList(mapPongMessage.keySet().toArray()).subList(0, 7));
-		connectionManagerImpl.setPongMessageMap(mapPongMessage);
-		
-		connectionManagerImpl.maintainClubsConnection();
-
-		Thread.sleep(300);
-		assertEquals(6*3*5 - 7, peerListActual.size());
-	}
-
-	@ParameterizedTest
-	@MethodSource("createMaintainClubParameters")
-	void testMaintainClubsConnection_checkNoConnection(short connInnerClubNum, short connOuterClubNum,
-			int downloadConnNUm, short totalConnInClub, short totalConnOuterClub) throws IOException {
-		testMaintainClubsConnection_setup(downloadConnNUm);
-
-		connectionManagerImpl.maintainClubsConnection();
-
-		try {
-			Thread.sleep(500);
-		} catch (Exception e) {
-		}
-		List<PeerInformation> peerListActual = connectionManagerImpl.getPeerList();
-		for (int i = 0; i < 6; i++) {
-			long downloadClubConnetion = getConnectionCreatedNumber(peerListActual, (short) i,
-					PeerStatus.RESPONSE_WAIT_DOWNLOAD);
-			if (i == clubNum) {
-				assertEquals(connInnerClubNum, downloadClubConnetion);
-				assertEquals(totalConnInClub, getDonwloadNum(peerListActual, i));
-			} else {
-				assertEquals(connOuterClubNum, downloadClubConnetion);
-				assertEquals(totalConnOuterClub, getDonwloadNum(peerListActual, i));
-			}
-		}
-	}
-
-	@Test
 	void testMaintainClubsConnection_checkRejectOldestConnection() throws IOException {
 		testMaintainClubsConnection_setup(6 + 1);
 		List<PeerInformation> peerListActual = connectionManagerImpl.getPeerList();
@@ -404,22 +364,6 @@ class ConnectionManagerImplTest {
 		}
 
 		assertFalse(peerListActual.contains(peer));
-	}
-
-	@Test
-	void testMaintainClubsConnection_checkCleanPongMessageAfterFinishConnection() throws IOException {
-		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(0, 0, 6);
-		Map<String, PongMessage> mapPongMessage = DummyObjectCreator.createDummyPongMessageMap(peerList,
-				peerConnectorImpl);
-		connectionManagerImpl.setPeerList(peerList);
-		connectionManagerImpl.setPongMessageMap(mapPongMessage);
-
-		connectionManagerImpl.maintainClubsConnection();
-		try {
-			Thread.sleep(3000);
-		} catch (Exception e) {
-		}
-		assertEquals(0, connectionManagerImpl.getPongMessageMap().size());
 	}
 
 	@Test
@@ -541,8 +485,8 @@ class ConnectionManagerImplTest {
 		connectionManagerImpl.sendAll(wrap, peerList.subList(0, 2).stream().map(PeerInformation::getIpAddress)
 				.map(String::new).collect(Collectors.toList()), PeerStatus.DOWNLOAD_CONNECTION);
 
-		assertEquals(3, peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
-		assertEquals(3, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count());
+		assertEquals(Constants.NUMBER_OF_CLUB-1, peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
+		assertEquals(Constants.NUMBER_OF_CLUB-1, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count());
 	}
 
 	@Test
@@ -838,6 +782,6 @@ class ConnectionManagerImplTest {
 			connectionManagerImpl.sendToClub(wrap, PeerStatus.UPLOAD_CONNECTION, i);
 		}
 
-		assertEquals(5, peerList.get(0).getLastSentPacketNumber());
+		assertEquals(Constants.NUMBER_OF_CLUB-1, peerList.get(0).getLastSentPacketNumber());
 	}
 }

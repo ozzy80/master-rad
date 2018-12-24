@@ -93,27 +93,6 @@ class ConnectionManagerSourceImplTest {
 				.count();
 	}
 
-	@ParameterizedTest
-	@MethodSource("createMaintainClubParameters")
-	void testMaintainClubsConnection_checkNoConnection(short clubConnNum, int uploadConnNUm, short totalClubConn)
-			throws IOException {
-		testMaintainClubsConnection_setup(uploadConnNUm);
-		List<PeerInformation> peerList = connectionManagerImpl.getPeerList();
-
-		connectionManagerImpl.maintainClubsConnection();
-
-		try {
-			Thread.sleep(600);
-		} catch (Exception e) {
-		}
-
-		for (int i = 0; i < Constants.NUMBER_OF_CLUB; i++) {
-			long uploadClubConnetion = getConnectionCreatedNumber(peerList, (short) i);
-			assertEquals(clubConnNum, uploadClubConnetion, "Error on pass " + i);
-			assertEquals(totalClubConn, getUploadNum(peerList, i), "Error on pass " + i);
-		}
-	}
-
 	@Test
 	void testMaintainClubsConnection_checkDeleteNoActivePeer() throws IOException, InterruptedException {
 		testMaintainClubsConnection_setup(0);
@@ -169,11 +148,10 @@ class ConnectionManagerSourceImplTest {
 
 		connectionManagerImpl.processPacket(packetPair);
 
-		assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
+		assertEquals(PeerStatus.RESPONSE_WAIT_UPLOAD, peer.getPeerStatus());
 		assertTrue(peer.getLastReceivedMessageTimeMilliseconds() > 1000);
 		assertEquals(1, peer.getRequestMessageNumber());
-		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
-		assertEquals(2, peer.getLastSentPacketNumber());
+		assertEquals(1, peer.getLastSentPacketNumber());
 		assertEquals(0, peer.getUnorderPacketNumber());
 	}
 
@@ -189,7 +167,7 @@ class ConnectionManagerSourceImplTest {
 
 		connectionManagerImpl.processPacket(packetPair);
 
-		assertEquals(PeerStatus.RESPONSE_WAIT_DOWNLOAD, peer.getPeerStatus());
+		assertEquals(PeerStatus.UPLOAD_CONNECTION, peer.getPeerStatus());
 	}
 
 	@Test
@@ -304,9 +282,7 @@ class ConnectionManagerSourceImplTest {
 		connectionManagerImpl.processPacket(packetPair);
 
 		assertEquals(0, peer.getRequestMessageNumber());
-		assertEquals(PeerStatus.DOWNLOAD_CONNECTION, peer.getPeerStatus());
-		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
-		assertEquals(1, peer.getLastSentPacketNumber());
+		assertEquals(PeerStatus.RESPONSE_WAIT_DOWNLOAD, peer.getPeerStatus());
 	}
 
 	@Test

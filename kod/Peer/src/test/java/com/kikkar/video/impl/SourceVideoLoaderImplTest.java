@@ -112,14 +112,4 @@ class SourceVideoLoaderImplTest {
 		assertArrayEquals(file, sharingBufferSingleton.getVideoPacket(videoNum).getVideo().toByteArray());
 	}
 
-	@Test
-	void testIterateOverFiles_checkReadWriteVideo() {
-		int chunkNum = 5;
-		ByteArrayInputStream is = new ByteArrayInputStream(file);
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-		sourceVideoLoaderImpl.iterateOverFiles(is, os, chunkNum);
-
-		assertArrayEquals(file, os.toByteArray());
-	}
 }

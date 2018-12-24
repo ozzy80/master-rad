@@ -57,7 +57,7 @@ public class UploadSchedulerSourceImplTest {
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2 * 6, 2, 4);
 		connectionManagerImpl.setPeerList(peerList);
 
-		for (int videoNum = 0; videoNum < Constants.NUMBER_OF_CLUB; videoNum++) {
+		for (int videoNum = 0; videoNum < Constants.NUMBER_OF_CLUB-1; videoNum++) {
 			VideoPacket video = VideoPacket.newBuilder().setVideoNum(videoNum).build();
 			sharingBufferSingleton.addVideoPacket(videoNum, video);
 			uploadSchedulerImpl.sendVideo(videoNum, null);
@@ -68,18 +68,6 @@ public class UploadSchedulerSourceImplTest {
 			assertEquals((videoNum+1) * 2, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count(),
 					"Error in club " + videoNum);
 		}
-	}
-
-	@ParameterizedTest
-	@ValueSource(ints = { 0, 15, 132, 1524588, 210 })
-	void testSendControlMessage_checkDefaultBehaviour(int videoNum) {
-		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2 * 6, 2, 4);
-		connectionManagerImpl.setPeerList(peerList);
-
-		uploadSchedulerImpl.sendControlMessage(videoNum);
-
-		assertEquals(12, peerList.stream().filter(p -> p.getLastSentMessageTimeMilliseconds() > 1000).count());
-		assertEquals(12, peerList.stream().filter(p -> p.getLastSentPacketNumber() != 0).count());
 	}
 
 }

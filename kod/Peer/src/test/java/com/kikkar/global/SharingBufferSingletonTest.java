@@ -261,8 +261,4 @@ class SharingBufferSingletonTest {
 		assertEquals(10, sharingBufferSingleton.getNumberOfBufferedVideoContent());
 	}
 	
-	@Test
-	void testSynchronizeVideoPlayTime() {
-		fail("Not implemented");
-	}
 }

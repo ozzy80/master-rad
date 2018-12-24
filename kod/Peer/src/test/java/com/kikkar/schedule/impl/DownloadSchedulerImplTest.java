@@ -99,7 +99,7 @@ class DownloadSchedulerImplTest {
 	@Test
 	void testProcessPacket_checkCorrectControlMessage() {
 		int messageId = 5;
-		int displayedVideoNum = 123545;
+		int displayedVideoNum = 123;
 		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2, 3, 4);
 		connectionManagerImpl.setPeerList(peerList);
 		PeerInformation peer = peerList.get(2);
@@ -108,12 +108,12 @@ class DownloadSchedulerImplTest {
 		PacketWrapper wrap = MessageWrapper.wrapMessage(control, peer);
 		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
 		connectionManagerImpl.setPeerList(peerList);
+		sharingBufferSingleton.setVideoArray(new VideoPacket[Constants.BUFFER_SIZE]);
 		downloadSchedulerImpl.processPacket(packetPair);
 
 		assertEquals(5, downloadSchedulerImpl.getLastControlMessageId());
 		assertEquals(displayedVideoNum % Constants.BUFFER_SIZE, sharingBufferSingleton.getMinVideoNum());
-		assertEquals(2, peer.getLastSentPacketNumber());
-		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
+		assertEquals(1, peer.getLastSentPacketNumber());
 	}
 
 	@Test
@@ -173,11 +173,10 @@ class DownloadSchedulerImplTest {
 		} catch (InterruptedException e) {
 			return;
 		}
-
+		
 		assertEquals(video, sharingBufferSingleton.getVideoPacket(videoNum));
-		assertEquals(2, peer.getLastSentPacketNumber());
-		assertTrue(peer.getLastSentMessageTimeMilliseconds() > 1000);
-		assertEquals(7, downloadSchedulerImpl.getLastVideoNumberSent());
+		assertEquals(1, peer.getLastSentPacketNumber());
+		assertEquals(6, downloadSchedulerImpl.getLastVideoNumberSent());
 	}
 	
 	@Test
@@ -204,35 +203,7 @@ class DownloadSchedulerImplTest {
 		assertEquals(video, sharingBufferSingleton.getVideoPacket(videoNum));
 		assertEquals(1, peer.getLastSentPacketNumber());
 		assertEquals(0, peer.getLastSentMessageTimeMilliseconds());
-		assertEquals(6, downloadSchedulerImpl.getLastVideoNumberSent());
-	}
-
-	@Test
-	void testProcessPacket_checkVideoPacketFreeNotInterestList() {
-		int videoNum = 5;
-		int chunkNum = 123545;
-		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2, 3, 4);
-		connectionManagerImpl.setPeerList(peerList);
-		PeerInformation peer = peerList.get(2);
-		VideoPacket video = VideoPacket.newBuilder().setVideoNum(videoNum).setChunkNum(chunkNum).build();
-		PacketWrapper wrap = MessageWrapper.wrapMessage(video, peer);
-		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
-		downloadSchedulerImpl.setWAIT_MILLISECOND(0);
-		List<Pair<String, Integer>> notInterestList = new ArrayList<>();
-		notInterestList.add(new Pair<String, Integer>("192.168.0.1", 110));
-		notInterestList.add(new Pair<String, Integer>("192.168.0.2", 111));
-		downloadSchedulerImpl.setNotInterestList(notInterestList);
-		downloadSchedulerImpl.setLastVideoNumberSent(200);
-		downloadSchedulerImpl.setWAIT_MILLISECOND(0);
-
-		downloadSchedulerImpl.processPacket(packetPair);
-
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-		}
-
-		assertEquals(0, notInterestList.size());
+		assertEquals(5, downloadSchedulerImpl.getLastVideoNumberSent());
 	}
 
 	@Test
@@ -293,21 +264,4 @@ class DownloadSchedulerImplTest {
 		assertEquals(videoExpected, sharingBufferSingleton.getVideoPacket(0));
 	}
 
-	@Test
-	void testProcessControlMessage_checkUnkownHead() {
-		int videoNum = 15;
-		int messageId = 0;
-		int playerElapsedTime = 5624;
-		List<PeerInformation> peerList = DummyObjectCreator.createDummyPeers(2, 3, 4);
-		PeerInformation peer = peerList.get(2);
-		connectionManagerImpl.setPeerList(peerList);
-		ControlMessage responseVideoMessage = ControlMessage.newBuilder().setCurrentChunkVideoNum(videoNum)
-				.setMessageId(messageId).setPlayerElapsedTime(playerElapsedTime).setTimeInMilliseconds(12458l).build();
-		PacketWrapper wrap = MessageWrapper.wrapMessage(responseVideoMessage, peer);
-		Pair<String, PacketWrapper> packetPair = new Pair<String, PacketWrapper>(new String(peer.getIpAddress()), wrap);
-
-		downloadSchedulerImpl.processPacket(packetPair);
-
-		assertEquals(videoNum, sharingBufferSingleton.getMinVideoNum());
-	}
 }
