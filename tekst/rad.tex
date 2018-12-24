@@ -71,7 +71,7 @@ Popularnost deljenja video sadržaja putem Interneta beleži značajan rast. Sad
 }
 
 % Ključne reči na srpskom jeziku (u odabranom pismu)
-\kljucnereci{P2P mreža, deljenje video sadržaja, sinhronizovano deljenje sadržaja, P2P protokol, deljenje u realnom vremenu, decentralizovana razmena podataka}
+\kljucnereci{P2P mreža, deljenje video sadržaja, deljenje sinhronizovanog sadržaja, P2P protokol, deljenje u realnom vremenu, decentralizovana razmena podataka}
 
 \begin{document}
 % ==============================================================================
@@ -100,7 +100,7 @@ Svakodnevno se povećava broj dostupnih radio stanica i TV kanala koji se emituj
 
 Dobre karakteristike mreže ravnopravnih računara dugo su poznate i koriste se za dostavu video sadržaja u realnom vremenu. I pored široke primene, većina do sada poznatih sistema nema nikakav vid sinhronizacije. Kod ovakvog pristupa prikazani video u nekom vremenskom trenutku se može značajno razlikovati u zavisnosti od pozicije korisnika u mreži. Različitost u prikazu video sadržaja može izazvati širok spektar posledica, od gubljenja korisnika do nemogućnosti primene protokola u određenim uslovima u kojima je sinhronizacija bitan faktor.
 
-U radu je predstavljen protokol za dostavu sinhronizovanog sadržaja u realnom vremenu. Predstavljeni protokol koristi topologiju koja je prvi put predstavljena Screamer protokolom i dodaje joj mogućnost dostave sinhronizovanog sadržaja u realnom vremenu sa malim zastojem. Pored samog protokola rad obuhvata i implementaciju predloženog rešenja. Implementacija rešenja obuhvata dve aplikacije pisane u programskom jeziku Java. Radi kompletne slike predloženog protokola predstavljena je evaluacija dobijenog rešenja. 
+U radu je predstavljen protokol za dostavu sinhronizovanog sadržaja u realnom vremenu. Predstavljeni protokol koristi topologiju koja je prvi put predstavljena Screamer protokolom i dodaje joj mogućnost dostave sinhronizovanog sadržaja u realnom vremenu sa malom zadrškom. Pored samog protokola rad obuhvata i implementaciju predloženog rešenja. Implementacija rešenja obuhvata dve aplikacije pisane u programskom jeziku Java. Radi kompletne slike predloženog protokola predstavljena je evaluacija dobijenog rešenja. 
   
 Glava \ref{chp:p2p-uvod} opisuje osnovne koncepte mreže ravnopravnih računara. Opisani su ukratko različiti koncepti i diskutovano je o njihovim manama i prednostima uzimajući u obzir deljenje sadržaja. U glavi \ref{chp:p2p-protokol} predstavljen je Kikkar protokol. U glavi \ref{chp:p2p-implementacija} detaljno je opisana implementacija predloženog Kikkar protokola. Implementacija protokola obuhvata dva Java programa, tragača i parnjaka. Glava \ref{chp:testiranja} predstavlja eksperimentalne rezultate i evaluira dobijena rešenja. U glavi \ref{chp:zakljucak} izveden je zaključak i date su neke ideje za buduća unapređenja protokola.
  
@@ -272,7 +272,7 @@ Protokol Kikkar \footnote{Kikkar (hebrejski kružni okrug, kompletna težina)} j
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=1.05\textwidth]{slike/screamer-topology.jpg}
-  \caption{Screamer topologija}
+  \caption{Screamer topologija (slika je preuzeta iz rada \cite{ClubbingWithThePeers})}
   \label{fig:screamer-topologija}
 \end{figure}
 \par
@@ -330,7 +330,7 @@ Nakon dodeljivanja bloka klubu čeka se vreme slanja. Vreme čekanja odgovara uk
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=1.05\textwidth]{slike/distribucija-jato.jpg}
-  \caption{Distribucija sadržaja od izvora ka korisnicima}
+  \caption{Distribucija sadržaja od korisnika ka korisnicima}
   \label{fig:distribucija-izvor}
 \end{figure}
 \par
@@ -478,7 +478,7 @@ Spring je nastao 2002. godine sa idejom omogućavanja lake manipulacije velikih 
 
 Prilikom razvoja korisničke aplikacije jedna od ključnih stvari je razdvajanje sadržaja od prezentacije. Kako bismo ovo postigli na veb-u koristimo MVC arhitekturu. Glavni akcenat ovakve arhitekture je podela odgovornosti između različitih slojeva. Aplikacija je podeljena na tri glavne komponente i svaka od njih obavlja različite zadatke. Model je prva komponenta. On predstavlja internu reprezentaciju podataka. Sadrži glavne programske podatke kao što su informacije o objektima iz baze. Druga komponenta je pogled. Ova komponenta omogućava korisniku interfejs preko kog može da komunicira sa aplikacijom i prikazuje korisniku stanje modela. Treća komponenta je kontrolor. Glavna odgovornost kontrolora je upravljanje korisničkim zahtevima i iniciranje aktivnosti na nivou modela i promene na pogledu. 
 
-Komunikacija sa bazom podataka urađena je uz pomoć Hibernate \cite{Hibernate}. Hibernate je programski okvir za objektno-relaciono mapiranje u Java programskom jeziku. Njegova glavna svrha je mapiranje objektno-orijentisanog modela u model relacione baze podataka radi lakše manipulacije podacima i održavanja koda. Mapiranje se postiže povezivanjem Java klasa i tabela baze podataka i mapiranjem Java tipova podataka u SQL tipove podataka. Povezivanje Java klasa i tabela baze podataka vrši se korišćenjem Java anotacija. Pretraga upita vrši se uz pomoć objektno orijentisane verzije SQL-a koja se zove HQL (eng. \textit{Hibernate Query Language, HQL}). HQL nam omogućava pisanje upita nad Java objektima, a to znači da su upiti nezavisni od tipa baze podataka. Ukoliko projekat zahteva promenu tipa baze podataka, neće biti potrebe za menjanjem upita unutar projekta. Za sam pristup MySQL bazi koristi se MySQL konektor. 
+Komunikacija sa bazom podataka urađena je uz pomoć Hibernate \cite{Hibernate}. Hibernate je programski okvir za objektno-relaciono mapiranje u Java programskom jeziku. Njegova glavna svrha je mapiranje objektno-orijentisanog modela u model relacione baze podataka radi lakše manipulacije podacima i održavanja koda. Mapiranje se postiže povezivanjem Java klasa i tabela baze podataka i mapiranjem Java tipova podataka u SQL tipove podataka. Povezivanje Java klasa i tabela baze podataka vrši se korišćenjem Java anotacija. Pretraga upita vrši se uz pomoć objektno orijentisane verzije SQL-a koja se zove HQL (eng. \textit{Hibernate Query Language, HQL}). HQL nam omogućava pisanje upita nad Java objektima, a to znači da su upiti nezavisni od tipa baze podataka. Ukoliko dođe do zamene tipa baze podataka u okviru projekta, neće biti potrebno menjati upite. Za sam pristup MySQL bazi koristi se MySQL konektor. 
 
 Za kreiranje i čitanje iz JSON formata koristi se \textit{jackson} \cite{Jackson}. Jackson je veoma popularna i izuzetno efikasna Java biblioteka za serijalizaciju i mapiranje Java objekata u JSON i obrnuto. Ostale biblioteke koje se koriste su \textit{jstl} \cite{JSTL} kao tehnologija za kreiranje veb stranica sa dinamičkim sadržajem, biblioteka \textit{bootstrap} \cite{Bootstrap} za kreiranje responzivnih veb sadržaja i \textit{JQuery} \cite{JQuery} kao biblioteka za brži i lakši razvoj interaktivne veb stranice. 
 
@@ -525,7 +525,7 @@ Za upravljanje i izgradnju projekta koristi se \textit{Apache Maven} \cite{Maven
 
 Biblioteka \textit{Apache Commons Net} \cite{CommonsNet} se koristi za NTP protokol. Ona je skup različitih implementiranih internet protokola na klijentskoj strani. Glavna svrha biblioteke je da omogući korišćenje različitih protokola. Bitno je napomenuti da ona ne obezbeđuje viši nivo apstrakcije protokola već samo implementaciju.  
 
-Za pisanje jediničnih testova u projektu koriste se radni okviri \textit{JUnit} \cite{Junit} i \textit{Mockito} \cite{Mockito}. JUnit dinamički proverava ispravnost softvera izvođenjem konačnog broja testova i upoređivanjem dobijenih rezultata sa očekivanim ponašanjem softvera. Koristi se za testiranje jedinica koda i integraciono testiranje. Testiranje jedinica koda je testiranje gde se svaka jedinica koda zasebno testira, pri čemu jedinica koda može biti funkcija, metod, klasa, operacija, struktura podataka u zavisnosti od konteksta i programske paradigme. Integraciono testiranje je testiranje tokom kojeg se proverava saradnja između modula koji predstavljaju jednu celinu sistema. U okviru projekta je korišćeno samo testiranje jedinica koda. Mockito je radni okvir koji omogućava kreiranje duplih test objekata (eng. \textit{test double objects (mock objects)}) u automatskom jediničnom testiranju. Glavna korist od duplih test objekata je obmotavanje objekta tako da pri svakom pozivu vrši unapred definisanu akciju.
+Za pisanje jediničnih testova u projektu koriste se radni okviri \textit{JUnit} \cite{Junit} i \textit{Mockito} \cite{Mockito}. JUnit dinamički proverava ispravnost softvera izvođenjem konačnog broja testova i upoređivanjem dobijenih rezultata sa očekivanim ponašanjem softvera. Koristi se za testiranje jedinica koda i integraciono testiranje. Testiranje jedinica koda je vrsta testiranja sa kojom se svaka jedinica koda testira kao zasebna celina. Jedinica koda može biti operacija, funkcija, metod, struktura podataka, klasa u zavisnosti od konteksta u kome se posmatra i programske paradigme. Integraciono testiranje je testiranje tokom kojeg se proverava saradnja između modula koji predstavljaju jednu celinu sistema. U okviru projekta je korišćeno samo testiranje jedinica koda. Mockito \cite{Mockito} je radni okvir koji omogućava kreiranje duplih test objekata (eng. \textit{test double objects (mock objects)}) u automatskom jediničnom testiranju. Glavna korist od duplih test objekata je obmotavanje objekta tako da pri svakom pozivu vrši unapred definisanu akciju.
 
 \textit{Gson} \cite{Gson} je Google-ova biblioteka koja se koristi za konverziju Java objekata u njihovu JSON reprezentaciju i obrnuto. Glavna prednost Gson-a nad sličnim bibliotekama je ta što radi sa proizvoljnim objektima. Navedena činjenica omogućava konvertovanje objekata u JSON reprezentaciju čak i ako nemamo njihov izvorni kod (eng. \textit{source code}). Takođe, Gson potpuno podržava Java dženerike (eng. \textit{Java Generics}), što često nije slučaj sa sličnim bibliotekama.
 
@@ -599,7 +599,7 @@ Enumeracija tipova konekcije predstavljena kodom \ref{ConnectionType} sadrži in
 \end{center}
 
 
-\lstinputlisting[language=protobuf2,style=protobuf,caption={Response poruka},label=VideoPacket]{messages/VideoPacket.proto}
+\lstinputlisting[language=protobuf2,style=protobuf,caption={VideoPacket poruka},label=VideoPacket]{messages/VideoPacket.proto}
 
 \textit{Video paket} poruka predstavljena kodom \ref{VideoPacket} definiše video snimak koji se šalje kroz jato. Poruka se sastoji od:
  
@@ -704,7 +704,7 @@ Poruka \textit{TerminatedMessage} predstavljena kodom \ref{TerminatedMessage} je
 \end{center}
 
 
-\lstinputlisting[language=protobuf2,style=protobuf,caption={Terminated poruka},label=PacketWrapper]{messages/PacketWrapper.proto}
+\lstinputlisting[language=protobuf2,style=protobuf,caption={PacketWrapper poruka},label=PacketWrapper]{messages/PacketWrapper.proto}
 
 \textit{PacketWrapper} predstavljen kodom \ref{PacketWrapper} je omotač koji obmotava sve poruke. Njegova glavna svrha je da omogući proveru dolaska poruka u pravilnom redosledu kao i da eliminiše ponovljene ili prijavi izgubljene poruke. Omotač se sastoji od:
  
@@ -836,7 +836,7 @@ gde je c ukupan broj klubova a $b_{trans}$ bitrejt koji video snimak zahteva da 
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=1\textwidth]{slike/teorijski-model.jpg}
-  \caption{\textbf{Potrebni  propusni opseg odlaznog saobraćaja izvora}}
+  \caption{Potrebni  propusni opseg odlaznog saobraćaja izvora (slika je preuzeta iz rada \cite{ClubbingWithThePeers})}
   \label{fig:teorijski-model}
 \end{figure}
 \par
