@@ -46,7 +46,6 @@
 \usepackage{protobuf/lang}  % include language definition for protobuf
 \usepackage{protobuf/style} % include custom style for proto declarations.
 
-
 % Datoteka sa literaturom u BibTex tj. BibLaTeX/Biber formatu
 \bib{literatura}
 
@@ -59,9 +58,9 @@
 % Ime i afilijacija mentora (u odabranom pismu)
 \mentor{dr Aleksandar \textsc{Kartelj}, docent\\ Univerzitet u Beogradu, Matematički fakultet}
 % Ime i afilijacija prvog člana komisije (u odabranom pismu)
-\komisijaA{dr Saša \textsc{Malkov}, profesor\\  Univerzitet u Beogradu, Matematički fakultet}
+\komisijaA{dr Saša \textsc{Malkov}, vanredni profesor\\  Univerzitet u Beogradu, Matematički fakultet}
 % Ime i afilijacija drugog člana komisije (u odabranom pismu)
-\komisijaB{dr Miroslav \textsc{Marić}, profesor \\ Univerzitet u Beogradu, Matematički fakultet}
+\komisijaB{dr Miroslav \textsc{Marić}, vanredni profesor \\ Univerzitet u Beogradu, Matematički fakultet}
 % Datum odbrane (odkomentarisati narednu liniju i upisati datum odbrane ako je poznat)
 % \datumodbrane{}
 
@@ -128,7 +127,7 @@ Tokom 1990-ih godina internet se najvećim delom zasnivao na klijent-server mode
 
 Navedene činjenice dovode do promene načina korišćenja interneta i pravljenja mreže ravnopravnih članova (eng. \textit{peer-to-peer (P2P) network}) u kojoj korisnici dele svoje resurse \cite{Tanenbaum}. Primena ovakvog pristupa obećavajuće je rešenje za mnoge oblasti.
 
-U poglavlju \ref{P2P.1} opisani su osnovni koncepti mreže ravnopravnih članova. U poglavlju \ref{P2P.2} opisane su struktuirane i nestruktuirane mreže ravnopravnih članova. U poglavlju \ref{P2P.3} opisane su topologija stabla (eng. \textit{tree topology}), mrežna (eng. \textit{mesh topology}) i hibridna (eng. \textit{hybrid topology}) topologija. Način pripreme i slanja video sadržaja opisan je u poglavlju \ref{P2P.4}. U poglavlju \ref{P2P.5} opisani su osnovni problemi prilikom pravljenja mreže ravnopravnih članova.
+U sekciji \ref{P2P.1} opisani su osnovni koncepti mreže ravnopravnih članova. U sekciji \ref{P2P.2} opisane su struktuirane i nestruktuirane mreže ravnopravnih članova. U sekciji \ref{P2P.3} opisane su topologija stabla (eng. \textit{tree topology}), mrežna (eng. \textit{mesh topology}) i hibridna (eng. \textit{hybrid topology}) topologija. Način pripreme i slanja video sadržaja opisan je u sekciji \ref{P2P.4}. U sekciji \ref{P2P.5} opisani su osnovni problemi prilikom pravljenja mreže ravnopravnih članova.
 
 
 \section{Osnovni koncepti}
@@ -285,7 +284,7 @@ Kod Kikkar protokola, svi parnjaci su podeljeni u klubove, tj. svaki parnjak pri
 
 Parnjak komunicira sa tragačem upotrebom HTTP protokola. Parnjaci komuniciraju međusobom koristeći protokol korisničkih datagrama (eng. \textit{User Datagram Protocol, UDP}). Veze između parnjaka se formiraju tako što se povezuju parnjak koji šalje i parnjak koji prima. Važi pravilo da parnjak koji je na početku veze odabran da šalje video ne prima sadržaj od parnjaka primaoca. Drugim rečima veze su jednosmerne.  
 
-Svaki parnjak u klubu teži da ima bar dve i ne više od tri odlazne i dolazne konekcije sa parnjacima koji pripadaju njegovom klubu. Ovim svojstvom se postiže eksponencijalna brzina slanja video snimka. Takođe, pored parnjaka iz njegovog kluba teži i da postigne po jednu dolaznu konekciju sa parnjacima koji ne pripadaju njegovom klubu. Ova konekcija je istog značaja kao i konekcija u klubu. Bez njenog postojanja, ne mogu se obezbediti svi potrebni podaci. Broj odlaznih konekcija sa parnjacima koji ne pripadaju njegovom klubu nije bitan. Konekcije će detaljnije biti opisane u pogavlju \ref{Kikkar.4}. 
+Svaki parnjak u klubu teži da ima bar dve i ne više od tri odlazne i dolazne konekcije sa parnjacima koji pripadaju njegovom klubu. Ovim svojstvom se postiže eksponencijalna brzina slanja video snimka. Takođe, pored parnjaka iz njegovog kluba teži i da postigne po jednu dolaznu konekciju sa parnjacima koji ne pripadaju njegovom klubu. Ova konekcija je istog značaja kao i konekcija u klubu. Bez njenog postojanja, ne mogu se obezbediti svi potrebni podaci. Broj odlaznih konekcija sa parnjacima koji ne pripadaju njegovom klubu nije bitan. Konekcije će detaljnije biti opisane u sekciji \ref{Kikkar.4}. 
 
 
 \section{Pridruživanje parnjaka}
@@ -374,16 +373,15 @@ Ukoliko je uspešno izvršeno slanje sadržaja video plejeru, prelazi se na kora
 
 Za demonstraciju Kikkar protokola opisanog u poglavlju \ref{chp:p2p-protokol} razvijene su veb i desktop aplikacija. Za razvoj je korišćen programski jezik Java 8 \cite{Java} i razvojno okruženje Eclipse \cite{Eclipse}. Veb aplikacija implementira funkcionalnosti tragača Kikkar protokola, a desktop aplikacija u zavisnosti od podešenih parametara predstavlja parnjaka ili izvor. 
 
-Za uspešno pokretanje veb aplikacije neophodan je Java servlet kontejnera (eng. \textit{Java Servlet Container}), dok je za desktop aplikaciju potrebna samo Java virtuelna mašina (eng. \textit{Java virtual machine, JVM}). Prilikom inicijalizacije desktop aplikacije bira se mod pokretanja aplikacije. Dostupni su mod izvora ili mod parnjaka. Kada je mod izabran, aplikacija do kraja rada ostaje u odabranom modu. I veb i desktop aplikacija su otvorenog koda i mogu se pronaći na github repozitorijumu \footnote{Repozitorijum se može naći na adresi \url{https://github.com/ozzy80/master-rad/tree/master/kod}}. Detaljnije o veb aplikaciji može se pronaći u poglavlju \ref{implementacija.1}. Više detalja o desktop aplikaciji nalazi se u poglavlju \ref{implementacija.2}.
+Za uspešno pokretanje veb aplikacije neophodan je Java servlet kontejnera (eng. \textit{Java Servlet Container}), dok je za desktop aplikaciju potrebna samo Java virtuelna mašina (eng. \textit{Java virtual machine, JVM}). Prilikom inicijalizacije desktop aplikacije bira se mod pokretanja aplikacije. Dostupni su mod izvora ili mod parnjaka. Kada je mod izabran, aplikacija do kraja rada ostaje u odabranom modu. I veb i desktop aplikacija su otvorenog koda i mogu se pronaći na github repozitorijumu \footnote{Repozitorijum se može naći na adresi \url{https://github.com/ozzy80/master-rad/tree/master/kod}}. Detaljnije o veb aplikaciji može se pronaći u sekciji \ref{implementacija.1}. Više detalja o desktop aplikaciji nalazi se u sekciji \ref{implementacija.2}.
 
 \section{Implementacija tragača}
 \label{implementacija.1}
 
 Implementacija Kikkar protokola obuhvata aplikacije za veb i desktop. Veb aplikacija predstavlja tragača Kikkar protokola. 
 
-
 Pre implementacije samog tragača, neophodno je obavljanje nekoliko zadataka.
-Prvi zadatak je odabir odgovarajućeg Java servlet kontejnera za izvršavanje veb aplikacije. Za Java servlet kontejner odabran je Tomcat \cite{Tomcat} verzije 9. Razlozi za odabir Tomcat kontejnera su široka primena u industriji, jednostavnost, odlična zajednica i dokumentacija. Drugi zadatak je odabir odgovarajuće baze podataka. Za bazu podataka izabrana je MySQL \cite{Mysql} baza. Detaljnije o samoj bazi i formiranim tabelama nalazi se u poglavlju \ref{implementacija.1.1}. Konačno, potrebno je naći odgovarajće radne okvire (eng. \textit{framework}). Detaljnije o korišćenim bibliotekama i radnim okvirima može se pronaći u poglavlju \ref{implementacija.1.2}. U poglavlju \ref{implementacija.1.3} dat je opis funkcionalnosti aplikacije.
+Prvi zadatak je odabir odgovarajućeg Java servlet kontejnera za izvršavanje veb aplikacije. Za Java servlet kontejner odabran je Tomcat \cite{Tomcat} verzije 9. Razlozi za odabir Tomcat kontejnera su široka primena u industriji, jednostavnost, odlična zajednica i dokumentacija. Drugi zadatak je odabir odgovarajuće baze podataka. Za bazu podataka izabrana je MySQL \cite{Mysql} baza. Detaljnije o samoj bazi i formiranim tabelama nalazi se u sekciji \ref{implementacija.1.1}. Konačno, potrebno je naći odgovarajće radne okvire (eng. \textit{framework}). Detaljnije o korišćenim bibliotekama i radnim okvirima može se pronaći u sekciji \ref{implementacija.1.2}. U sekciji \ref{implementacija.1.3} dat je opis funkcionalnosti aplikacije.
 
 \subsection{Baza podataka}
 \label{implementacija.1.1}
@@ -470,30 +468,28 @@ Tabela \texttt{peer\_token} služi za čuvanje dodeljenog pristupnog tokena kori
 \subsection{Korišćene biblioteke i radni okviri}
 \label{implementacija.1.2}
 
-Pre opisa korišćenih biblioteka i radnih okvira, ukratko će biti predstavljen softverski alat \textit{Apache Maven} \cite{Maven}. Glavna namena alata je upravljanje i izgradnja projekta. Dva osnovna pravca upotrebe su priprema izvornog koda za distribuciju i jednostavno dodavanje Java biblioteka (eng. \textit{jars}) u projekat. Kako su Java biblioteke obimne, većinom se nove biblioteke grade korišćenjem već postojećih. Postojeće biblioteke često koriste druge biblioteke pri čemu pomenuta zavisnost može biti proizvoljne dubine. U slučaju nekompatibilnosti različitih verzija biblioteka zadatak se dodatno komplikuje.
-Pri upotrebi Apache Maven alata pravila o zavisnostima navodimo u datoteci \textit{pom.xml}. Ova datoteka mora da sadrži grupu, predmet za upotrebu, verziju i naziv projekta. U okviru pom.xml datoteke definiše se i način pakovanja, koji može biti jar (eng. \textit{Java Application Archive}) ili war (eng. \textit{Web Application Archive}). Kako je tragač veb aplikacija koristi se war. U okviru pom.xml nalazi se i deo sa zavisnostima (eng. \textit{dependencies}). U okviru ovog dela se definišu biblioteke ili radni okviri koji su neophodni projektu. Bez upotrebe Maven-a navedena pravila morala bi se ručno postavljati. 
+Pre opisa korišćenih biblioteka i radnih okvira potrebno je predstaviti softverski alat \textit{Apache Maven} \cite{Maven}. Glavna namena alata je upravljanje i izgradnja projekta. Dva osnovna pravca upotrebe su priprema izvornog koda za distribuciju i jednostavno dodavanje Java biblioteka (eng. \textit{jars}) u projekat. 
 
-U nastavku će biti opisane korišćene biblioteke i radni okviri. Prvi korišćeni je \textit{Spring} radni okvir \cite{Spring}.
-Spring je nastao 2002. godine sa idejom omogućavanja lake manipulacije velikih projekata na Java platformi (eng. \textit{Java SE}). Pre Spring-a koristila se najčešće čista Java (eng. \textit{pure Java}). Glavna mana ovakvog pristupa je težina učenja i održavanja koda. U početku Spring je predstavljao dopunu Java standarda za poslovne aplikacije (eng. \textit{Java 2 Platform Enterprise Edition, J2EE}), ali danas se sve više koristi kao alternativa preobimnom i kompleksnom J2EE standardu, naročito u delu koji se tiče rada sa Java zrnima (eng. \textit{Enterprise Java Beans}). Spring se može koristiti u bilo kojoj Java aplikaciji. Kao projekat, Spring okvir sastoji se od više modula koji su u velikoj meri nezavisni, tako da svaka aplikacija može da koristi samo deo Spring okvira koji joj je potreban. U projektu je korišćeno jezgro Springa, koje je obavezno za sve Spring okvire, modul podrške za veb MVC (eng. \textit{Model–view–controller, MVC}) radni okvir, objektno relaciono mapiranje (eng. \textit{object relational mapping}) i sigurnost same veb aplikacije.
+U nastavku će biti opisane korišćene biblioteke i radni okviri. Prvi korišćeni je \textit{Spring} radni okvir \cite{Spring}. Spring je nastao sa idejom omogućavanja lake manipulacije velikih projekata na Java platformi (eng. \textit{Java SE}). Kao projekat, Spring okvir sastoji se od više modula koji su u velikoj meri nezavisni, tako da svaka aplikacija može da koristi samo deo Spring okvira koji joj je potreban. U projektu je korišćeno jezgro Springa, koje je obavezno za sve Spring okvire, modul podrške za veb MVC (eng. \textit{Model–view–controller, MVC}) radni okvir, objektno relaciono mapiranje (eng. \textit{object relational mapping}) i sigurnost same veb aplikacije.
 
-Prilikom razvoja korisničke aplikacije jedna od ključnih stvari je razdvajanje sadržaja od prezentacije. Kako bismo ovo postigli na veb-u koristimo MVC arhitekturu. Glavni akcenat ovakve arhitekture je podela odgovornosti između različitih slojeva. Aplikacija je podeljena na tri glavne komponente i svaka od njih obavlja različite zadatke. Model je prva komponenta. On predstavlja internu reprezentaciju podataka. Sadrži glavne programske podatke kao što su informacije o objektima iz baze. Druga komponenta je pogled. Ova komponenta omogućava korisniku interfejs preko kog može da komunicira sa aplikacijom i prikazuje korisniku stanje modela. Treća komponenta je kontrolor. Glavna odgovornost kontrolora je upravljanje korisničkim zahtevima i iniciranje aktivnosti na nivou modela i promene na pogledu. 
+Prilikom razvoja korisničke aplikacije jedna od ključnih stvari je razdvajanje sadržaja od prezentacije. Za razdvajanje sadržaja od prezentacije na veb-u koristimo MVC arhitekturu. Glavni akcenat ovakve arhitekture je podela odgovornosti između različitih slojeva. Aplikacija je podeljena na tri glavne komponente i svaka od njih obavlja različite zadatke. Model je prva komponenta. On predstavlja internu reprezentaciju podataka. Sadrži glavne programske podatke kao što su informacije o objektima iz baze. Druga komponenta je pogled. Ova komponenta omogućava korisniku interfejs preko kog može da komunicira sa aplikacijom i prikazuje korisniku stanje modela. Treća komponenta je kontrolor. Glavna odgovornost kontrolora je upravljanje korisničkim zahtevima i iniciranje aktivnosti na nivou modela i promene na pogledu. 
 
-Komunikacija sa bazom podataka urađena je uz pomoć Hibernate \cite{Hibernate}. Hibernate je programski okvir za objektno-relaciono mapiranje u Java programskom jeziku. Njegova glavna svrha je mapiranje objektno-orijentisanog modela u model relacione baze podataka radi lakše manipulacije podacima i održavanja koda. Mapiranje se postiže povezivanjem Java klasa i tabela baze podataka i mapiranjem Java tipova podataka u SQL tipove podataka. Povezivanje Java klasa i tabela baze podataka vrši se korišćenjem Java anotacija. Pretraga upita vrši se uz pomoć objektno orijentisane verzije SQL-a koja se zove HQL (eng. \textit{Hibernate Query Language, HQL}). HQL nam omogućava pisanje upita nad Java objektima, a to znači da su upiti nezavisni od tipa baze podataka. Ukoliko dođe do zamene tipa baze podataka u okviru projekta, neće biti potrebno menjati upite. Za sam pristup MySQL bazi koristi se MySQL konektor. 
-
-Za kreiranje i čitanje iz JSON formata koristi se \textit{jackson} \cite{Jackson}. Jackson je veoma popularna i izuzetno efikasna Java biblioteka za serijalizaciju i mapiranje Java objekata u JSON i obrnuto. Ostale biblioteke koje se koriste su \textit{jstl} \cite{JSTL} kao tehnologija za kreiranje veb stranica sa dinamičkim sadržajem, biblioteka \textit{bootstrap} \cite{Bootstrap} za kreiranje responzivnih veb sadržaja i \textit{JQuery} \cite{JQuery} kao biblioteka za brži i lakši razvoj interaktivne veb stranice. 
+Komunikacija sa bazom podataka izvršena je korišćenjem Hibernate \cite{Hibernate}. Hibernate je programski okvir za objektno-relaciono mapiranje u Java programskom jeziku. Njegova glavna svrha je mapiranje objektno-orijentisanog modela u model relacione baze podataka radi lakše manipulacije podacima i održavanja koda. Za kreiranje i čitanje iz JSON formata koristi se \textit{jackson} \cite{Jackson}. Jackson je veoma popularna i izuzetno efikasna Java biblioteka za serijalizaciju i mapiranje Java objekata u JSON i obrnuto. Ostale biblioteke koje se koriste su \textit{jstl} \cite{JSTL} kao tehnologija za kreiranje veb stranica sa dinamičkim sadržajem, biblioteka \textit{bootstrap} \cite{Bootstrap} za kreiranje responzivnih veb sadržaja i \textit{JQuery} \cite{JQuery} kao biblioteka za brži i lakši razvoj interaktivne veb stranice. 
 
 
 \subsection{Neki detalji implementacije}
 \label{implementacija.1.3}
 
-Pri implementaciji tragača koristi se MVC arhitektura. Model čine klase \texttt{Channel}, \texttt{Authorities}, \texttt{PeerInformation}, \texttt{Token}, \texttt{TopChannel} i \texttt{User} koje redom odgovaraju istoimenim tabelama iz poglavlja \ref{implementacija.1.2}. Sloj za pristup objektima (eng. \textit{data access object, DAO}) služi za pisanje jednostavnih HQL naredbi za pristup mapiranim objektima. Klase koje se nalaze u ovom sloju imaju identična imena kao modeli kojim pristupaju sa nastavkom DAO. Sloj servisa služi za biznis logiku. Sastoji se od klasa \texttt{ChannelManager}, \texttt{PeerConnectionManager}, \texttt{PeerInformationManager}, \texttt{TokenManager} i \texttt{UserManager}. Većina metoda ovih klasa vrši prosleđivanje upita nižim slojevima, jer ne postoji nikakva logika koju bi bilo neophodno implementirati. Jedini izuzetak je metod \textit{void deleteDeadPeers()} koji je privatan u klasi \texttt{PeerInformationManager} i koristi se za periodično brisanje parnjaka koji se nisu javili u poslednjih 1000 sekundi. Kontroler se sastoji od klasa \texttt{FileUploadController}, \texttt{HomeController}, \texttt{LoginController} i \texttt{PeerConnectionController}. Za preuzimanje fajlova od korisnika koristi se klasa \texttt{FileUploadController}. \texttt{LoginController} se koristi za prijavljivanje i kreiranje novih naloga emiterima video sadržaja.
+Pri implementaciji tragača koristi se MVC arhitektura. Model čine klase \texttt{Channel}, \texttt{Authorities}, \texttt{PeerInformation}, \texttt{Token}, \texttt{TopChannel} i \texttt{User} koje redom odgovaraju istoimenim tabelama iz sekcije \ref{implementacija.1.2}. Sloj za pristup objektima (eng. \textit{data access object, DAO}) služi za pisanje jednostavnih HQL naredbi za pristup mapiranim objektima. Klase koje se nalaze u ovom sloju imaju identična imena kao modeli kojim pristupaju sa nastavkom DAO. Sloj servisa služi za biznis logiku. Sastoji se od klasa \texttt{ChannelManager}, \texttt{PeerConnectionManager}, \texttt{PeerInformationManager}, \texttt{TokenManager} i \texttt{UserManager}. Većina metoda ovih klasa vrši prosleđivanje upita nižim slojevima, jer ne postoji nikakva logika koju bi bilo neophodno implementirati. Jedini izuzetak je metod \textit{void deleteDeadPeers()} koji je privatan u klasi \texttt{PeerInformationManager} i koristi se za periodično brisanje parnjaka koji se nisu javili u poslednjih 1000 sekundi. Kontroler se sastoji od klasa \texttt{FileUploadController}, \texttt{HomeController}, \texttt{LoginController} i \texttt{PeerConnectionController}. Za preuzimanje fajlova od korisnika koristi se klasa \texttt{FileUploadController}. \texttt{LoginController} se koristi za prijavljivanje i kreiranje novih naloga emiterima video sadržaja.
 Za opsluživanje veb stranica koristi se \texttt{HomeController}. Za pristupanje parnjacima koristi se \texttt{PeerConnectionController}.
 
 Serverska aplikacija je napravljena po REST principima i prihvata zahteve ka
 sledećim adresama:
 
 
-\begin{center}
+\begin{table}[h]
+\caption{Serverske REST adrese sa opisima} 
+\centering
 \begin{tabular}{ |p{1.5cm}|p{4cm}|p{8cm}| } 
 \hline
 Metoda & Putanja & Opis \\
@@ -504,42 +500,37 @@ Metoda & Putanja & Opis \\
 \texttt{GET} & \texttt{/channel/{channelId}} & Vraća podatke o kanalu čiji je jedinstveni identifikacioni broj \texttt{{channelId}}\\
 \texttt{GET} & \texttt{/login} & Preusmerava korisnika na stranu za prijavljivanje \\ 
 \texttt{POST} & \texttt{/register} & Prihvata podatke od korisnika i čuva ih u bazi podataka, preusmerva korisnika na stranicu sa spiskom kanala \\ 
-\texttt{GET} & \texttt{/initial/{channelId}} & Proverava se korisnikova verzija protokola. Ukoliko nije podržana vraća se statusni kod 505, ukoliko jeste proverava se brzina odlaznog i dolaznog saobraćaja. Ukoliko je brzina zadovoljavajuća prosleđuje se pristupni token, ukoliko nije vraća se statusni kod 509 \\ 
-\texttt{GET} & \texttt{/list/{channelId}} & Proverava se dobijeni token. Ukoliko token nije validan vraća se statusni kod 412, u suprotnom vraća se lista parnjaka \\ 
+\texttt{GET} & \texttt{/initial/{channelId}} & Proverava se korisnikova verzija protokola. Ukoliko nije podržana vraća se statusni k$\hat{o}$d 505, ukoliko jeste proverava se brzina odlaznog i dolaznog saobraćaja. Ukoliko je brzina zadovoljavajuća prosleđuje se pristupni token, ukoliko nije vraća se statusni k$\hat{o}$d 509 \\ 
+\texttt{GET} & \texttt{/list/{channelId}} & Proverava se dobijeni token. Ukoliko token nije validan vraća se statusni k$\hat{o}$d 412, u suprotnom vraća se lista parnjaka \\ 
 \texttt{GET} & \texttt{/leave} & Parnjak se briše iz liste parnjaka \\ 
 \texttt{GET} & \texttt{/stayAlive} & Postavlja se vreme poslednjeg javljanja parnjaka \\ 
 \hline
 \end{tabular}
-\end{center}
-
+\end{table}
+\newpage
 
 \section{Implementacija parnjaka}
 \label{implementacija.2}
 
-U poglavlju \ref{implementacija.1} opisan je tragač kao jedan deo Kikkar protokola. U ovom poglavlju opisuje se desktop aplikacija. Desktop aplikacija odgovara parnjaku Kikkar protokola. U zavisnosti od podešenog moda parnjak može biti izvor ili obični parnjak. Za implementaciju parnjaka korišćeni su razni radni okviri i biblioteke. Detaljniji opisi radnih okvira i biblioteka nalaze se u poglavlju \ref{implementacija.2.1}. Kako bi jato moglo da funkcioniše razmenjuju se poruke između parnjaka. Detaljnije o tipu i nameni svake poruke može se naći u poglavlju \ref{implementacija.2.2}. U poglavlju \ref{implementacija.2.3} dat je opis funkcionalnosti koje aplikacija pruža.
+U sekciji \ref{implementacija.1} opisan je tragač kao jedan deo Kikkar protokola. U ovom poglavlju opisuje se desktop aplikacija. Desktop aplikacija odgovara parnjaku Kikkar protokola. U zavisnosti od podešenog moda parnjak može biti izvor ili obični parnjak. Za implementaciju parnjaka korišćeni su razni radni okviri i biblioteke. Detaljniji opisi radnih okvira i biblioteka nalaze se u sekciji \ref{implementacija.2.1}. Kako bi jato moglo da funkcioniše razmenjuju se poruke između parnjaka. Detaljnije o tipu i nameni svake poruke može se naći u sekciji \ref{implementacija.2.2}. U sekciji \ref{implementacija.2.3} dat je opis funkcionalnosti koje aplikacija pruža.
 
 \subsection{Korišćene biblioteke i radni okviri}
 \label{implementacija.2.1}
 
-Za upravljanje i izgradnju projekta koristi se \textit{Apache Maven} \cite{Maven} koji je opisan u poglavlju \ref{implementacija.1.2}. 
+Za upravljanje i izgradnju projekta koristi se \textit{Apache Maven} \cite{Maven} koji je opisan u sekciji \ref{implementacija.1.2}. 
 
-Biblioteka \textit{Apache Commons Net} \cite{CommonsNet} se koristi za NTP protokol. Ona je skup različitih implementiranih internet protokola na klijentskoj strani. Glavna svrha biblioteke je da omogući korišćenje različitih protokola. Bitno je napomenuti da ona ne obezbeđuje viši nivo apstrakcije protokola već samo implementaciju.  
+Biblioteka \textit{Apache Commons Net} \cite{CommonsNet} se koristi za NTP protokol. Ona je skup različitih implementiranih internet protokola na klijentskoj strani. Za pisanje jediničnih testova u projektu koriste se radni okviri \textit{JUnit} \cite{Junit} i \textit{Mockito} \cite{Mockito}. JUnit dinamički proverava ispravnost softvera izvođenjem konačnog broja testova i upoređivanjem dobijenih rezultata sa očekivanim ponašanjem softvera. Mockito je radni okvir koji omogućava kreiranje duplih test objekata (eng. \textit{test double objects (mock objects)}), tako da pri svakom pozivu obmotani objekat vrši unapred definisanu akciju.
 
-Za pisanje jediničnih testova u projektu koriste se radni okviri \textit{JUnit} \cite{Junit} i \textit{Mockito} \cite{Mockito}. JUnit dinamički proverava ispravnost softvera izvođenjem konačnog broja testova i upoređivanjem dobijenih rezultata sa očekivanim ponašanjem softvera. Koristi se za testiranje jedinica koda i integraciono testiranje. Testiranje jedinica koda je vrsta testiranja sa kojom se svaka jedinica koda testira kao zasebna celina. Jedinica koda može biti operacija, funkcija, metod, struktura podataka, klasa u zavisnosti od konteksta u kome se posmatra i programske paradigme. Integraciono testiranje je testiranje tokom kojeg se proverava saradnja između modula koji predstavljaju jednu celinu sistema. U okviru projekta je korišćeno samo testiranje jedinica koda. Mockito \cite{Mockito} je radni okvir koji omogućava kreiranje duplih test objekata (eng. \textit{test double objects (mock objects)}) u automatskom jediničnom testiranju. Glavna korist od duplih test objekata je obmotavanje objekta tako da pri svakom pozivu vrši unapred definisanu akciju.
+\textit{Gson} \cite{Gson} je Google-ova biblioteka koja se koristi za konverziju Java objekata u njihovu JSON reprezentaciju i obrnuto. Glavna prednost Gson-a nad sličnim bibliotekama je što radi sa proizvoljnim objektima, te omogućava konvertovanje objekata u JSON reprezentaciju čak i ako nemamo njihov izvorni k$\hat{o}$d (eng. \textit{source code}). Za potrebe pozivanja metoda prema unapred određenom rasporedu koristi se biblioteka otvorenog koda \textit{Quartz} \cite{Quartz}. 
 
-\textit{Gson} \cite{Gson} je Google-ova biblioteka koja se koristi za konverziju Java objekata u njihovu JSON reprezentaciju i obrnuto. Glavna prednost Gson-a nad sličnim bibliotekama je ta što radi sa proizvoljnim objektima. Navedena činjenica omogućava konvertovanje objekata u JSON reprezentaciju čak i ako nemamo njihov izvorni kod (eng. \textit{source code}). Takođe, Gson potpuno podržava Java dženerike (eng. \textit{Java Generics}), što često nije slučaj sa sličnim bibliotekama.
+Za formatiranje poruka koje se razmenjuju među parnjacima koristi se Google-ova biblioteka \textit{Protocol buffers} \cite{ProtocolBuffers}. Protocol buffers je biblioteka koja se koristi za binarnu serijalizaciju podataka. Biblioteka radi tako što se definiše struktura podataka koju želimo da serijalizujemo. Kada je struktura definisana vrši se njeno prevođenje u odgovarajući programski jezik. Definisana struktura podataka omogućava da se razmenjuju podaci između različitih programskih jezika. Pošto se prenose binarni podaci dobijeni izlaz je značajno brži i manji od izlaza dobijenog primenom tekstualnih formata kao što su XML ili JSON format. Detaljnije o porukama koje se koriste u protokolu može se pronaći u sekciji \ref{implementacija.2.2} 
 
-Za potrebe pozivanja metoda prema unapred određenom rasporedu koristi se biblioteka otvorenog koda \textit{Quartz} \cite{Quartz}. Quartz je veoma moćna biblioteka koja se može koristiti kako za jednostavne tako i za komplikovane zadatke. Glavna prednost biblioteke Quartz nad drugim bibliotekama iste namene je što sa lakoćom može obraditi i održavati i desetine hiljada poslova. 
-
-Za formatiranje poruka koje se razmenjuju među parnjacima koristi se Google-ova biblioteka \textit{Protocol buffers} \cite{ProtocolBuffers}. Protocol buffers je biblioteka koja se koristi za binarnu serijalizaciju podataka. Biblioteka radi tako što se definiše struktura podataka koje želimo da serijalizujemo. Kada je struktura definisana vrši se prevođenje definisane strukture u odgovarajući programski jezik. Definisana struktura podataka omogućava da se razmenjuju podaci između različitih programskih jezika. Pošto se prenose binarni podaci dobijeni izlaz je značajno brži i manji od izlaza dobijenog primenom tekstualnih formata kao što su XML ili JSON format. Detaljnije o porukama koje se koriste u protokolu može se pronaći u poglavlju \ref{implementacija.2.2} 
-
-Za video plejer izabran je \textit{VLC} plejer \cite{VLC} zbog dobre podrške, dokumentacije i velikog izbora kodeka. Da bi VLC plejer mogao koristiti iz Java aplikacije upotrebljava se programski okvir VLCj \cite{VLCJ}. VLCj omogućava Java aplikaciji da pokrene instancu nativnog VLC medijskog plejera u okviru Java AWT prozora ili Swing JFrame-a.
-
+Za video plejer izabran je \textit{VLC} plejer \cite{VLC} zbog dobre podrške, dokumentacije i velikog izbora kodeka. Da bi VLC plejer mogao koristiti iz Java aplikacije upotrebljava se programski okvir VLCj \cite{VLCJ}. 
 
 \subsection{Protocol buffers poruke}
 \label{implementacija.2.2}
 
-Kao što je navedeno u poglavlju \ref{implementacija.2.1} za razmenu poruka se koristi biblioteka Protocol buffers. Protocol buffers je izabran u mnoštvu sličnih biblioteka jer je izlaz dobijen primenom ove biblioteke mali, sama biblioteka je dobro dokumentovana i jednostavna za korišćenje i ima odličnu zajednicu. U nastavku sledi opis svake poruke koja se razmenjuje u okviru Kikkar protokola.
+Kao što je navedeno u sekciji \ref{implementacija.2.1} za razmenu poruka se koristi biblioteka Protocol buffers. Protocol buffers je izabran u mnoštvu sličnih biblioteka jer je izlaz dobijen primenom ove biblioteke mali, sama biblioteka je dobro dokumentovana i jednostavna za korišćenje i ima odličnu zajednicu. U nastavku sledi opis svake poruke koja se razmenjuje u okviru Kikkar protokola.
 
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={Enumeracija tipova konekcije},label=ConnectionType]{messages/ConnectionType.proto}
@@ -549,7 +540,7 @@ Enumeracija tipova konekcije predstavljena kodom \ref{ConnectionType} sadrži in
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={Ping poruka},label=PingMessage]{messages/PingMessage.proto}
 
-\textit{Ping poruka} predstavljena kodom \ref{PingMessage} definiše ping poruku opisanu u poglavlju \ref{Kikkar.2}. Poruka se sastoji od:
+\textit{Ping poruka} predstavljena kodom \ref{PingMessage} definiše ping poruku opisanu u sekciji \ref{Kikkar.2}. Poruka se sastoji od:
  
 \begin{center}
 \begin{tabular}{ p{4cm} p{10cm} }
@@ -563,7 +554,7 @@ Enumeracija tipova konekcije predstavljena kodom \ref{ConnectionType} sadrži in
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={Pong poruka},label=PongMessage]{messages/PongMessage.proto}
 
-\textit{Pong poruka} predstavljena kodom \ref{PongMessage} definiše pong poruku opisanu u poglavlju \ref{Kikkar.2}. Poruka se sastoji od:
+\textit{Pong poruka} predstavljena kodom \ref{PongMessage} definiše pong poruku opisanu u sekciji \ref{Kikkar.2}. Poruka se sastoji od:
  
 \begin{center}
 \begin{tabular}{ p{4cm} p{10cm} }
@@ -577,7 +568,7 @@ Enumeracija tipova konekcije predstavljena kodom \ref{ConnectionType} sadrži in
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={Request poruka},label=RequestMessage]{messages/RequestMessage.proto}
 
-\textit{Request poruka} predstavljena kodom \ref{RequestMessage} definiše request poruku opisanu u poglavlju \ref{Kikkar.2}. Poruka se sastoji od:
+\textit{Request poruka} predstavljena kodom \ref{RequestMessage} definiše request poruku opisanu u sekciji \ref{Kikkar.2}. Poruka se sastoji od:
  
 \begin{center}
 \begin{tabular}{ p{4cm} p{10cm} }
@@ -590,7 +581,7 @@ Enumeracija tipova konekcije predstavljena kodom \ref{ConnectionType} sadrži in
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={Response poruka},label=ResponseMessage]{messages/ResponseMessage.proto}
 
-\textit{Response poruka} \ref{ResponseMessage} predstavlja response poruku opisanu u poglavlju \ref{Kikkar.2}. Poruka se sastoji od:
+\textit{Response poruka} \ref{ResponseMessage} predstavlja response poruku opisanu u sekciji \ref{Kikkar.2}. Poruka se sastoji od:
  
 \begin{center}
 \begin{tabular}{ p{4cm} p{10cm} }
@@ -615,7 +606,7 @@ Enumeracija tipova konekcije predstavljena kodom \ref{ConnectionType} sadrži in
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={Kontrolna poruka},label=ControlMessage]{messages/ControlMessage.proto}
 
-\textit{Kontrolna poruka} predstavljena kodom \ref{ControlMessage} je kontrolna poruka opisana u poglavlju \ref{Kikkar.5}. Poruka se sastoji od:
+\textit{Kontrolna poruka} predstavljena kodom \ref{ControlMessage} je kontrolna poruka opisana u sekciji \ref{Kikkar.5}. Poruka se sastoji od:
  
 \begin{center}
 \begin{tabular}{ p{4.5cm} p{9.5cm} }
@@ -629,7 +620,7 @@ Enumeracija tipova konekcije predstavljena kodom \ref{ConnectionType} sadrži in
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={Have poruka},label=HaveMessage]{messages/HaveMessage.proto}
 
-Poruka \textit{HaveMessage} predstavljena kodom \ref{HaveMessage} je have poruka opisana u poglavlju \ref{Kikkar.3}. Poruka se sastoji od:
+Poruka \textit{HaveMessage} predstavljena kodom \ref{HaveMessage} je have poruka opisana u sekciji \ref{Kikkar.3}. Poruka se sastoji od:
  
 \begin{center}
 \begin{tabular}{ p{4.5cm} p{9.5cm} }
@@ -640,7 +631,7 @@ Poruka \textit{HaveMessage} predstavljena kodom \ref{HaveMessage} je have poruka
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={NotInterested poruka},label=NotInterestedMessage]{messages/NotInterestedMessage.proto}
 
-Poruka \textit{NotInterestedMessage} predstavljena kodom \ref{NotInterestedMessage} je notInterested poruka opisana u poglavlju \ref{Kikkar.3}. Poruka se sastoji od:
+Poruka \textit{NotInterestedMessage} predstavljena kodom \ref{NotInterestedMessage} je notInterested poruka opisana u sekciji \ref{Kikkar.3}. Poruka se sastoji od:
  
 \begin{center}
 \begin{tabular}{ p{4cm} p{10cm} }
@@ -651,7 +642,7 @@ Poruka \textit{NotInterestedMessage} predstavljena kodom \ref{NotInterestedMessa
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={KeepAlive poruka},label=KeepAliveMessage]{messages/KeepAliveMessage.proto}
 
-Poruka \textit{KeepAliveMessage} predstavljena kodom \ref{KeepAliveMessage} je keep-alive poruka opisana u poglavlju \ref{Kikkar.4}. Poruka se sastoji od:
+Poruka \textit{KeepAliveMessage} predstavljena kodom \ref{KeepAliveMessage} je keep-alive poruka opisana u sekciji \ref{Kikkar.4}. Poruka se sastoji od:
  
 \begin{center}
 \begin{tabular}{ p{4cm} p{10cm} }
@@ -662,7 +653,7 @@ Poruka \textit{KeepAliveMessage} predstavljena kodom \ref{KeepAliveMessage} je k
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={RequestVideo poruka},label=RequestVideoMessage]{messages/RequestVideoMessage.proto}
 
-Poruka \textit{RequestVideoMessage} predstavljena kodom \ref{RequestVideoMessage} je request video poruka opisana u poglavlju \ref{Kikkar.3}. Poruka se sastoji od:
+Poruka \textit{RequestVideoMessage} predstavljena kodom \ref{RequestVideoMessage} je request video poruka opisana u sekciji \ref{Kikkar.3}. Poruka se sastoji od:
  
 \begin{center}
 \begin{tabular}{ p{4cm} p{10cm} }
@@ -674,7 +665,7 @@ Poruka \textit{RequestVideoMessage} predstavljena kodom \ref{RequestVideoMessage
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={ResponseVideo poruka},label=ResponseVideoMessage]{messages/ResponseVideoMessage.proto}
 
-Poruka \textit{ResponseVideoMessage} predstavljena kodom \ref{ResponseVideoMessage} je response video poruka opisana u poglavlju \ref{Kikkar.3}. Poruka je identična video poruci po sadržaju. Razlog za njeno uvođenje je taj što se logički razlikuje od video poruke.
+Poruka \textit{ResponseVideoMessage} predstavljena kodom \ref{ResponseVideoMessage} je response video poruka opisana u sekciji \ref{Kikkar.3}. Poruka je identična video poruci po sadržaju. Razlog za njeno uvođenje je taj što se logički razlikuje od video poruke.
 
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={TerminatedReason poruka},label=TerminatedReason]{messages/TerminatedReason.proto}
@@ -694,7 +685,7 @@ Poruka \textit{TerminatedReason} predstavljena kodom \ref{TerminatedReason} sadr
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={Terminated poruka},label=TerminatedMessage]{messages/TerminatedMessage.proto}
 
-Poruka \textit{TerminatedMessage} predstavljena kodom \ref{TerminatedMessage} je terminated poruka opisana u poglavlju \ref{Kikkar.4}. Poruka se sastoji od:
+Poruka \textit{TerminatedMessage} predstavljena kodom \ref{TerminatedMessage} je terminated poruka opisana u sekciji \ref{Kikkar.4}. Poruka se sastoji od:
  
 \begin{center}
 \begin{tabular}{ p{4cm} p{10cm} }
@@ -735,7 +726,7 @@ Kako je Kikkar složen sistem bilo je neophodno izvršiti prepoznavanje odgovara
 
 Komponenta \textit{povezivač sa tragačem} (u programu klasa \texttt{ServerConnector}) predstavlja modul koji se koristi za komunikaciju parnjaka i tragača. Komunikacija se odvija uz pomoć HTTP i NTP protokola. Komponenta od podataka čuva informacije o željenom kanalu i datum poslednje izmene podataka. Informacije o željenom kanalu koriste se za prosleđivanje tačnog upita o određenom kanalu tragača. Informacija o poslednjoj modifikaciji služi za smanjenje opterećenja tragača. Ukoliko se jato nije promenilo od poslednje modifikacije, tragač ignoriše zahtev za novim parnjacima. 
 
-Funkcionalnosti koje ova klasa obezbeđuje su učitavanje JSON fajla koji sadrži podatke o kanalu u okviru metode \texttt{loadJson(String json)}. JSON fajl obezbeđuje tragač prilikom registrovanja kanala. Kako se većini metoda tragača pristupa GET zahtevima neophodno je kreirati URL upite. Metod koji se koristi za tu svrhu je \texttt{createURL(String baseURL, Map<String, String> parameters)}, gde \textit{baseURL} predstavlja url na koji želimo da kreiramo upit. Mapa parametara predstavlja parametre koje želimo da dodamo upitu. Kreiranje zaglavlja HTTP poruke se izvršava u metodi \texttt{getURLConnection(URL url)}, gde je \textit{url} konkretan url za koji se kreira upit. Za inicijalnu konekciju sa tragačem koristi se metoda \texttt{connectToServer(URL url)}. Za sinhronizaciju vremena sa serverom koristi se metod \texttt{synchronizeTime(NTPUDPClient client, String ntpServer)}. Argument \textit{client} predstavlja klijentsku implementaciju NTP protokola, a argument \textit{ntpServer} predstavlja adresu NTP servera. U okviru klasnih metoda pristupa se klasi \textit{Sat} o kojoj će biti više reči u poglavlju \ref{implementacija.2.3.4}. U samom protokolu tragač obezbeđuje tačno vreme, ali se ovde zbog jednostavnosti koriste javno dostupni NTP serveri. Bitno je primetiti da se na ovaj način ne umanjuje opštost protokola. Lista parnjaka dobija se pozivanjem metoda \texttt{getPeerInfoList(URL url)} dok se obaveštavanje tragača o aktivnosti vrši se metodom \texttt{sendStayAliveMessage(URL url)}. Prilikom napuštanja kanala iz bilo kog razloga koristi se metod \texttt{sendLeaveMessage(URL url)}.  
+Funkcionalnosti koje ovaj modul pruža su učitavanje kanala iz JSON formata, kreiranje poruka i komunikacija sa tragačem, sinhronizacija vremena sa serverom, prikupljanje liste aktivnih parnjaka i obaveštavanje tragača o trenutnim aktivnostima. U samom protokolu tragač obezbeđuje tačno vreme, ali se ovde zbog jednostavnosti koriste javno dostupni NTP serveri. Bitno je primetiti da se na ovaj način ne umanjuje opštost protokola.  
 
 
 \subsubsection{Povezivač sa parnjakom}
@@ -743,15 +734,7 @@ Funkcionalnosti koje ova klasa obezbeđuje su učitavanje JSON fajla koji sadrž
 
 Komponenta \textit{povezivač sa parnjakom} (u programu klasa \texttt{PeerConnector}) predstavlja modul koji se koristi za komunikaciju parnjaka sa ostatkom jata. Komunikacija se odvija uz pomoću UDP protokola. Ova komponenta je najniža komponenta za komunikaciju sa parnjacima i kao takva ne donosi nikakve odluke već samo izvršava naredbe viših komponenti. Modul čuva sve pakete koje je parnjak dobio preko mreže u blokirajućem redu kao i podatke o samom sebi.
 
-Komponenta sadrži veliki broj metoda. Većina ovih metoda se ipak ne koristi direktno. U ovom radu opisaćemo samo metode koje bi prosečni korisnik klase želeo da koristi. Za razumevanje ostalih metoda dovoljno je razumeti protokol opisan u poglavlju \ref{chp:p2p-protokol}. 
-
-Za slanje paketa neophodno je pozivanje metoda \texttt{void send(DatagramPacket sendDataPacket, DatagramSocket socket)}. Argumenti su paket \textit{sendDataPacket} koji želimo poslati i \textit{soket} preko koga želimo izvršiti slanje. Za primanje podataka sa mreže koristi se metod \texttt{void startRecievePacketLoop(DatagramSocket socket)}. U okviru ovog metoda puni se blokirajuć red.
-
-Prvi zadatak parnjaka kod pristupanja jatu je razmena ping-pong poruke. Ping poruka se šalje metodom \texttt{void sendPingMessages(List<PeerInformation> \\ neighbourPeers, ConnectionType connectionType, DatagramSocket socket, \\Short  clubNum)}. Lista parnjaka \textit{neighbourPeers} predstavlja listu potencijalnih komšija, \textit{connectionType} predstavlja tip konekcije opisane u poglavlju \ref{implementacija.2.2}, \textit{socket} predstavlja apstrakciju soketa preko koga se vrši saobraćaj a \textit{clubNum} broj kluba kome parnjak pripada. U okviru ove metode svakom od parnjaka iz potencijalne liste komšija šalje se ping poruka i postavlja se novo stanje parnjaka na čekanje pong poruke. Pong poruka se šalje metodom \texttt{void sendPongMessage(List<PeerInformation> neighbourPeers, PeerInformation peer, PingMessage pingMessage, \\DatagramSocket socket)}. Lista parnjaka \textit{neighbourPeers} predstavlja listu već postojećih komšija, \textit{peer} predstavlja parnjaka kome se odgovara na ping poruku \textit{pingMessage} dok \textit{socket} predstavlja apstrakciju soketa preko koga se vrši saobraćaj. U okviru ove metode proverava se koliko veza i uskladištenih podataka ima parnjak i šalje pong poruka. 
-
-Nakon što su razmenjene ping-pong poruke šalju se request-response poruke. Request poruka se šalje metodom \texttt{void sendRequestMessage(List<PeerInformation> neighbourPeers, DatagramSocket socket, ConnectionType connectionType)}. Argument \textit{neighbourPeers} odgovara listi parnjaka sa kojima želimo da se povežemo, \textit{socket} je apstrakcija soketa a \textit{connectionType} tip konekcije koju želimo da uspostavimo. U okviru ove metode svakom parnjaku iz liste se šalje request poruka i postavlja stanje na čekanje response poruke. Response poruka se šalje metodom \texttt{void sendResponseMessage(PeerInformation peer, PacketWrapper packet, \\ DatagramSocket socket)}, gde \textit{peer} predstavlja parnjaka kome se šalje \textit{packet} preko \textit{socket}-a. Nakon što je response poruka poslata postavlja se status parnjaka na povezano.
-
-Za slanje keep-alive poruke parnjaku opisane u poglavlju \ref{Kikkar.4} koristi se metod \texttt{void sendKeepAliveMessage(PeerInformation peer, DatagramSocket socket)}. Argument \textit{peer} odgovara parnjaku kojem se šalje poruka dok \textit{socket} predstavlja apstrakciju soketa preko koga se odvija saobraćaj.
+Funkcionalnosti koje ovaj modul pruža su slanje i primanje paketa, razmena ping-pong poruke u okviru koje se proverava koliko veza i uskladištenih podataka ima parnjak. Pored ping-pong poruke modul omogućava i razmene \textit{request-response} i \textit{keep-alive} poruka opisanih u poglavlju \ref{chp:p2p-protokol}. 
 			
 
 \subsubsection{Menadžer veze}
@@ -759,9 +742,7 @@ Za slanje keep-alive poruke parnjaku opisane u poglavlju \ref{Kikkar.4} koristi 
 
 Komponenta \textit{menadžer veze} (u programu klasa \texttt{ConnectionManager}) predstavlja modul koji se koristi za održavanje topologije parnjaka. Glavni zadatak ove komponente je da sakrije topologiju mreže od viših nivoa aplikacije i da koordiniše komunikaciju između tragača i parnjaka. U zavisnosti da li je aplikacija pokrenuta u režimu izvora ili parnjaka, menadžer veze istim metodama različito održava topologiju i procesira pakete u skladu sa protokolom. Modul od podataka čuva reference ka povezivaču sa tragačem i parnjakom, soket, podatke o trenutnom kanalu, listu svih parnjaka, listu svih dobijenih pong poruka, sat, pakete za viši nivo aplikacije u blokirajućem redu kao i pristupni token tragača.
 
-Za učitavanje JSON fajla koristi se metod \texttt{void loadJson(String rawJson)}. Ovaj metod samo prosleđuje parametre istom metodu povezivača sa tragačem. Da bi se pokrenulo osluškivanje i procesiranje paketa koristi se metod \texttt{void start()}. U okviru ovog metoda pokreće se u zasebnoj niti metod za primanje podatka klase povezivač sa parnjakom. Takođe, u okviru nje se radi kontrola zagušenja i eventualno slanje keep-alive poruke komšijama \ref{Kikkar.4}, kao i provera i održavanje topologije \ref{Kikkar.2}. Za svaki primljeni paket proverava se da li je u dobrom redosledu i prosleđuje metodu za obradu paketa. U okviru ove metode svi paketi koji ne predstavljaju video sadržaj već kontrolne poruke se obrađuju u skladu sa protokolom. 
-
-Kako bismo poslali pakete svim komšijama koristimo metod \texttt{void sendAll(\\PacketWrapper.Builder wrap, List<String> uninterestedPeerIp, \\PeerStatus peerStatus)}. Argument \textit{wrap} predstavlja poruku koja se šalje, lista \textit{uninterestedPeerIp} predstavlja listu komšija koji nisu zainteresovani za poruku dok \textit{peerStatus} predstavlja status komšija kojima se šalje poruka. Svim komšijama koji imaju odgovarajući status i ne nalaze se na listi nezainteresovanih biće isporučena poruka. Najpre se poruka isporučuje komšijama u klubu pa tek onda ostalima da bi se što brže distribuirala. Ukoliko poruku želimo da pošaljemo jednom parnjaku koristi se metod \texttt{void sendOne(PacketWrapper.Builder wrap, String IpAddress)} gde \textit{wrap} predstavlja poruku a \textit{IpAddress} adresu parnjaka kome se poruka šalje. Ukoliko želimo da pošaljemo poruku svim komšijama u klubu koristimo metod \texttt{void sendToClub(PacketWrapper.Builder wrap, PeerStatus peerStatus, int \\clubNum)}. Kao i u prethodnim metodama argument \textit{wrap} predstavlja poruku koja se šalje, \textit{peerStatus} predstavlja status komšija kojima se šalje poruka a \textit{clubNum} broj kluba.
+Funkcionalnosti koje ovaj modul obezbeđuje su osluškivanje i procesiranje paketa, primanje i slanje podataka upotrebom modula \textit{povezivač sa parnjakom} i \textit{povezivač sa tragačem}, kontrola zagušenja, slanje keep-alive poruke komšijama \ref{Kikkar.4}, kao i provera i održavanje topologije \ref{Kikkar.2}. Modul za svaki primljeni paket proverava da li je u dobrom redosledu i prosleđuje metodu za obradu paketa. U okviru ove metode svi paketi koji ne predstavljaju video sadržaj već kontrolne poruke se obrađuju u skladu sa protokolom. 
 
 
 \subsubsection{Sat}
@@ -769,16 +750,13 @@ Kako bismo poslali pakete svim komšijama koristimo metod \texttt{void sendAll(\
 
 Komponenta \textit{sat} (u programu klasa \texttt{ClockSingleton}) predstavlja modul koji se koristi za ujednačavanje vremena svih parnjaka u mreži. Sat koristi unikat (eng. \textit{singleton}) uzorak za projektovanje. Pri razvoju aplikacija često je potrebno omogućiti korišćenje samo jedne instance određene klase iz konceptualnih ili arhitekturalnih razloga. Treba biti oprezan pri korišćenju unikata jer sa njim uvodimo globalno stanje u aplikaciju čime se povećava njena kompleksnost. U većini slučajeva ubrizgavanje zavisnosti (eng. \textit{dependency injection}) treba koristiti umesto unikata. Korišćenjem ubrizgavanja zavisnosti ne postoji direktna zavisnost između klasa aplikacije jer objekat ne zna koja je klasa u pitanju već zna samo njen javni interfejs. Međutim, u aplikaciji se klasa sat koristi u različitim delovima programa te bi korišćenje ubrizgavanja zavisnosti previše zakomplikovalo kreiranje objekata željenih klasa pa se iz tog razloga koristi unikat.
 
-Formiranje i dobijanje unikat objekta ostvaruje se korišćenjem metode \\\texttt{ClockSingleton getInstance()}. 
-Takođe treba obratiti pažnju i na to da je konstruktor deklarisan sa privatnim pravima pristupa. Klasa koristi vremensku zonu Europe/Belgrade. Da bismo dobili vreme koje je isto svuda u mreži koristimo metod \texttt{Long getcurrentTimeMilliseconds()}.
-
 
 \subsubsection{Raspoređivač dolaznog saobraćaja}
 \label{implementacija.2.3.5}
 
 Komponenta \textit{raspoređivač dolaznog saobraćaja} (u programu implementirana klasom \texttt{DownloadScheduler}) predstavlja modul koji se koristi za menadžerisanje video sadržaja i kontrolnih poruka koje su povezane sa video sadržajem. Podaci koje klasa čuva su deljeno skladište za video sadržaj, menadžer veze za komunikaciju sa mrežom, raspoređivač odlaznog saobraćaja kojem se prosleđuju potrebne akcije za slanje video sadržaja i video kontrolnih poruka kroz mrežu. Razlikuju se metodi za procesiranje paketa u zavisnosti da li je aplikacija pokrenuta u modu parnjaka ili izvora.
 
-Da bi se pokrenulo preuzimanje odgovarajućih paketa od menadžera veze koristi se metod \texttt{void startDownload()}. Za obradu paketa u skladu sa opisanim protokolom koristi se metod \texttt{void processPacket(Pair<String,PacketWrapper> packetPair)}. U okviru ove metode poziva se i raspoređivač odlaznog saobraćaja ukoliko za to postoji potreba.
+Funkcionalnosti koje ovaj modul pruža su preuzimanje i obrada odgovarajućih paketa od menadžera veze. Takođe, modul je zadužen i za pozivanje raspoređivača odlaznog saobraćaja ukoliko za to postoji potreba.
 
 
 \subsubsection{Raspoređivač odlaznog saobraćaja}
@@ -786,34 +764,27 @@ Da bi se pokrenulo preuzimanje odgovarajućih paketa od menadžera veze koristi 
 
 Komponenta \textit{raspoređivač odlaznog saobraćaja} (u programu implementirana klasom \texttt{DownloadScheduler}) predstavlja modul koji se koristi za menadžerisanje slanja video sadržaja i kontrolnih poruka koje imaju veze sa video sadržajem. Podaci koje klasa čuva su deljeno skladište za preuzimanje video sadržaja, menadžer veze za komunikaciju sa mrežom za dalje prosleđivanje poruka. Razlikuju se metodi za procesiranje paketa u zavisnosti da li je aplikacija pokrenuta u modu parnjaka ili izvora.
 
-Za slanje kontrolne poruke, opisane u poglavlju \ref{Kikkar.5} koristi se metod \texttt{void \\ sendControlMessage(ControlMessage message)}. Za slanje nezainteresovane poruke, opisane u poglavlju \ref{Kikkar.3},  koristi se metod \texttt{void sendNotInterested(Pair<String, PacketWrapper> haveMessagePair)}. Za slanje video snimka koristi se metod \texttt{void sendVideo(int currentVideoNum, \\List<String> currentVideoNotInterestedIpAddresses)}, gde \textit{currentVideoNum} odgovara jedinstvenom broju video snimka koji je potrebno poslati dok \textit{currentVideoNotInterestedIpAddresses} IP adresama parnjaka koji nisu zainteresovani za sadržaj. Za odgovor na traženje video snimka koristi se metod \texttt{void sendVideo(void sendResponseMessage(Pair<String, PacketWrapper> packetPair, int[]\\ videoNum)}. Za pronalaženje nedostajajućih video snimaka koristi se metod \texttt{void getMissingVideoNum()}.
-
+Funkcionalnosti koje ovaj modul pruža su slanje kontrolne i nezainteresovane poruke, slanje video snimka, odgovaranje na tražene video snimke i pronalaženje nedostajajućih video snimaka.
 
 \subsubsection{Deljeno skladište}
 \label{implementacija.2.3.7}
 
-Komponenta \textit{deljeno skladište} (u programu klasa \texttt{SharingBufferSingleton}) predstavlja modul koji se koristi za skladištenje multimedijalnog sadržaja i njegovo prosleđivanje video plejeru i sinhronizaciju video sadržaja. Koristi unikat obrazac za projektovanje na isti način i iz istog razloga kao i komponenta sat. Klasa čuva objekat klase sat, niz objekata video snimaka i objekat video plejer.
+Komponenta \textit{deljeno skladište} (u programu klasa \texttt{SharingBufferSingleton}) predstavlja modul koji se koristi za skladištenje multimedijalnog sadržaja i njegovo prosleđivanje video plejeru i sinhronizaciju video sadržaja. Koristi unikat obrazac za projektovanje na isti način i iz istog razloga kao i komponenta sat. Klasa čuva objekat klase sat, niz objekata video snimaka i objekat video plejer. 
 
-Pri korišćenju VLC plejera neophodno je zapisati podatak iz skladišta u fajl. Zapisivanje se ostvaruje metodom \texttt{void saveVideoPack(OutputStream os, int lastControlMessageVideoNum)}. U okviru ove metode osim snimanja sadržaja u fajl, briše se zastareli video sadržaj. Da bi se dobio broj trenutno uskladištenih podataka koristi se metod \texttt{int getNumberOfBufferedVideoContent()}. Za sinhronizaciju video sadržaja metodima opisanim u poglavlju \ref{Kikkar.5} koriste se metodi \texttt{void synchronizeVideoPlayTime(int currentVideoNum, ControlMessage controlMessage)} i \texttt{void synchronizeVideoPlayTime(int currentVideoNum)} gde je \textit{currentVideoNum} trenutni jedinstveni identifikator video sadržaja koji se prikazuje a \textit{controlMessage} kontrolna poruka koja se prikazuje. 
+Funkcionalnosti koje ovaj modul pruža su zapisivanje podataka iz skladišta u fajl i sinhronizacija video sadržaja metodama opisanim u sekciji \ref{Kikkar.5}.
 
 
 \subsubsection{Video plejer}
 \label{implementacija.2.3.8}
 
-Komponenta \textit{video plejer} (u programu klasa \texttt{VLCPlayer}) predstavlja modul koji se koristi za prikazivanje multimedijalnog sadržaja. Korsti se VLCj radni okvir za pokretanje instance nativnog VLC medijskog plejera i skrivanje kompleksnosti rada sa LibVLC. VLCj radi na Linux, Windows i MacOSX operativnim sistemima. Od podataka klasa sadrži instancu plejera i putanju do video sadržaja. 
-
-Za prikazivanje video snimka koristi se metod \texttt{void playVideo()}. Dobijanje dužine trenutno prikazanog sadržaja vrši se metodom
-\texttt{int getCurrentPlayTime()}.
- Da bi se izvršila sinhronizacija video plejera sa izvorom koristi se metod \texttt{void synchronizeVideo(int sourceVideoTime)} gde \textit{sourceVideoTime} predstavlja dužinu emitovanog snimka plejera.
+Komponenta \textit{video plejer} (u programu klasa \texttt{VLCPlayer}) predstavlja modul koji se koristi za prikazivanje multimedijalnog sadržaja. Koristi se VLCj radni okvir za pokretanje instance nativnog VLC medijskog plejera i skrivanje kompleksnosti rada sa LibVLC. VLCj radi na Linux, Windows i MacOSX operativnim sistemima. Od podataka klasa sadrži instancu plejera i putanju do video sadržaja. 
 
 
 \subsubsection{Izvor multimedijalnog sadržaja}
 \label{implementacija.2.3.9}
 Komponenta \textit{izvor multimedijalnog sadržaja} (u programu implementirana klasom \texttt{SourceVideoLoader}) predstavlja modul koji se koristi za prikupljanje multimedijalnog sadržaja. Multimedijalni sadržaj može biti snimljen ili emitovan. Ova komponenta se izdvaja od svih prethodno opisanih komponenti jer se povezuje sa ostalim komponentama samo u slučaju moda aplikacije izvor. Od podataka sadrži sat, deljeno skladište i raspoređivač odlaznog saobraćaja.
 
-Učitavanje video sadržaja obezbeđeno je metodom \texttt{void loadVideo(String \\inputVideoPath, String outputVideoPath)} gde \textit{inputVideoPath} odgovara putanji na kojoj se nalazi video sadržaj a \textit{outputVideoPath} putanji na kojoj plejer očekuje video sadržaj. Vrši se učitavanje pojedinačnih blokova a zatim se čeka određeno vreme pre učitavanja sledećeg.
-Potrebno vreme čekanja zavisi od karakteristika video snimka. Vreme čekanja se uvodi kako bi se sprečilo zagušenje izvora.
-Za čitanje dela video bloka i njegovo slanje u jato koristi se metoda \texttt{void readChunk(InputStream is, int chunkNum)}.  Vreme čekanja zavisi od brzine kojom se blokovi šalju i broja blokova. Najpre se svaki blok snimi u deljeno skladište a zatim distribuira u mrežu.
+Funkcionalnosti koje ovaj modul pruža su učitavanje video sadržaja i čekanje određenog vremena pre njegove distribucije. Potrebno vreme čekanja se uvodi kako bi se sprečilo zagušenje izvora i zavisi od karakteristika video snimka.
 
 % ------------------------------------------------------------------------------
 \chapter{Eksperimentalna testiranja}
@@ -821,7 +792,7 @@ Za čitanje dela video bloka i njegovo slanje u jato koristi se metoda \texttt{v
 
 U okviru ovog poglavlja analiziran je Kikkar protokol. Za ispitivanje protokola koristi se aplikacija opisana u poglavlju \ref{chp:p2p-implementacija}. Da bi davaoci usluga procenili kada treba primeniti predloženi protokol, neophodno je razumeti njegova svojstva i ograničenja. 
 
-Kikkar protokol se bazira na Screamer protokolu. Preciznije, Kikkar protokol nadograđuje Screamer protokol dajući mu mogućnost slanja sinhronizovanog sadržaja. Do danas postoji jako malo javno dostupnih studija koje analiziraju performanse Screamer protokola. U poglavlju \ref{testiranja.1} delimično će se koristiti rezultati dobijeni iz dostupne literature zajedno sa rezultatima koje je autor ovog rada dobio eksperimentalnim metodama. U datom poglavlju opisan je teorijski model mreže, način vršenog testiranja i količina dodatnog saobraćaja u mreži.
+Kikkar protokol se bazira na Screamer protokolu. Preciznije, Kikkar protokol nadograđuje Screamer protokol dajući mu mogućnost slanja sinhronizovanog sadržaja. Do danas postoji jako malo javno dostupnih studija koje analiziraju performanse Screamer protokola. U sekciji \ref{testiranja.1} delimično će se koristiti rezultati dobijeni iz dostupne literature zajedno sa rezultatima koje je autor ovog rada dobio eksperimentalnim metodama. U datom poglavlju opisan je teorijski model mreže, način vršenog testiranja i količina dodatnog saobraćaja u mreži.
 
 \section{Dobijeni rezultati}
 \label{testiranja.1}
@@ -848,9 +819,65 @@ Mrežni saobraćaj je prikupljen korišćenjem alata Whireshark \cite{Whireshark
 
 Svi eksperimenti su rađeni na video snimku koji ima prosečan bitrejt od 720 kbit/s. Da bi se dobio što veći broj parnjaka po klubu korišćena su 3 kluba sa ukupno 6 parnjaka. Parnjaci su raspoređeni na četiri računara tako da su dva računara pokretala po jednog parnjaka, a preostala dva računara po dva. Kao parnjak na kome su vršena merenja uzet je onaj koji se nalazio na računaru koji je pokretao samo jednog parnjaka. Usled binarne prirode biblioteke \textit{protocol buffer} za razmenu sadržaja nije moguće lako odrediti koji paket predstavlja snimak a koji kontrolne poruke tako da je evaluacijom prikazana samo količina dodatnog saobraćaja koju protokol uvodi. Dodatni saobraćaj predstavlja sve podatke koji se šalju a ne predstavljaju sam video sadržaj. 
 
-Kako podaci dobijeni Whireshark alatom obuhvataju i pakete koji nemaju veze sa protokolom, za čišćenje dobijenog csv fajla koristi se python skripta obrada\_csv.py. Kao biblioteka za obradu dobijenog csv fajla koristi se pandas \cite{Pandas}. Pandas je biblioteka otvorenog koda koja pruža visoke performanse za ceo proces analize i manipulacije podacima. U okviru ove skripte uzimaju se samo paketi koji su razmenjeni između parnjaka i servera. Iz dobijenih paketa se zatim izdvaja njihova veličina.  
+Kako podaci dobijeni Whireshark alatom obuhvataju i pakete koji nemaju veze sa protokolom, za čišćenje dobijenog csv fajla koristi se python skripta \textit{obrada\_csv.py}. Kao biblioteka za obradu dobijenog csv fajla koristi se pandas \cite{Pandas}. Pandas je biblioteka otvorenog koda koja pruža visoke performanse za ceo proces analize i manipulacije podacima. U okviru ove skripte uzimaju se samo paketi koji su razmenjeni između parnjaka i servera. Iz dobijenih paketa se zatim izdvaja njihova veličina.  
 
 Rezultati pokazuju da je parnjaku bilo neophodno da primi 49 598 526 bajtova podataka da bi dobio video snimak veličine 45 771 008 bajtova odakle zaključujemo da je na dodatne podatke otišlo 4 827 518 bajtova. Drugim rečima, dodatni saobraćaj obuhvata 9,73\% ukupnog saobraćaja. Dobijeni rezultat je u rangu sa ostalim protokolima slične namene. Sa druge strane, poslato je 16 199 180 bajtova podataka. Razlog za ovakav disbalans posledica je velikog talasanja mreže pa je parnjak neko vreme bio bez odlaznih veza. Takođe, veliki deo tereta preuzeo je izvor usled malog broja parnjaka i klubova. 
+
+Sledeće istraživano svojstvo je zavisnost kašnjenja video sadržaja od broja parnjaka u mreži. Pri istraživanju ovakve vrste svojstava bitno je obezbediti veliki broj parnjaka da bi dobijeni rezultati bili relevantni. Takođe, eksperimenti su rađeni u kućnim uslovima, te se mora voditi računa i da se ne preoptereti usmerivač (eng. \textit{router}) sa prevelikim brojem poruka, kao i da se ne preopterete računari sa prevelikim brojem instanci parnjaka. Preopterećenje usmerivača zajedno sa UDP protokolom može dovesti do gubljenja paketa i povećavanja vremena kašnjenja, a preopterećenje računara dovodi do lažnog velikog kašnjenja paketa usled hardverskih ograničenja računara. Kako je na raspolaganju bilo pet računara izabrana konfiguracija mreže se sastojala od tri kluba i devet parnjaka. Po dva parnjaka su pokrenuta na četiri računara, a na petom jedan parnjak i jedan tragač.
+
+Pri izvođenju eksperimenta parnjaci su dodati redom jedan po jedan. Jednom kada parnjak postane član mreže do kraja eksperimenta je ne napušta. Pošto su parnjaci dodati redom znamo da svaki klub ima tačno po tri parnjaka. Video snimak koji se deli među parnjacima ima prosečan bitrejt od 720 kbit/s. Kašnjenje koje mreža uvodi kreće se od 50ms do 150ms. Ukupna dužina merenja je 3600 sekundi tokom kojih su u prvih 540 sekundi dodaju parnjaci. Test je pokrenut ukupno 8 puta i kao konačan rezultat je uzeta srednja vrednost svih pokretanja. 
+
+Vreme je prikupljeno tako što je svaki parnjak ispisivao vreme u kojem je određeni video snimak smestio u bafer. Dakle, meri se vreme koje je potrebno od kad izvor učita video dok ga parnjak ne snimi. Kako parnjaci koriste NTP protokol, vremena su usklađena do na razliku manju od 50ms \cite{Magee}. 
+
+
+\begin{table}[h]
+\caption{Kašnjenje video sadržaja prema broju parnjaka (izraženo u milisekundama)} 
+\label{tab:kasnjenje}
+\centering
+\begin{tabular}{ |c|c|c|c|c|c|c|c|c|c| } 
+\hline 
+ Broj parnjaka & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\
+\hline
+ Maksimalno kašnjenje & 498 & 1015 & 1027 & 1027 & 1031 & 1043 & 1043 & 1502 & 1510  \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.83 \textwidth]{slike/delay_time.png}
+  \caption{Maksimalno vreme kašnjenja video sadržaja prema broju parnjaka u mreži (izraženo u milisekundama)}
+  \label{fig:kasnjenje}
+\end{figure}
+\par
+
+Dobijene rezultate primenom prethodno opisanih metoda bilo je potrebno obraditi. Obrada je podrazumevala određivanje srednje vrednosti kašnjenja po pokretanju i određivanje srednje vrednosti svih pokretanja. Uzimano vreme za određeni broj parnjaka je najveće od svih dobijenih vremena sa tim brojem parnjaka. 
+
+U tabeli \ref{tab:kasnjenje} predstavljeni su dobijeni rezultati nakon obrade, dok je na slici \ref{fig:kasnjenje} predstavljen grafik menjanja vremena kašnjenja video sadržaja u zavisnosti od broja parnjaka. Sa slike uočavamo da pri eksponencijalnom rastu broja parnjaka dobijamo samo linearan rast kašnjenja video sadržaja u mreži, što je i očekivano imajući u vidu  eksponencijalno širenje mreže u odnosu na broj parnjaka. 
+
+Jedna bitna karakteristika svih UDP protokola je veličina najvećeg UDP paketa koji će se slati kroz mrežu. Što je UDP paket veći to se brže i jeftinije podaci prenose, ali je veća i verovatnoća da će se neki paket izgubiti. Pravilni odabir veličine paketa od krucijalnog je značaja za uspešnu eksplataciju protokola. 
+
+Maksimalna veličina paketa ograničena je sa maksimalnom jedinicom prenosa (eng. \textit{Maximum transmission unit, MTU}). Maksimalna jedinica prenosa je veličina najveće jedinice podatka koja se može preneti u jednoj tansakciji mrežnog sloja. Kako se paketi usmeravaju nezavisno jedan od drugog, putanje se mogu iznenada promeniti, što može promeniti i vrednost MTU. Iz ove činjenice zaključujemo da ne postoji jedinstven način za određivanje veličine MTU. U okviru ovog rada veličina najvećeg dozvoljenog UDP paketa određena je eksperimentalno.
+
+U ovom testu određena je veličina najvećeg UDP paketa koji se šalje kroz mrežu, pri kom je gubitak paketa mali. Testiranje je rađeno tako što je slato ukupno 500mb video sadržaja, uvek istom brzinom, sa različitim veličinama paketa video sadržaja. Da bi se simulirali realni uslovi mreža je dodatno opterećena razmenjivanjem različitih paketa između članova. 
+
+\begin{table}[h]
+\caption{Gubitak paketa u zavisnosti od veličine maksimalne jedinice prenosa} 
+\label{tab:mtu}
+\centering
+\begin{tabular}{ |c|c|c|c|c|c|c|c|c|c| } 
+\hline 
+ MTU veličina & 1000 & 1200 & 1500 & 1700 & 1900\\
+\hline
+ Izgubljeni paketi \% & 4.3 & 2.4 & 1.5 & 3.1 & 5.2  \\
+\hline
+\end{tabular}
+\end{table} 
+
+U tabeli \ref{tab:mtu} predstavljen je odnos veličine i procenta izgubljenih paketa, pri velikom opterećenju mreže. Na osnovu nje izabrano je da največi udp paket bude manji od 1500 bajtova jer se pokazuje da preko te mere počinje značajno gubljenje paketa naročito kada je mreža opterećena. Takođe, veličina od 1500 bajtova nije uzeta samo zbog eksperimentalnih rezultata već je i najčešće korišćena maksimalna jedinica prenosa na internetu. Ovakva veličina omogućava maksimalnu efikasnost i propusnost kanala. Više može da se pročita u literaturi \cite{Kodikara} .
+
+
+
 
 %------------------------------------------------------------------------------
 \chapter{Zaključak i budući radovi}
