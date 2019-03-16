@@ -66,7 +66,7 @@
 
 % Apstrakt na srpskom jeziku (u odabranom pismu)
 \apstr{
-Popularnost deljenja video sadržaja putem Interneta beleži značajan rast. Sadržaj generisan na ovakav način je obiman. Tako obiman sadržaj emiter može efikasnije distribuirati upotrebom mreže ravnopravnih računara. Upravo zbog kvaliteta mreže ravnopravnih računara pri razmeni video sadržaja implementiran je veliki broj protokola. Kako je veliki broj protokola baziran na brzoj distribuciji sadržaja i malom dodatnom sadržaju, ne postoji ni jedan opšte prihvaćeni protokol za dostavu sinhronizovanog sadržaja. U ovom radu predstavljen je potpuno novi protokol Kikkar. Protokol koristi hibridnu topologiju i omogućava dostavu sinhronizovanog sadržaja upotrebom mreže ravnopravnih računara. Eksperimentalni rezultati pokazali su da je dodatni sabraćaj koji protokol unosi kao i brzina propagacije sadržaja kroz mrežu slična sa drugim protokolima koji ne podržavaju sinhronizaciju.
+Popularnost deljenja video sadržaja putem interneta beleži značajan rast. Sadržaj generisan na ovakav način je obiman. Tako obiman sadržaj emiter može efikasnije distribuirati upotrebom mreže ravnopravnih računara. Upravo zbog kvaliteta mreže ravnopravnih računara pri razmeni video sadržaja implementiran je veliki broj protokola. Glavna preokupacija novih protokola bila je brža distribucija sadržaja sa malim dodatnim sadržajem, što je dovelo do nepostojanja ni jednog opšte prihvaćenog protokola za dostavu sinhronizovanog sadržaja. U ovom radu predstavljen je potpuno novi protokol Kikkar. Protokol koristi hibridnu topologiju i omogućava dostavu sinhronizovanog sadržaja upotrebom mreže ravnopravnih računara. Eksperimentalni rezultati pokazali su da je dodatni sabraćaj koji protokol unosi kao i brzina propagacije sadržaja kroz mrežu slična sa drugim protokolima koji ne podržavaju sinhronizaciju.
 }
 
 % Ključne reči na srpskom jeziku (u odabranom pismu)
@@ -95,19 +95,19 @@ Popularnost deljenja video sadržaja putem Interneta beleži značajan rast. Sad
 
 % ------------------------------------------------------------------------------
 \chapter{Uvod}
-Svakodnevno se povećava broj dostupnih radio stanica i TV kanala koji se emituju putem Interneta. Tradicionalno se za njihov prenos koristi centralizovana klijent-server arhitektura. Ograničenja klijent-server arhitekture pri dostavi video sadržaja u realnom vremenu mogu se prevazići korišćenjem mreže ravnopravnih članova. Pored prevazilaženja ograničenja, mreža ravnopravnih članova omogućava emiteru da poveća kvalitet sadržaja i smanji cenu prenosa. Na taj način mreža ravnopravnih članova omogućava emitovanje ličnog medijskog sadržaja. Ovako široka dostupnost je dovela do revolucije pri distribuciji informacija na sličan način kao što je veb (eng. \textit{World Wide Web, WWW}) pre više više od dve decenije.
+Svakodnevno se povećava broj dostupnih radio stanica i TV kanala koji se emituju putem interneta. Tradicionalno se za njihov prenos koristi centralizovana klijent-server arhitektura. Glavno ograničenje klijent-server arhitekture pri dostavi video sadržaja u realnom vremenu je linearno povećanje zahtevanih resursa i performansi servera u odnosu na broj klijenta. Ovakvo ograničenje može se prevazići korišćenjem mreže u kojoj korisnici dele svoje resurse. Ovakav tip mreže je samoskalabilan i naziva se mreža ravnopravnih članova. Pored prevazilaženja ograničenja, kao posledica samoskalabilnosi, mreža ravnopravnih članova omogućava emiteru da poveća kvalitet sadržaja i smanji cenu prenosa. Na taj način mreža ravnopravnih članova omogućava emitovanje ličnog medijskog sadržaja. Ovako široka dostupnost je dovela do revolucije pri distribuciji informacija na sličan način kao što je veb (eng. \textit{World Wide Web, WWW}) pre više više od dve decenije.
 
-Dobre karakteristike mreže ravnopravnih računara dugo su poznate i koriste se za dostavu video sadržaja u realnom vremenu. I pored široke primene, većina do sada poznatih sistema nema nikakav vid sinhronizacije. Kod ovakvog pristupa prikazani video u nekom vremenskom trenutku se može značajno razlikovati u zavisnosti od pozicije korisnika u mreži. Različitost u prikazu video sadržaja može izazvati širok spektar posledica, od gubljenja korisnika do nemogućnosti primene protokola u određenim uslovima u kojima je sinhronizacija bitan faktor.
+Samoskalabilnost mreže ravnopravnih računara dugo je poznata i koristi se za dostavu video sadržaja u realnom vremenu. I pored široke primene, većina do sada poznatih sistema nema nikakav vid sinhronizacije. Kod ovakvog pristupa prikazani video u nekom vremenskom trenutku može se značajno razlikovati u zavisnosti od pozicije korisnika u mreži. Različitost u prikazu video sadržaja može izazvati širok spektar posledica, od gubljenja korisnika do nemogućnosti primene protokola u određenim uslovima u kojima je sinhronizacija bitan faktor.
 
-U radu je predstavljen protokol za dostavu sinhronizovanog sadržaja u realnom vremenu. Predstavljeni protokol koristi topologiju koja je prvi put predstavljena Screamer protokolom i dodaje joj mogućnost dostave sinhronizovanog sadržaja u realnom vremenu sa malom zadrškom. Pored samog protokola rad obuhvata i implementaciju predloženog rešenja. Implementacija rešenja obuhvata dve aplikacije pisane u programskom jeziku Java. Radi kompletne slike predloženog protokola predstavljena je evaluacija dobijenog rešenja. 
+U radu je predstavljen protokol za dostavu sinhronizovanog sadržaja u realnom vremenu. Predstavljeni protokol koristi topologiju koja je prvi put predstavljena protokolom  Screamer i dodaje joj mogućnost dostave sinhronizovanog sadržaja u realnom vremenu sa malom zadrškom. Pored samog protokola rad obuhvata i implementaciju predloženog rešenja. Implementacija rešenja obuhvata dve aplikacije pisane u programskom jeziku Java. Radi kompletne slike predloženog protokola predstavljena je evaluacija dobijenog rešenja. 
   
-Glava \ref{chp:p2p-uvod} opisuje osnovne koncepte mreže ravnopravnih računara. Opisani su ukratko različiti koncepti i diskutovano je o njihovim manama i prednostima uzimajući u obzir deljenje sadržaja. U glavi \ref{chp:p2p-protokol} predstavljen je Kikkar protokol. U glavi \ref{chp:p2p-implementacija} detaljno je opisana implementacija predloženog Kikkar protokola. Implementacija protokola obuhvata dva Java programa, tragača i parnjaka. Glava \ref{chp:testiranja} predstavlja eksperimentalne rezultate i evaluira dobijena rešenja. U glavi \ref{chp:zakljucak} izveden je zaključak i date su neke ideje za buduća unapređenja protokola.
+Glava \ref{chp:p2p-uvod} opisuje osnovne koncepte mreže ravnopravnih računara. Opisani su ukratko različiti koncepti i diskutovano je o njihovim manama i prednostima uzimajući u obzir deljenje sadržaja. U glavi \ref{chp:p2p-protokol} predstavljen je protokol Kikkar. U glavi \ref{chp:p2p-implementacija} detaljno je opisana implementacija predloženog protokola Kikkar. Implementacija protokola obuhvata dva Java programa, tragača i parnjaka. Glava \ref{chp:testiranja} predstavlja eksperimentalne rezultate i evaluira dobijena rešenja. U glavi \ref{chp:zakljucak} izveden je zaključak i date su neke ideje za buduća unapređenja protokola.
  
 
 \section{Pregled literature}
 \label{pregled.1}
 
-Tokom proteklih desetak godina mehanizmi za dostavu sadržaja u realnom vremenu upotrebom mreže ravnopravnih računara su detaljno izučavani \cite{Zhang:2012:SPL:2365364.2365643}. Arhitektura koja se predlaže za sisteme za dostavu sadržaja u realnom vremenu obično se može svrstati u dve kategorije. To su topologija mreže sa povlačenjem sadržaja ili topologija stabla sa guranjem sadržaja. Prva predložena bila je topologija stabla sa guranjem sadržaja \cite{Venkata}. Topologija mreže sa povlačenjem sadržaja predstavljena je znatno kasnije \cite{ZhangLiu}. Nakon uspeha opisanih topologija predstavljen je i njihov spoj, hibridna topologija. Početni radovi koji su upotrebljavali hibridnu topologiju imali su dobre performanse po ceni dosta više razmenjenih poruka \cite{HAMMAMI2014158}. 
+Tokom proteklih desetak godina mehanizmi za dostavu sadržaja u realnom vremenu upotrebom mreže ravnopravnih računara su detaljno izučavani \cite{Zhang:2012:SPL:2365364.2365643}. Arhitektura koja se predlaže za sisteme za dostavu sadržaja u realnom vremenu obično se može svrstati u dve kategorije. To su topologija mreže sa povlačenjem sadržaja i topologija stabla sa guranjem sadržaja. Prva predložena bila je topologija stabla sa guranjem sadržaja \cite{Venkata}. Topologija mreže sa povlačenjem sadržaja predstavljena je znatno kasnije \cite{ZhangLiu}. Nakon uspeha opisanih topologija predstavljen je i njihov spoj, hibridna topologija. Početni radovi koji su upotrebljavali hibridnu topologiju imali su dobre performanse po ceni dosta više razmenjenih poruka \cite{HAMMAMI2014158}. 
 
 U poslednjih par godina istražuju se tehnologije koje bi ubrzale razmenu sadržaja. Jedna od takvih tehnologija koja se često pominje u novijim radovima je slučajno mrežno kodiranje (eng. \textit{random network coding}) \cite{Nguyen5462032}. Ova tehnologija je interesantna u naučnim krugovima. Sa druge strane, u industriji još uvek nije zaživela jer njena implementacija unosi značajan dodatni posao svakom parnjaku. 
 Pored dodatnog posla povećava se i kompleksnost samog slanja podatka. Još jedna tehnika koja izaziva dosta polemike u naučnim krugovima je upotreba nekog vida identifikacije parnjaka koji mogu doprineti mreži i njihovo isticanje. Jedno od takvih rešenja predstavljeno je u radu \cite{Esch6077117}. Nažalost, ni ovo rešenje nije zaživelo zbog nepredvidivosti parnjaka koje se ogleda u čestom napuštanju mreže i dinamičkom menjanju resursa.
@@ -127,14 +127,11 @@ Tokom 1990-ih godina internet se najvećim delom zasnivao na klijent-server mode
 
 Navedene činjenice dovode do promene načina korišćenja interneta i pravljenja mreže ravnopravnih članova (eng. \textit{peer-to-peer (P2P) network}) u kojoj korisnici dele svoje resurse \cite{Tanenbaum}. Primena ovakvog pristupa obećavajuće je rešenje za mnoge oblasti.
 
-U sekciji \ref{P2P.1} opisani su osnovni koncepti mreže ravnopravnih članova. U sekciji \ref{P2P.2} opisane su struktuirane i nestruktuirane mreže ravnopravnih članova. U sekciji \ref{P2P.3} opisane su topologija stabla (eng. \textit{tree topology}), mrežna (eng. \textit{mesh topology}) i hibridna (eng. \textit{hybrid topology}) topologija. Način pripreme i slanja video sadržaja opisan je u sekciji \ref{P2P.4}. U sekciji \ref{P2P.5} opisani su osnovni problemi prilikom pravljenja mreže ravnopravnih članova.
-
-
 \section{Osnovni koncepti}
 \label{P2P.1}
 Korišćenje aplikativnog sloja u formiranju pokrivača (eng. \textit{overlays}) za pristup internet servisima ima dugu istoriju. I pored duge tradicije ovakav pristup se do nedavno koristio samo za dizajn specifičnih protokola i interno povezivanje servisa infrastrukture, bez mogućnosti korišćenja između dva računara koja nisu susedi. Popularizacija ideje za formiranje pokrivača na aplikativnom sloju počinje 1999. godine sa Napster-om \cite{Aberer_2004} i nastavlja se kroz druge sisteme za razmenu digitalnog sadržaja kao što su Gnutella \cite{Gnutella}, FastTrack \cite{FastTrack}, KaZaa \cite{kazaa} i BitTorrent \cite{Bittorent}. 
 
-Arhitektura ravnopravnih članova (eng. \textit{peer-to-peer, P2P}) definiše se kao distribuirani vid arhitekture u kojoj svaki parnjak (eng. \textit{peer}) može samostalno da obavlja poslove, ali omogućava drugim parnjacima da koriste njegove resurse kao što i sam može po potrebi koristiti resurse drugih parnjaka \cite{Shen:2009}. Drugim rečima, svaki parnjak komunicira sa ostalim parnjacima u mreži koristeći softver koji se ponaša i kao klijent i kao server. Na osnovu navedenih činjenica zaključuje se da arhitektura ravnopravnih članova omogućava veću autonomiju članova mreže koji sami definišu pravila o deljenju resursa. Glavna primena arhitekture ravnopravnih članova prisutna je u sistemima sa većom tolerancijom greške kod distribuirane obrade. Pored toga, ovaj vid arhitekture koristi se prilikom razmene fajlova, direktne komunikacije, obrade velikih količina podataka i softvera za zabavu. 
+Arhitektura ravnopravnih članova (eng. \textit{peer-to-peer, P2P}) definiše se kao distribuirani vid arhitekture u kojoj svaki parnjak (eng. \textit{peer}) može samostalno da obavlja poslove, ali omogućava drugim parnjacima da koriste njegove resurse kao što i sam može po potrebi koristiti resurse drugih parnjaka \cite{Shen:2009}. Drugim rečima, svaki parnjak komunicira sa ostalim parnjacima u mreži koristeći softver koji se ponaša i kao klijent i kao server. Na osnovu navedenih činjenica može se zaključiti da arhitektura ravnopravnih članova omogućava veću autonomiju članova mreže koji sami definišu pravila o deljenju resursa. Glavna primena arhitekture ravnopravnih članova prisutna je u sistemima sa većom tolerancijom greške kod distribuirane obrade. Pored toga, ovaj vid arhitekture koristi se prilikom razmene fajlova, direktne komunikacije, obrade velikih količina podataka i softvera za zabavu. 
 
 
 Prilikom deljenja resursa svaki parnjak doprinosi resursima mreže ravnopravnih članova. Idealno, deljenje resursa je proporcionalno broju parnjaka koji koriste mrežu ravnopravnih članova. Međutim, usled različitih problema u praksi navedeno svojstvo većinom nije ispunjeno. 
@@ -235,7 +232,7 @@ Takođe, značajnu ulogu u svemu igra i Murov zakon \cite{Moore} činjenicom da 
 
 Internet je dizajniran za slanje paketa bez mogućnosti kontrole toka. Ovakav način transfera ne pogoduje slanju vremenski neprekidno baziranog saobraćaja kao što su video i audio sadržaji \cite{Tanenbaum}. Glavni razlog je što dostava u realnom vremenu ima određeni poredak kojim se mora emitovati kao i vremenska ograničenja. Na primer, video sadržaj se mora emitovati neprekidno slika za slikom. U slučaju da podatak ne stigne na vreme, proces emitovanja će biti prekinut.
 
-Danas se internet sve više koristi za razmenu multimedijalnog sadržaja umesto statičnog teksta i grafika \cite{Beggs:1999}. Aplikacije koje zahtevaju dostavu u realnom vremenu velikom broju korisnika su, između ostalog, Internet TV, prenos sportskih događaja, online igrice i edukacija preko daljine. Usled ovako širokog spektra primena istraživači već skoro trideset godina istražuju odgovarajuću podršku aplikacijama u obliku IP višesmernog emitovanja (eng. \textit{multicast}). IP višesmerno emitovanje je vrsta slanja paketa u kome se dodaje posebna zastavica (eng. \textit{flag}) u IP pakete kojom se signalizira ruterima da je paket potrebno poslati grupi računara paralelno \cite{Deering:1990}. Međutim, usled ozbiljnih problema sa skaliranjem i podrškom na višim nivoima funkcionalnosti, višesmerno emitovanje nije zaživelo šire. Visoki troškovi mreža za isporuku sadržaja (eng. \textit{Content Delivery Networks (CDN)}) i obezbeđivanja odgovarajućeg propusnog opsega su dva glavna faktora koji ograničavaju ovakav vid slanja samo na mali deo izdavača Internet usluga, koji višesmerno emitovanje prevashodno koriste za dostavu kvalitetnog video sadržaja IPTV. Za dostavu sadržaja pretplatnicima izdavači koriste usmerivače paketa (eng. \textit{packet switching}). 
+Danas se internet sve više koristi za razmenu multimedijalnog sadržaja umesto statičnog teksta i grafika \cite{Beggs:1999}. Aplikacije koje zahtevaju dostavu u realnom vremenu velikom broju korisnika su, između ostalog, internet TV, prenos sportskih događaja, online igrice i edukacija preko daljine. Usled ovako širokog spektra primena istraživači već skoro trideset godina istražuju odgovarajuću podršku aplikacijama u obliku IP višesmernog emitovanja (eng. \textit{multicast}). IP višesmerno emitovanje je vrsta slanja paketa u kome se dodaje posebna zastavica (eng. \textit{flag}) u IP pakete kojom se signalizira ruterima da je paket potrebno poslati grupi računara paralelno \cite{Deering:1990}. Međutim, usled ozbiljnih problema sa skaliranjem i podrškom na višim nivoima funkcionalnosti, višesmerno emitovanje nije zaživelo šire. Visoki troškovi mreža za isporuku sadržaja (eng. \textit{Content Delivery Networks (CDN)}) i obezbeđivanja odgovarajućeg propusnog opsega su dva glavna faktora koji ograničavaju ovakav vid slanja samo na mali deo izdavača internet usluga, koji višesmerno emitovanje prevashodno koriste za dostavu kvalitetnog video sadržaja IPTV. Za dostavu sadržaja pretplatnicima izdavači koriste usmerivače paketa (eng. \textit{packet switching}). 
 
 U nadolazećim godinama, postoji značajni interes za korišćenje mreže ravnopravnih računara za dostavu sadržaja u realnom vremenu. Dve ključne stavke čine pomenuti pristup primamljivim. Prvo, ovakva tehnologija ne zahteva podršku mrežne infrastrukture što je čini jeftinom i jednostavnom za izradu. Drugo, u takvoj tehnologiji, svi koji primaju sadržaj isti taj sadržaj dele dalje, što obezbeđuje visok nivo skalabilnosti. Pored velikog interesa i uloženog truda u pronalaženje odgovarajućeg P2P sistema, ova tema je još uvek otvorena. 
 Glavna tačka spoticanja P2P mreže za dostavu sadržaja u realnom vremenu je susret sa drugačijim poteškoćama u odnosu na uobičajne probleme mreže. Kod dostave sadržaja u realnom vremenu posebno se mora voditi računa o kašnjenju signala, dok u slučaju preuzimanja sadržaja kašnjenje nije kritično. Zapravo, prihvatljivo je preuzimanje sadržaja u trajanju od nekoliko sati pa čak i dana. Različitost i striktniji zahtevi prenosa video sadržaja u realnom vremenu zahteva fundamentalno drugačiji dizajn i pristup.
@@ -263,7 +260,7 @@ Treći izazov sa kojim se susreću P2P sistemi su različiti propusni opsezi par
 U poglavlju \ref{chp:p2p-uvod} navedeno je da distribucija medijskog sadržaja preko interneta privlači veliku pažnju u poslednjoj deceniji. Navedena činjenica dovela je do detaljnijeg istraživanja teme od strane naučnika i industrije. Veliki broj različitih P2P protokola za dostavu video sadržaja u realnom vremenu predstavljen je u prethodnim godinama \cite{Zhang:2012:SPL:2365364.2365643}. Pored velikog broja predloženih protokola, samo pojedini imaju neki vid sinhronizacije. Ostali protokoli vode se logikom da će sadržaj biti relativno sinhronizovan. Relativna sinhronizacija uzrokuje da se sadržaj koji se prikazuje na parnjacima može značajno razlikovati.
 
 
-Protokol Kikkar \footnote{Kikkar (hebrejski kružni okrug, kompletna težina)} je baziran na Screamer protokolu \cite{cohenP2P}. Screamer koristi hibridnu topologiju koja omogućava dostavu video sadržaja u realnom vremenu sa malim zastojem (eng. \textit{delays}) i malim dodatnim saobraćajem u mreži (eng. \textit{overhead}). Zbog ovakvih karakteristika posebno je pogodan za dostavu video sadržaja u realnom vremenu. Važno je napomenuti da sam Screamer protokol nema nikakav mehanizam kojim bi se kontrolisala sinhronizacija sadržaja među parnjacima, te Kikkar menja neke delove i donosi nove kako bi omogućio sinhronizaciju.
+Protokol Kikkar \footnote{Kikkar (hebrejski kružni okrug, kompletna težina)} je baziran na protokolu Screamer \cite{cohenP2P}. Screamer koristi hibridnu topologiju koja omogućava dostavu video sadržaja u realnom vremenu sa malim zastojem (eng. \textit{delays}) i malim dodatnim saobraćajem u mreži (eng. \textit{overhead}). Zbog ovakvih karakteristika posebno je pogodan za dostavu video sadržaja u realnom vremenu. Važno je napomenuti da sam protokol Screamer nema nikakav mehanizam kojim bi se kontrolisala sinhronizacija sadržaja među parnjacima, te Kikkar menja neke delove i donosi nove kako bi omogućio sinhronizaciju.
 
 \section{Arhitektura mreže}
 \label{Kikkar.1}
@@ -278,9 +275,9 @@ Protokol Kikkar \footnote{Kikkar (hebrejski kružni okrug, kompletna težina)} j
 
 Protokol Kikkar je baziran na protokolu Screamer. Odavde zaključujemo da se Kikkar klasifikuje kao hibridni pokrivač koji koristi brojne mehanizme kako bi postigao što manji zastoj i dodatni saobraćaj u mreži. Na slici \ref{fig:screamer-topologija} prikazana je struktura mreže za dostavu video sadržaja u realnom vremenu za jednu konfiguraciju protokola. Uočavamo da su parnjaci podeljeni u klubove. Jedan parnjak može da pripada najviše jednom klubu. Ukupan broj klubova je 6. Proces dostave video sadržaja se može apstrahovati na tri faze: (1) ubacivanje guranjem video blokova od izvora (eng. \textit{source}) u ostale klubove, (2) kontrolisano plavljenje (eng. \textit{flooding}) u klubu, i (3) guranje sadržaja u listove mreže, tj. guranje sadržaja izvan kluba.
 
-Kikkar protokol razlikuje tri glavne uloge u sistemu: tragač (eng. \textit{tracker}), parnjak koji proizvodi i distribuira video snimak (eng. \textit{source}) i parnjaci koji traže video snimak. Tragač služi da pomogne parnjacima u bržem i lakšem pronalaženju ostalih parnjaka. Bitno je napomenuti da se tragač koristi samo za otkrivanje novih parnjaka i sinhronizaciju časovnika u mreži. 
+Protokol Kikkar razlikuje tri glavne uloge u sistemu: tragač (eng. \textit{tracker}), parnjak koji proizvodi i distribuira video snimak (eng. \textit{source}) i parnjaci koji traže video snimak. Tragač služi da pomogne parnjacima u bržem i lakšem pronalaženju ostalih parnjaka. Bitno je napomenuti da se tragač koristi samo za otkrivanje novih parnjaka i sinhronizaciju časovnika u mreži. 
 
-Kod Kikkar protokola, svi parnjaci su podeljeni u klubove, tj. svaki parnjak pripada jednom klubu. Dodeljivanje veze parnjak-klub vrši tragač prilikom pristupanja parnjaka sistemu. Parnjak doprinosi klubu kome pripada svojim resursima. Ostalim klubovima parnjak je list tj. ništa ne doprinosi već samo dobija sadržaj. Parnjak koji šalje video igra posebnu ulogu u sistemu, tj. pripada svim klubovima. Takođe, on je zadužen za podelu video snimaka na manje delove i dodelu delova određenim klubovima. Ovakav način slanja je čest kod topologije višestrukih stabala.
+Kod protokola Kikkar, svi parnjaci su podeljeni u klubove, tj. svaki parnjak pripada jednom klubu. Dodeljivanje veze parnjak-klub vrši tragač prilikom pristupanja parnjaka sistemu. Parnjak doprinosi klubu kome pripada svojim resursima. Ostalim klubovima parnjak je list tj. ništa ne doprinosi već samo dobija sadržaj. Parnjak koji šalje video igra posebnu ulogu u sistemu, tj. pripada svim klubovima. Takođe, on je zadužen za podelu video snimaka na manje delove i dodelu delova određenim klubovima. Ovakav način slanja je čest kod topologije višestrukih stabala.
 
 Parnjak komunicira sa tragačem upotrebom HTTP protokola. Parnjaci komuniciraju međusobom koristeći protokol korisničkih datagrama (eng. \textit{User Datagram Protocol, UDP}). Veze između parnjaka se formiraju tako što se povezuju parnjak koji šalje i parnjak koji prima. Važi pravilo da parnjak koji je na početku veze odabran da šalje video ne prima sadržaj od parnjaka primaoca. Drugim rečima veze su jednosmerne.  
 
@@ -343,7 +340,7 @@ Kako se u okviru mreže javljaju zagušenja i gube paketi, postoji mogućnost da
 \section{Kontrola zagušenja}
 \label{Kikkar.4}
 
-U Kikkar protokolu, radi kontrolisanja zagušenja može doći do raskidanja konekcije pri određenim uslovima. Za raskidanje veze se koristi \texttt{terminirajuća} poruka. Ova poruka sadrži razlog terminacije (na primer dolazak novog parnjaka, prespora veza, izlazak iz jata). Jedna od okolnosti pri kojoj može doći do raskidanja konekcije je preveliko kašnjenje paketa. Ukoliko se preko dolazne konekcije ne dobije ni jedna poruka za unapred definisano vreme veza se smatra mrtvom i prekida se. Tačno vreme čekanja zavisi od same mreže i postavlja ga administrator mreže. Merenje vremena počinje dolaskom poslednje poruke. Pri svakoj dobijenoj poruci proveravaju se svi parnjaci. U slučaju da neki od parnjaka nije poslao poruku određeno vreme, veza se raskida. Ukoliko parnjak nema sadržaj za slanje a želi da spreči raskidanje veze, on šalje \texttt{keep-alive} poruku kojom obaveštava dobavljača sadržaja da je sa vezom sve u redu. Sa ciljem da bude što manja, keep-alive poruka sadrži samo redni broj koji je jedinstveno identifikuje. 
+U protokolu Kikkar, radi kontrolisanja zagušenja može doći do raskidanja konekcije pri određenim uslovima. Za raskidanje veze se koristi \texttt{terminirajuća} poruka. Ova poruka sadrži razlog terminacije (na primer dolazak novog parnjaka, prespora veza, izlazak iz jata). Jedna od okolnosti pri kojoj može doći do raskidanja konekcije je preveliko kašnjenje paketa. Ukoliko se preko dolazne konekcije ne dobije ni jedna poruka za unapred definisano vreme veza se smatra mrtvom i prekida se. Tačno vreme čekanja zavisi od same mreže i postavlja ga administrator mreže. Merenje vremena počinje dolaskom poslednje poruke. Pri svakoj dobijenoj poruci proveravaju se svi parnjaci. U slučaju da neki od parnjaka nije poslao poruku određeno vreme, veza se raskida. Ukoliko parnjak nema sadržaj za slanje a želi da spreči raskidanje veze, on šalje \texttt{keep-alive} poruku kojom obaveštava dobavljača sadržaja da je sa vezom sve u redu. Sa ciljem da bude što manja, keep-alive poruka sadrži samo redni broj koji je jedinstveno identifikuje. 
 
 Druga okolnost pod kojom je dozvoljeno raskidanje veze je dolazak paketa u pogrešnom redosledu. Svaki paket ima svoj broj. Ukoliko paketi pristižu u pogrešnom redosledu to može ukazivati na postojanje zagušenja pa će paketi ići alternativnim putevima. U tom slučaju, radi rasterećenja mreže veza se raskida. Dodatno, mali broj paketa koji pristižu u pogrešnom redosledu za veći vremenski period ne mora ukazivati na kritično zagušenje. Treći način rešavanja problema sa zagušenjem je odbacivanje svih veza u kojima se blok podataka predugo čeka. Predugo čekanje obično ukazuje na usko grlo u sistemu. Radi određivanja trajanja pauze u pristizanju paketa, čuvamo vreme kada je poslednji paket primljen.
 
@@ -363,22 +360,22 @@ Pored problema sa manjkom veza, može se javiti i višak veza parnjaka. Kada par
 \end{figure}
 \par
 
-U Kikkar protokolu izvor je pored slanja video sadržaja zadužen i za slanje kontrolnih poruka. Na slici \ref{Kikkar.5} ilustrovan je način obrade kontrolne poruke. Kontrolna poruka se šalje u pravilnim razmacima pre svakog keyframe-a. Za razliku od ostalih poruka, kontrolna poruka se zbog svoje važnosti šalje u sve klubove. Nakon primanja kontrolne poruke, parnjak je prosleđuje svim komšijama sa kojima ima odlaznu vezu, bez obzira da li su je oni već primili i da li su u njegovom klubu. Na ovaj način se osigurava da poruka stigne do svakog parnjaka. Nakon primanja kontrolne poruke koja ima isti sadržaj kao i neka od prethodnih poruka parnjak prekida njeno dalje prosleđivanje. Na ovaj način se sprečava beskonačno slanje poruke kroz jato. Nakon primanja kontrolne poruke, parnjak proverava da li skladište sadrži odgovarajuće video blokove koji su porukom obuhvaćeni. Ukoliko skladištu nedostaje prvi obuhvaćeni blok, preskače se ceo opseg. Kako se sve značajne informacije za prikazivanje video snimka nalaze u prvom bloku, prethodna činjenica je potpuno opravdana. U slučaju postojanja prvog bloka, obuhvaćeni blokovi se šalju video plejeru. Kako bi se sprečilo prekidanje video snimka, u slučaju preskakanja nekog video bloka prikazuje se prethodni video blok.
+U protokolu Kikkar izvor je pored slanja video sadržaja zadužen i za slanje kontrolnih poruka. Na slici \ref{Kikkar.5} ilustrovan je način obrade kontrolne poruke. Kontrolna poruka se šalje u pravilnim razmacima pre svakog keyframe-a. Za razliku od ostalih poruka, kontrolna poruka se zbog svoje važnosti šalje u sve klubove. Nakon primanja kontrolne poruke, parnjak je prosleđuje svim komšijama sa kojima ima odlaznu vezu, bez obzira da li su je oni već primili i da li su u njegovom klubu. Na ovaj način se osigurava da poruka stigne do svakog parnjaka. Nakon primanja kontrolne poruke koja ima isti sadržaj kao i neka od prethodnih poruka parnjak prekida njeno dalje prosleđivanje. Na ovaj način se sprečava beskonačno slanje poruke kroz jato. Nakon primanja kontrolne poruke, parnjak proverava da li skladište sadrži odgovarajuće video blokove koji su porukom obuhvaćeni. Ukoliko skladištu nedostaje prvi obuhvaćeni blok, preskače se ceo opseg. Kako se sve značajne informacije za prikazivanje video snimka nalaze u prvom bloku, prethodna činjenica je potpuno opravdana. U slučaju postojanja prvog bloka, obuhvaćeni blokovi se šalju video plejeru. Kako bi se sprečilo prekidanje video snimka, u slučaju preskakanja nekog video bloka prikazuje se prethodni video blok.
 
 Ukoliko je uspešno izvršeno slanje sadržaja video plejeru, prelazi se na korak sinhronizacije. U koraku sinhronizacije se proverava da li video plejer prikazuje sadržaj. U slučaju neaktivnosti multimedijalnog plejera, snima se vrednost prikazanog sadržaja izvora sabrana sa kašnjenjem paketa. Ova vrednost će se koristiti kasnije kao reper za eventualne korekcije. Nakon što je vrednost snimljena pokreće se multimedijalni plejer. Ukoliko je plejer već aktivan, izračunava se dužina do sada prikazanog sadržaja. Ukoliko je ta dužina manja od zbira dužine emitovanja sadržaja izvora i kašnjenja paketa, potrebno je povećati brzinu snimka određeni vremenski interval dok se ne sinhronizuje sa izvorom. Slično, u slučaju da je pomenuta dužina veća od zbira dužine emitovanja sadržaja izvora i kašnjenja paketa, brzina se smanjuje određeni vremenski interval dok se ne postigne sinhronizacija sa izvorom. 
 
 
-\chapter{Implementacija Kikkar protokola}
+\chapter{Implementacija protokola Kikkar}
 \label{chp:p2p-implementacija}
 
-Za demonstraciju Kikkar protokola opisanog u poglavlju \ref{chp:p2p-protokol} razvijene su veb i desktop aplikacija. Za razvoj je korišćen programski jezik Java 8 \cite{Java} i razvojno okruženje Eclipse \cite{Eclipse}. Veb aplikacija implementira funkcionalnosti tragača Kikkar protokola, a desktop aplikacija u zavisnosti od podešenih parametara predstavlja parnjaka ili izvor. 
+Za demonstraciju protokola Kikkar opisanog u poglavlju \ref{chp:p2p-protokol} razvijene su veb i desktop aplikacija. Za razvoj je korišćen programski jezik Java 8 \cite{Java} i razvojno okruženje Eclipse \cite{Eclipse}. Veb aplikacija implementira funkcionalnosti tragača protokola Kikkar, a desktop aplikacija u zavisnosti od podešenih parametara predstavlja parnjaka ili izvor. 
 
 Za uspešno pokretanje veb aplikacije neophodan je Java servlet kontejnera (eng. \textit{Java Servlet Container}), dok je za desktop aplikaciju potrebna samo Java virtuelna mašina (eng. \textit{Java virtual machine, JVM}). Prilikom inicijalizacije desktop aplikacije bira se mod pokretanja aplikacije. Dostupni su mod izvora ili mod parnjaka. Kada je mod izabran, aplikacija do kraja rada ostaje u odabranom modu. I veb i desktop aplikacija su otvorenog koda i mogu se pronaći na github repozitorijumu \footnote{Repozitorijum se može naći na adresi \url{https://github.com/ozzy80/master-rad/tree/master/kod}}. Detaljnije o veb aplikaciji može se pronaći u sekciji \ref{implementacija.1}. Više detalja o desktop aplikaciji nalazi se u sekciji \ref{implementacija.2}.
 
 \section{Implementacija tragača}
 \label{implementacija.1}
 
-Implementacija Kikkar protokola obuhvata aplikacije za veb i desktop. Veb aplikacija predstavlja tragača Kikkar protokola. 
+Implementacija protokola Kikkar obuhvata aplikacije za veb i desktop. Veb aplikacija predstavlja tragača protokola Kikkar. 
 
 Pre implementacije samog tragača, neophodno je obavljanje nekoliko zadataka.
 Prvi zadatak je odabir odgovarajućeg Java servlet kontejnera za izvršavanje veb aplikacije. Za Java servlet kontejner odabran je Tomcat \cite{Tomcat} verzije 9. Razlozi za odabir Tomcat kontejnera su široka primena u industriji, jednostavnost, odlična zajednica i dokumentacija. Drugi zadatak je odabir odgovarajuće baze podataka. Za bazu podataka izabrana je MySQL \cite{Mysql} baza. Detaljnije o samoj bazi i formiranim tabelama nalazi se u sekciji \ref{implementacija.1.1}. Konačno, potrebno je naći odgovarajće radne okvire (eng. \textit{framework}). Detaljnije o korišćenim bibliotekama i radnim okvirima može se pronaći u sekciji \ref{implementacija.1.2}. U sekciji \ref{implementacija.1.3} dat je opis funkcionalnosti aplikacije.
@@ -386,7 +383,7 @@ Prvi zadatak je odabir odgovarajućeg Java servlet kontejnera za izvršavanje ve
 \subsection{Baza podataka}
 \label{implementacija.1.1}
 
-Za potrebe aplikacije izabrana je MySQL \cite{Mysql} baza podataka. Razlog za odabir MySQL baze podataka je široka primena u industriji i nauci, dobra dokumentacija i jednostavna integracija. Na slici \ref{fig:eer} predstavljen je EER dijagram baze podataka (eng. \textit{EER database diagram}). 
+Za potrebe aplikacije korišćena je MySQL \cite{Mysql} baza podataka. Razlog za odabir MySQL baze podataka je široka primena u industriji i nauci, dobra dokumentacija i jednostavna integracija. Na slici \ref{fig:eer} predstavljen je EER dijagram baze podataka (eng. \textit{EER database diagram}). 
 
 \begin{figure}[!ht]
   \centering
@@ -400,12 +397,20 @@ Za potrebe aplikacije izabrana je MySQL \cite{Mysql} baza podataka. Razlog za od
 Tabela \texttt{channel} sadrži informacije o kanalima. Ove informacije pruža emiter signala pri registraciji kanala. Informacije koje se čuvaju u tabeli obuhvataju:
 
 \begin{center}
-\begin{tabular}{ p{3.8cm} p{10.2cm} }
- \textit{channel\_id} & - jedinstveni identifikacioni broj kanala, primarni ključ \\ 
- \textit{chunk\_size} & - maksimalnu veličinu bloka podatka poslatog kroz mrežu \\  
- \textit{bitrate} & - maksimalnu brzinu protoka video snimka \\
- \textit{name} & - ime kanala \\
- \textit{description} & - opis kanala \\
+\begin{tabular}{ |p{3.8cm}|p{10.2cm}| }
+ \hline
+ \texttt{ime polje} & opis polja \\ 
+ \hline
+ \textit{channel\_id} & jedinstveni identifikacioni broj kanala, primarni ključ \\ 
+ \hline 
+ \textit{chunk\_size} & maksimalnu veličinu bloka podatka poslatog kroz mrežu \\  
+ \hline 
+ \textit{bitrate} & maksimalnu brzinu protoka video snimka \\
+ \hline 
+ \textit{name} & ime kanala \\
+ \hline 
+ \textit{description} & opis kanala \\
+ \hline
 \end{tabular}
 \end{center}
 
@@ -413,12 +418,20 @@ Tabela \texttt{channel} sadrži informacije o kanalima. Ove informacije pruža e
 Tabela \texttt{peer\_information} čuva informacije o aktivnim parnjacima za svaki kanal posebno. Za svakog parnjaka čuva se:
 
 \begin{center}
-\begin{tabular}{ p{3.8cm} p{10.2cm} }
- \textit{ip\_address} & - IP adresa, primarni ključ \\ 
- \textit{port\_number} & - broj porta na kojem se osluškuje saobraćaj \\  
- \textit{club\_number} & - broj kluba kojem pripada \\
- \textit{last\_active\_message} & - vreme poslednje primljene aktivne poruke \\
- \textit{channel\_id} & - jedinstven identifikacioni broj gledanog kanala, strani ključ ka tabeli \texttt{channel} \\
+\begin{tabular}{ |p{3.8cm}|p{10.2cm}| }
+ \hline
+ \texttt{ime polje} & opis polja \\ 
+ \hline
+ \textit{ip\_address} & IP adresa, primarni ključ \\ 
+ \hline
+ \textit{port\_number} & broj porta na kojem se osluškuje saobraćaj \\  
+ \hline
+ \textit{club\_number} & broj kluba kojem pripada \\
+ \hline
+ \textit{last\_active\_message} & vreme poslednje primljene aktivne poruke \\
+ \hline
+ \textit{channel\_id} & jedinstven identifikacioni broj gledanog kanala, strani ključ ka tabeli \texttt{channel} \\
+ \hline
 \end{tabular}
 \end{center}
 
@@ -426,31 +439,50 @@ Tabela \texttt{peer\_information} čuva informacije o aktivnim parnjacima za sva
 Tabela \texttt{user} čuva informacije o vlasnicima kanala, izvornim parnjacima. Tabela sadrži navedena polja:
 
 \begin{center}
-\begin{tabular}{ p{3.8cm} p{10.2cm} }
- \textit{username} & - jedinstveno korisničko ime, primarni ključ \\ 
- \textit{password} & - šifru korisnika \\  
- \textit{email} & - email adresa korisnika \\
- \textit{enabled} & - podatak o odobrenosti naloga \\
+\begin{tabular}{ |p{3.8cm}|p{10.2cm}| }
+ \hline
+ \texttt{ime polje} & opis polja \\ 
+ \hline
+ \textit{username} & jedinstveno korisničko ime, primarni ključ \\ 
+ \hline
+ \textit{password} & šifru korisnika \\  
+ \hline
+ \textit{email} & email adresa korisnika \\
+ \hline
+ \textit{enabled} & podatak o odobrenosti naloga \\
+ \hline
 \end{tabular}
 \end{center}
 
 Tabela \texttt{authorities} služi za autorizaciju korisnika. Sastoji se od polja:
 
 \begin{center}
-\begin{tabular}{ p{3.8cm} p{10.2cm} }
- \textit{authority\_id} & - jedinstveni broj autorizacije, primarni ključ \\ 
- \textit{authority} & - ime autorizacije \\  
- \textit{username} & - jedinstveno korisničko ime, strani ključ ka tabeli \texttt{user} \\
+\begin{tabular}{ |p{3.8cm}|p{10.2cm}| }
+ \hline
+ \texttt{ime polje} & opis polja \\ 
+ \hline
+ \textit{authority\_id} & jedinstveni broj autorizacije, primarni ključ \\ 
+ \hline
+ \textit{authority} & ime autorizacije \\  
+ \hline
+ \textit{username} & jedinstveno korisničko ime, strani ključ ka tabeli \texttt{user} \\
+ \hline
 \end{tabular}
 \end{center}
 
 Tabela \texttt{top\_channel} čuva listu najposećenijih kanala. Tabela se sastoji od polja:
  
 \begin{center}
-\begin{tabular}{ p{3.8cm} p{10.2cm} }
- \textit{views\_number} & - broj aktivnih parnjaka \\ 
- \textit{top\_channel\_id} & - jedinstveni identifikacioni broj, primarni ključ \\  
- \textit{channel\_id} & - jedinstven identifikacioni broj kanala, strani ključ ka tabeli \texttt{channel}  \\
+\begin{tabular}{ |p{3.8cm}|p{10.2cm}| }
+ \hline
+ \texttt{ime polje} & opis polja \\ 
+ \hline
+ \textit{views\_number} & broj aktivnih parnjaka \\ 
+ \hline
+ \textit{top\_channel\_id} & jedinstveni identifikacioni broj, primarni ključ \\  
+ \hline
+ \textit{channel\_id} & jedinstven identifikacioni broj kanala, strani ključ ka  tabeli \texttt{channel}  \\
+ \hline
 \end{tabular}
 \end{center}
 
@@ -458,9 +490,14 @@ Tabela \texttt{top\_channel} čuva listu najposećenijih kanala. Tabela se sasto
 Tabela \texttt{peer\_token} služi za čuvanje dodeljenog pristupnog tokena korisnicima. Tabela se sastoji od polja: 
 
 \begin{center}
-\begin{tabular}{ p{3.7cm} p{10.3cm} }
- \textit{ip\_address} & - IP adresa parnjaka, primarni i strani ključ ka tabeli \texttt{user}\\ 
- \textit{tokena} & - pristupni token \\
+\begin{tabular}{ |p{3.8cm}|p{10.2cm}| }
+ \hline
+ \texttt{ime polje} & opis polja \\ 
+ \hline
+ \textit{ip\_address} & IP adresa parnjaka, primarni i strani ključ ka tabeli  \texttt{user}\\ 
+ \hline
+ \textit{tokena} & pristupni token \\
+ \hline
 \end{tabular}
 \end{center}
 
@@ -470,7 +507,7 @@ Tabela \texttt{peer\_token} služi za čuvanje dodeljenog pristupnog tokena kori
 
 Pre opisa korišćenih biblioteka i radnih okvira potrebno je predstaviti softverski alat \textit{Apache Maven} \cite{Maven}. Glavna namena alata je upravljanje i izgradnja projekta. Dva osnovna pravca upotrebe su priprema izvornog koda za distribuciju i jednostavno dodavanje Java biblioteka (eng. \textit{jars}) u projekat. 
 
-U nastavku će biti opisane korišćene biblioteke i radni okviri. Prvi korišćeni je \textit{Spring} radni okvir \cite{Spring}. Spring je nastao sa idejom omogućavanja lake manipulacije velikih projekata na Java platformi (eng. \textit{Java SE}). Kao projekat, Spring okvir sastoji se od više modula koji su u velikoj meri nezavisni, tako da svaka aplikacija može da koristi samo deo Spring okvira koji joj je potreban. U projektu je korišćeno jezgro Springa, koje je obavezno za sve Spring okvire, modul podrške za veb MVC (eng. \textit{Model–view–controller, MVC}) radni okvir, objektno relaciono mapiranje (eng. \textit{object relational mapping}) i sigurnost same veb aplikacije.
+U nastavku će biti opisane korišćene biblioteke i radni okviri. Tragaču kao glavnoj komponenta sistema podložnoj promenama, neophodno je da obezbediti laku nadogradnju i održavanje. Ove karakteristike obezbeđuje radni okvir \textit{Spring} \cite{Spring}. Spring je nastao sa idejom omogućavanja lake manipulacije velikih projekata na Java platformi (eng. \textit{Java SE}). Kao projekat, okvir Spring sastoji se od više modula koji su u velikoj meri nezavisni, tako da svaka aplikacija može da koristi samo deo okvira Spring koji joj je potreban. U projektu je korišćeno jezgro Springa, koje je obavezno za sve okvire Spring, modul podrške za veb MVC (eng. \textit{Model–view–controller, MVC}) radni okvir, objektno relaciono mapiranje (eng. \textit{object relational mapping}) i sigurnost same veb aplikacije.
 
 Prilikom razvoja korisničke aplikacije jedna od ključnih stvari je razdvajanje sadržaja od prezentacije. Za razdvajanje sadržaja od prezentacije na veb-u koristimo MVC arhitekturu. Glavni akcenat ovakve arhitekture je podela odgovornosti između različitih slojeva. Aplikacija je podeljena na tri glavne komponente i svaka od njih obavlja različite zadatke. Model je prva komponenta. On predstavlja internu reprezentaciju podataka. Sadrži glavne programske podatke kao što su informacije o objektima iz baze. Druga komponenta je pogled. Ova komponenta omogućava korisniku interfejs preko kog može da komunicira sa aplikacijom i prikazuje korisniku stanje modela. Treća komponenta je kontrolor. Glavna odgovornost kontrolora je upravljanje korisničkim zahtevima i iniciranje aktivnosti na nivou modela i promene na pogledu. 
 
@@ -480,7 +517,7 @@ Komunikacija sa bazom podataka izvršena je korišćenjem Hibernate \cite{Hibern
 \subsection{Neki detalji implementacije}
 \label{implementacija.1.3}
 
-Pri implementaciji tragača koristi se MVC arhitektura. Model čine klase \texttt{Channel}, \texttt{Authorities}, \texttt{PeerInformation}, \texttt{Token}, \texttt{TopChannel} i \texttt{User} koje redom odgovaraju istoimenim tabelama iz sekcije \ref{implementacija.1.2}. Sloj za pristup objektima (eng. \textit{data access object, DAO}) služi za pisanje jednostavnih HQL naredbi za pristup mapiranim objektima. Klase koje se nalaze u ovom sloju imaju identična imena kao modeli kojim pristupaju sa nastavkom DAO. Sloj servisa služi za biznis logiku. Sastoji se od klasa \texttt{ChannelManager}, \texttt{PeerConnectionManager}, \texttt{PeerInformationManager}, \texttt{TokenManager} i \texttt{UserManager}. Većina metoda ovih klasa vrši prosleđivanje upita nižim slojevima, jer ne postoji nikakva logika koju bi bilo neophodno implementirati. Jedini izuzetak je metod \textit{void deleteDeadPeers()} koji je privatan u klasi \texttt{PeerInformationManager} i koristi se za periodično brisanje parnjaka koji se nisu javili u poslednjih 1000 sekundi. Kontroler se sastoji od klasa \texttt{FileUploadController}, \texttt{HomeController}, \texttt{LoginController} i \texttt{PeerConnectionController}. Za preuzimanje fajlova od korisnika koristi se klasa \texttt{FileUploadController}. \texttt{LoginController} se koristi za prijavljivanje i kreiranje novih naloga emiterima video sadržaja.
+Za implementaciji tragača koristi se MVC arhitektura. Model čine klase \texttt{Channel}, \texttt{Authorities}, \texttt{PeerInformation}, \texttt{Token}, \texttt{TopChannel} i \texttt{User} koje redom odgovaraju istoimenim tabelama iz sekcije \ref{implementacija.1.2}. Sloj za pristup objektima (eng. \textit{data access object, DAO}) služi za pisanje jednostavnih HQL naredbi za pristup mapiranim objektima. Klase koje se nalaze u ovom sloju imaju identična imena kao modeli kojim pristupaju sa nastavkom DAO. Sloj servisa služi za biznis logiku. Sastoji se od klasa \texttt{ChannelManager}, \texttt{PeerConnectionManager}, \texttt{PeerInformationManager}, \texttt{TokenManager} i \texttt{UserManager}. Većina metoda ovih klasa vrši prosleđivanje upita nižim slojevima, jer ne postoji nikakva logika koju bi bilo neophodno implementirati. Jedini izuzetak je metod \textit{void deleteDeadPeers()} koji je privatan u klasi \texttt{PeerInformationManager} i koristi se za periodično brisanje parnjaka koji se nisu javili u poslednjih 1000 sekundi. Kontroler se sastoji od klasa \texttt{FileUploadController}, \texttt{HomeController}, \texttt{LoginController} i \texttt{PeerConnectionController}. Za preuzimanje fajlova od korisnika koristi se klasa \texttt{FileUploadController}. \texttt{LoginController} se koristi za prijavljivanje i kreiranje novih naloga emiterima video sadržaja.
 Za opsluživanje veb stranica koristi se \texttt{HomeController}. Za pristupanje parnjacima koristi se \texttt{PeerConnectionController}.
 
 Serverska aplikacija je napravljena po REST principima i prihvata zahteve ka
@@ -512,7 +549,7 @@ Metoda & Putanja & Opis \\
 \section{Implementacija parnjaka}
 \label{implementacija.2}
 
-U sekciji \ref{implementacija.1} opisan je tragač kao jedan deo Kikkar protokola. U ovom poglavlju opisuje se desktop aplikacija. Desktop aplikacija odgovara parnjaku Kikkar protokola. U zavisnosti od podešenog moda parnjak može biti izvor ili obični parnjak. Za implementaciju parnjaka korišćeni su razni radni okviri i biblioteke. Detaljniji opisi radnih okvira i biblioteka nalaze se u sekciji \ref{implementacija.2.1}. Kako bi jato moglo da funkcioniše razmenjuju se poruke između parnjaka. Detaljnije o tipu i nameni svake poruke može se naći u sekciji \ref{implementacija.2.2}. U sekciji \ref{implementacija.2.3} dat je opis funkcionalnosti koje aplikacija pruža.
+U sekciji \ref{implementacija.1} opisan je tragač kao jedan deo protokola Kikkar. U ovom poglavlju opisuje se desktop aplikacija. Desktop aplikacija odgovara parnjaku protokola Kikkar. U zavisnosti od podešenog moda parnjak može biti izvor ili obični parnjak. Za implementaciju parnjaka korišćeni su razni radni okviri i biblioteke. Detaljniji opisi radnih okvira i biblioteka nalaze se u sekciji \ref{implementacija.2.1}. Kako bi jato moglo da funkcioniše razmenjuju se poruke između parnjaka. Detaljnije o tipu i nameni svake poruke može se naći u sekciji \ref{implementacija.2.2}. U sekciji \ref{implementacija.2.3} dat je opis funkcionalnosti koje aplikacija pruža.
 
 \subsection{Korišćene biblioteke i radni okviri}
 \label{implementacija.2.1}
@@ -530,7 +567,7 @@ Za video plejer izabran je \textit{VLC} plejer \cite{VLC} zbog dobre podrške, d
 \subsection{Protocol buffers poruke}
 \label{implementacija.2.2}
 
-Kao što je navedeno u sekciji \ref{implementacija.2.1} za razmenu poruka se koristi biblioteka Protocol buffers. Protocol buffers je izabran u mnoštvu sličnih biblioteka jer je izlaz dobijen primenom ove biblioteke mali, sama biblioteka je dobro dokumentovana i jednostavna za korišćenje i ima odličnu zajednicu. U nastavku sledi opis svake poruke koja se razmenjuje u okviru Kikkar protokola.
+Kao što je navedeno u sekciji \ref{implementacija.2.1} za razmenu poruka se koristi biblioteka Protocol buffers. Protocol buffers je izabran u mnoštvu sličnih biblioteka jer je izlaz dobijen primenom ove biblioteke mali, sama biblioteka je dobro dokumentovana i jednostavna za korišćenje i ima odličnu zajednicu. U nastavku sledi opis svake poruke koja se razmenjuje u okviru protokola Kikkar.
 
 
 \lstinputlisting[language=protobuf2,style=protobuf,caption={Enumeracija tipova konekcije},label=ConnectionType]{messages/ConnectionType.proto}
@@ -707,7 +744,7 @@ Poruka \textit{TerminatedMessage} predstavljena kodom \ref{TerminatedMessage} je
 \end{center}
 
 
-\subsection{Implementacija parnjaka Kikkar protokola}
+\subsection{Implementacija parnjaka protokola Kikkar}
 \label{implementacija.2.3}
 
 \begin{figure}[!ht]
@@ -777,7 +814,7 @@ Funkcionalnosti koje ovaj modul pruža su zapisivanje podataka iz skladišta u f
 \subsubsection{Video plejer}
 \label{implementacija.2.3.8}
 
-Komponenta \textit{video plejer} (u programu klasa \texttt{VLCPlayer}) predstavlja modul koji se koristi za prikazivanje multimedijalnog sadržaja. Koristi se VLCj radni okvir za pokretanje instance nativnog VLC medijskog plejera i skrivanje kompleksnosti rada sa LibVLC. VLCj radi na Linux, Windows i MacOSX operativnim sistemima. Od podataka klasa sadrži instancu plejera i putanju do video sadržaja. 
+Komponenta \textit{video plejer} (u programu klasa \texttt{VLCPlayer}) predstavlja modul koji se koristi za prikazivanje multimedijalnog sadržaja. Koristi se radni okvir VLCj za pokretanje instance nativnog VLC medijskog plejera i skrivanje kompleksnosti rada sa LibVLC. VLCj radi na Linux, Windows i MacOSX operativnim sistemima. Od podataka klasa sadrži instancu plejera i putanju do video sadržaja. 
 
 
 \subsubsection{Izvor multimedijalnog sadržaja}
@@ -790,13 +827,13 @@ Funkcionalnosti koje ovaj modul pruža su učitavanje video sadržaja i čekanje
 \chapter{Eksperimentalna testiranja}
 \label{chp:testiranja}
 
-U okviru ovog poglavlja analiziran je Kikkar protokol. Za ispitivanje protokola koristi se aplikacija opisana u poglavlju \ref{chp:p2p-implementacija}. Da bi davaoci usluga procenili kada treba primeniti predloženi protokol, neophodno je razumeti njegova svojstva i ograničenja. 
+U okviru ovog poglavlja analiziran je protokol Kikkar. Za ispitivanje protokola koristi se aplikacija opisana u poglavlju \ref{chp:p2p-implementacija}. Da bi davaoci usluga procenili kada treba primeniti predloženi protokol, neophodno je razumeti njegova svojstva i ograničenja. 
 
-Kikkar protokol se bazira na Screamer protokolu. Preciznije, Kikkar protokol nadograđuje Screamer protokol dajući mu mogućnost slanja sinhronizovanog sadržaja. Do danas postoji jako malo javno dostupnih studija koje analiziraju performanse Screamer protokola. U sekciji \ref{testiranja.1} delimično će se koristiti rezultati dobijeni iz dostupne literature zajedno sa rezultatima koje je autor ovog rada dobio eksperimentalnim metodama. U datom poglavlju opisan je teorijski model mreže, način vršenog testiranja i količina dodatnog saobraćaja u mreži.
+Protokol Kikkar se bazira na protokolu Screamer. Preciznije, protokol Kikkar nadograđuje protokol Screamer dajući mu mogućnost slanja sinhronizovanog sadržaja. Do danas postoji jako malo javno dostupnih studija koje analiziraju performanse protokola Screamer. U sekciji \ref{testiranja.1} delimično će se koristiti rezultati dobijeni iz dostupne literature zajedno sa rezultatima koje je autor ovog rada dobio eksperimentalnim metodama. U datom poglavlju opisan je teorijski model mreže, način vršenog testiranja i količina dodatnog saobraćaja u mreži.
 
 \section{Dobijeni rezultati}
 \label{testiranja.1}
-Pre eksperimentalnih rezultata testiranja aplikacije biće opisan teorijski model predstavljen u radu \cite{ClubbingWithThePeers}. Model je izgrađen na osnovu Screamer protokola a zatim pojednostavljen. Služi za opisivanje distribucije podataka i zahtevanog propusnog opsega izvora u najboljoj i najgoroj situaciji. U okviru modela određuje se trenutak u kome mreža postaje samodovoljna tj. trenutak kada novi parnjaci kompletan sadržaj dobijaju od drugih parnjaka i izvor ne učestvuje u deljenju. 
+Pre eksperimentalnih rezultata testiranja aplikacije biće opisan teorijski model predstavljen u radu \cite{ClubbingWithThePeers}. Model je izgrađen na osnovu protokola Screamer a zatim pojednostavljen. Služi za opisivanje distribucije podataka i zahtevanog propusnog opsega izvora u najboljoj i najgoroj situaciji. U okviru modela određuje se trenutak u kome mreža postaje samodovoljna tj. trenutak kada novi parnjaci kompletan sadržaj dobijaju od drugih parnjaka i izvor ne učestvuje u deljenju. 
 
 Radi lakše analize pretpostavlja se da svi parnjaci imaju isti propusni opseg. U realnom slučaju kada parnjaci dolaze i odlaze iz mreže propusni opseg izvora se može izračunati formulom:
 
@@ -813,7 +850,7 @@ gde je c ukupan broj klubova a $b_{trans}$ bitrejt koji video snimak zahteva da 
 \par
 
 
-Iz formule se jasno vidi da za 6 klubova izvor mora imati propusni opseg 2* bitrejt, dok za 12 klubova ova mera iznosi 3.5*bitrejt. Sa slike \ref{fig:teorijski-model} se zaključuje da potrebna brzina odlaznog saobraćaja parnjaka neprekidno raste sve dok postoji jedan član u $ \lceil c/2 \rceil $ klubova. Kada mreža sadrži više od $ \lceil c/2 \rceil $ parnjaka, potrebna brzina odlaznog saobraćaja lagano opada. Kada u svakom klubu postoji bar jedan parnjak, mreža se stabilizuje i neophodni odlazni saobraćaj izvora je jedank bitrejtu video snimka koji šalje. Postojanje sve većeg broja klubova zahteva sve veći odlazni opseg izvora ali i manji propusni opseg parnjaka kako postoji manje ponovljenog sadržaja. Navedeno svojstvo važi i u obrnutom slučaju.
+Iz formule se jasno vidi da za 6 klubova izvor mora imati propusni opseg 2* bitrejt, dok za 12 klubova ova mera iznosi 3.5*bitrejt. Sa slike \ref{fig:teorijski-model} može se zaključiti da potrebna brzina odlaznog saobraćaja parnjaka neprekidno raste sve dok postoji jedan član u $ \lceil c/2 \rceil $ klubova. Kada mreža sadrži više od $ \lceil c/2 \rceil $ parnjaka, potrebna brzina odlaznog saobraćaja lagano opada. Kada u svakom klubu postoji bar jedan parnjak, mreža se stabilizuje i neophodni odlazni saobraćaj izvora je jedank bitrejtu video snimka koji šalje. Postojanje sve većeg broja klubova zahteva sve veći odlazni opseg izvora ali i manji propusni opseg parnjaka kako postoji manje ponovljenog sadržaja. Navedeno svojstvo važi i u obrnutom slučaju.
 
 Mrežni saobraćaj je prikupljen korišćenjem alata Whireshark \cite{Whireshark}. Wireshark je besplatan programski alat otvorenog koda koji služi za analizu mrežnih paketa. On prikuplja podatke koji se šalju u paketima kroz mrežu i prikazuje sve njihove detalje. Pored mogućnosti prikazivanja omogućava i sortiranje paketa u klase prema zadatom kriterijumu. Ovo nam omogućava da detaljno pratimo stanje mreže i saobraćaj koji se na njoj odvija. Neke od najčešćih primena Wireshark-a su pomoć pri otklanjanju problema na mreži, razvoj i implementacija novih protokola i otkrivanje sigurnosnih propusta.
 
@@ -821,7 +858,7 @@ Svi eksperimenti su rađeni na video snimku koji ima prosečan bitrejt od 720 kb
 
 Kako podaci dobijeni Whireshark alatom obuhvataju i pakete koji nemaju veze sa protokolom, za čišćenje dobijenog csv fajla koristi se python skripta \textit{obrada\_csv.py}. Kao biblioteka za obradu dobijenog csv fajla koristi se pandas \cite{Pandas}. Pandas je biblioteka otvorenog koda koja pruža visoke performanse za ceo proces analize i manipulacije podacima. U okviru ove skripte uzimaju se samo paketi koji su razmenjeni između parnjaka i servera. Iz dobijenih paketa se zatim izdvaja njihova veličina.  
 
-Rezultati pokazuju da je parnjaku bilo neophodno da primi 49 598 526 bajtova podataka da bi dobio video snimak veličine 45 771 008 bajtova odakle zaključujemo da je na dodatne podatke otišlo 4 827 518 bajtova. Drugim rečima, dodatni saobraćaj obuhvata 9,73\% ukupnog saobraćaja. Dobijeni rezultat je u rangu sa ostalim protokolima slične namene. Sa druge strane, poslato je 16 199 180 bajtova podataka. Razlog za ovakav disbalans posledica je velikog talasanja mreže pa je parnjak neko vreme bio bez odlaznih veza. Takođe, veliki deo tereta preuzeo je izvor usled malog broja parnjaka i klubova. 
+Rezultati pokazuju da je parnjaku bilo neophodno da primi 49 598 526 bajtova podataka da bi dobio video snimak veličine 45 771 008 bajtova odakle se može zaključiti da je na dodatne podatke otišlo 4 827 518 bajtova. Drugim rečima, dodatni saobraćaj obuhvata 9,73\% ukupnog saobraćaja. Dobijeni rezultat je u rangu sa ostalim protokolima slične namene. Sa druge strane, poslato je 16 199 180 bajtova podataka. Razlog za ovakav disbalans posledica je velikog talasanja mreže pa je parnjak neko vreme bio bez odlaznih veza. Takođe, veliki deo tereta preuzeo je izvor usled malog broja parnjaka i klubova. 
 
 Sledeće istraživano svojstvo je zavisnost kašnjenja video sadržaja od broja parnjaka u mreži. Pri istraživanju ovakve vrste svojstava bitno je obezbediti veliki broj parnjaka da bi dobijeni rezultati bili relevantni. Takođe, eksperimenti su rađeni u kućnim uslovima, te se mora voditi računa i da se ne preoptereti usmerivač (eng. \textit{router}) sa prevelikim brojem poruka, kao i da se ne preopterete računari sa prevelikim brojem instanci parnjaka. Preopterećenje usmerivača zajedno sa UDP protokolom može dovesti do gubljenja paketa i povećavanja vremena kašnjenja, a preopterećenje računara dovodi do lažnog velikog kašnjenja paketa usled hardverskih ograničenja računara. Kako je na raspolaganju bilo pet računara izabrana konfiguracija mreže se sastojala od tri kluba i devet parnjaka. Po dva parnjaka su pokrenuta na četiri računara, a na petom jedan parnjak i jedan tragač.
 
@@ -857,7 +894,7 @@ U tabeli \ref{tab:kasnjenje} predstavljeni su dobijeni rezultati nakon obrade, d
 
 Jedna bitna karakteristika svih UDP protokola je veličina najvećeg UDP paketa koji će se slati kroz mrežu. Što je UDP paket veći to se brže i jeftinije podaci prenose, ali je veća i verovatnoća da će se neki paket izgubiti. Pravilni odabir veličine paketa od krucijalnog je značaja za uspešnu eksplataciju protokola. 
 
-Maksimalna veličina paketa ograničena je sa maksimalnom jedinicom prenosa (eng. \textit{Maximum transmission unit, MTU}). Maksimalna jedinica prenosa je veličina najveće jedinice podatka koja se može preneti u jednoj tansakciji mrežnog sloja. Kako se paketi usmeravaju nezavisno jedan od drugog, putanje se mogu iznenada promeniti, što može promeniti i vrednost MTU. Iz ove činjenice zaključujemo da ne postoji jedinstven način za određivanje veličine MTU. U okviru ovog rada veličina najvećeg dozvoljenog UDP paketa određena je eksperimentalno.
+Maksimalna veličina paketa ograničena je sa maksimalnom jedinicom prenosa (eng. \textit{Maximum transmission unit, MTU}). Maksimalna jedinica prenosa je veličina najveće jedinice podatka koja se može preneti u jednoj tansakciji mrežnog sloja. Kako se paketi usmeravaju nezavisno jedan od drugog, putanje se mogu iznenada promeniti, što može promeniti i vrednost MTU. Iz ove činjenice može se zaključiti da ne postoji jedinstven način za određivanje veličine MTU. U okviru ovog rada veličina najvećeg dozvoljenog UDP paketa određena je eksperimentalno.
 
 U ovom testu određena je veličina najvećeg UDP paketa koji se šalje kroz mrežu, pri kom je gubitak paketa mali. Testiranje je rađeno tako što je slato ukupno 500mb video sadržaja, uvek istom brzinom, sa različitim veličinama paketa video sadržaja. Da bi se simulirali realni uslovi mreža je dodatno opterećena razmenjivanjem različitih paketa između članova. 
 
@@ -885,9 +922,9 @@ U tabeli \ref{tab:mtu} predstavljen je odnos veličine i procenta izgubljenih pa
 
 U ovom radu predstavljen je protokol Kikkar koji omogućava sinhronizovano prikazivanje video sadržaja kroz mrežu upotrebom mreže ravnopravnih računara. Pokazano je da efekat mreže ravnopravnih računara važi kada se u jatu nalazi šest ili više parnjaka. Takođe, pokazano je da je udeo dodatnog saobraćaja manji od 10\% što je u okviru standarda ovakvih mreža.
  
-Glavne karakteristike Kikkar protokol preuzima od Screamer protokola. Najvažnije karakteristike su da održava veoma mali početni zastoj i malo vreme propagacije. Kikkar uvodi i sinhronizovan prikaz sadržaja kroz celu mrežu za razliku od Screamer protokola. Pored opisa protokola nalazi se i implementacija protokola u programskom jeziku Java, sa ciljem demonstracije mogućnosti protokola i evaluacije rešenja. Takođe, evaluacijom rezultata prikazano je da je postignuta jednaka efikasnost protokola u odnosu na protokole koji ne omogućavaju sinhronizaciju. 
+Glavne karakteristike protokol Kikkar preuzima od protokola Screamer. Najvažnije karakteristike su da održava veoma mali početni zastoj i malo vreme propagacije. Kikkar uvodi i sinhronizovan prikaz sadržaja kroz celu mrežu za razliku od protokola Screamer. Pored opisa protokola nalazi se i implementacija protokola u programskom jeziku Java, sa ciljem demonstracije mogućnosti protokola i evaluacije rešenja. Takođe, evaluacijom rezultata prikazano je da je postignuta jednaka efikasnost protokola u odnosu na protokole koji ne omogućavaju sinhronizaciju. 
 
-Buduća unapređenja mogla bi da obuhvate implementiranje nekog vida provere validnosti dobijenog sadržaja. Trenutna verzija protokola pretpostavlja da je sav sadržaj za reprodukciju koji parnjak dobije stigao od izvora što u slučaju zlonamernih korisnika ne mora biti ispunjeno. Može se desiti da je u međuvremenu paket zamenjen malicioznim paketom. Takođe, trenutna verzija protokola je primenljiva samo u okviru lokalne mreže zbog manjka jedinstvenih adresa kod IPv4 protokola i primene nestandardizovanih prevođenja mrežnih adresa (eng. \textit{Network Address Translation, NAT}) za rešavanje problema. U narednim godinama se predviđa potpuni prelazak na IPv6 protokol pa će biti omogućeno korišćenje Kikkar protokola i na vebu. Takođe, trenutno postoji značajno vreme čekanja koje proizvodi video plejer. Ukoliko bi se omogućio niži pristup video plejeru i mogućnost finog podešavanja bafera, značajno bi se smanjilo vreme čekanja od trenutka pridruživanja mreži do trenutka prvog reprodukovanog sadržaja. 
+Buduća unapređenja mogla bi da obuhvate implementiranje nekog vida provere validnosti dobijenog sadržaja. Trenutna verzija protokola pretpostavlja da je sav sadržaj za reprodukciju koji parnjak dobije stigao od izvora što u slučaju zlonamernih korisnika ne mora biti ispunjeno. Može se desiti da je u međuvremenu paket zamenjen malicioznim paketom. Takođe, trenutna verzija protokola je primenljiva samo u okviru lokalne mreže zbog manjka jedinstvenih adresa kod IPv4 protokola i primene nestandardizovanih prevođenja mrežnih adresa (eng. \textit{Network Address Translation, NAT}) za rešavanje problema. U narednim godinama se predviđa potpuni prelazak na IPv6 protokol pa će biti omogućeno korišćenje protokola Kikkar i na vebu. Takođe, trenutno postoji značajno vreme čekanja koje proizvodi video plejer. Ukoliko bi se omogućio niži pristup video plejeru i mogućnost finog podešavanja bafera, značajno bi se smanjilo vreme čekanja od trenutka pridruživanja mreži do trenutka prvog reprodukovanog sadržaja. 
 
 % ------------------------------------------------------------------------------
 
