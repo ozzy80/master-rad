@@ -95,7 +95,7 @@ Popularnost deljenja video sadržaja putem interneta beleži značajan rast. Sad
 
 % ------------------------------------------------------------------------------
 \chapter{Uvod}
-Svakodnevno se povećava broj dostupnih radio stanica i TV kanala koji se emituju putem interneta. Tradicionalno se za njihov prenos koristi centralizovana klijent-server arhitektura. Glavno ograničenje klijent-server arhitekture pri dostavi video sadržaja u realnom vremenu je linearno povećanje zahtevanih resursa i performansi servera u odnosu na broj klijenta. Ovakvo ograničenje može se prevazići korišćenjem mreže u kojoj korisnici dele svoje resurse. Ovakav tip mreže je samoskalabilan i naziva se mreža ravnopravnih članova. Pored prevazilaženja ograničenja, kao posledica samoskalabilnosi, mreža ravnopravnih članova omogućava emiteru da poveća kvalitet sadržaja i smanji cenu prenosa. Na taj način mreža ravnopravnih članova omogućava emitovanje ličnog medijskog sadržaja. Ovako široka dostupnost je dovela do revolucije pri distribuciji informacija na sličan način kao što je veb (eng. \textit{World Wide Web, WWW}) pre više više od dve decenije.
+Svakodnevno se povećava broj dostupnih radio stanica i TV kanala koji se emituju putem interneta. Tradicionalno se za njihov prenos koristi centralizovana klijent-server arhitektura. Glavno ograničenje klijent-server arhitekture pri dostavi video sadržaja u realnom vremenu je linearno povećanje zahtevanih resursa i performansi servera u odnosu na broj klijenta. Ovakvo ograničenje može se prevazići korišćenjem mreže u kojoj korisnici dele svoje resurse. Ovakav tip mreže je samoskalabilan i naziva se mreža ravnopravnih članova. Pored prevazilaženja ograničenja, kao posledica samoskalabilnosi, mreža ravnopravnih članova omogućava emiteru da poveća kvalitet sadržaja i smanji cenu prenosa. Na taj način mreža ravnopravnih članova omogućava emiterima lako i jeftino emitovanje ličnog medijskog sadržaja. Ovako široka dostupnost je dovela do revolucije pri distribuciji informacija na sličan način kao što je veb (eng. \textit{World Wide Web, WWW}) pre više više od dve decenije.
 
 Samoskalabilnost mreže ravnopravnih računara dugo je poznata i koristi se za dostavu video sadržaja u realnom vremenu. I pored široke primene, većina do sada poznatih sistema nema nikakav vid sinhronizacije. Kod ovakvog pristupa prikazani video u nekom vremenskom trenutku može se značajno razlikovati u zavisnosti od pozicije korisnika u mreži. Različitost u prikazu video sadržaja može izazvati širok spektar posledica, od gubljenja korisnika do nemogućnosti primene protokola u određenim uslovima u kojima je sinhronizacija bitan faktor.
 
@@ -255,7 +255,7 @@ Treći izazov sa kojim se susreću P2P sistemi su različiti propusni opsezi par
 
 
 
-\chapter{Predloženi Kikkar P2P protokol}
+\chapter{Predloženi P2P protokol Kikkar}
 \label{chp:p2p-protokol}
 U poglavlju \ref{chp:p2p-uvod} navedeno je da distribucija medijskog sadržaja preko interneta privlači veliku pažnju u poslednjoj deceniji. Navedena činjenica dovela je do detaljnijeg istraživanja teme od strane naučnika i industrije. Veliki broj različitih P2P protokola za dostavu video sadržaja u realnom vremenu predstavljen je u prethodnim godinama \cite{Zhang:2012:SPL:2365364.2365643}. Pored velikog broja predloženih protokola, samo pojedini imaju neki vid sinhronizacije. Ostali protokoli vode se logikom da će sadržaj biti relativno sinhronizovan. Relativna sinhronizacija uzrokuje da se sadržaj koji se prikazuje na parnjacima može značajno razlikovati.
 
@@ -558,9 +558,9 @@ Za upravljanje i izgradnju projekta koristi se \textit{Apache Maven} \cite{Maven
 
 Biblioteka \textit{Apache Commons Net} \cite{CommonsNet} se koristi za NTP protokol. Ona je skup različitih implementiranih internet protokola na klijentskoj strani. Za pisanje jediničnih testova u projektu koriste se radni okviri \textit{JUnit} \cite{Junit} i \textit{Mockito} \cite{Mockito}. JUnit dinamički proverava ispravnost softvera izvođenjem konačnog broja testova i upoređivanjem dobijenih rezultata sa očekivanim ponašanjem softvera. Mockito je radni okvir koji omogućava kreiranje duplih test objekata (eng. \textit{test double objects (mock objects)}), tako da pri svakom pozivu obmotani objekat vrši unapred definisanu akciju.
 
-\textit{Gson} \cite{Gson} je Google-ova biblioteka koja se koristi za konverziju Java objekata u njihovu JSON reprezentaciju i obrnuto. Glavna prednost Gson-a nad sličnim bibliotekama je što radi sa proizvoljnim objektima, te omogućava konvertovanje objekata u JSON reprezentaciju čak i ako nemamo njihov izvorni k$\hat{o}$d (eng. \textit{source code}). Za potrebe pozivanja metoda prema unapred određenom rasporedu koristi se biblioteka otvorenog koda \textit{Quartz} \cite{Quartz}. 
+\textit{Gson} \cite{Gson} je biblioteka kompanije Google koja se koristi za konverziju Java objekata u njihovu JSON reprezentaciju i obrnuto. Glavna prednost biblioteke Gson nad sličnim bibliotekama je što radi sa proizvoljnim objektima, te omogućava konvertovanje objekata u JSON reprezentaciju čak i ako nemamo njihov izvorni k$\hat{o}$d (eng. \textit{source code}). Za potrebe pozivanja metoda prema unapred određenom rasporedu koristi se biblioteka otvorenog koda \textit{Quartz} \cite{Quartz}. 
 
-Za formatiranje poruka koje se razmenjuju među parnjacima koristi se Google-ova biblioteka \textit{Protocol buffers} \cite{ProtocolBuffers}. Protocol buffers je biblioteka koja se koristi za binarnu serijalizaciju podataka. Biblioteka radi tako što se definiše struktura podataka koju želimo da serijalizujemo. Kada je struktura definisana vrši se njeno prevođenje u odgovarajući programski jezik. Definisana struktura podataka omogućava da se razmenjuju podaci između različitih programskih jezika. Pošto se prenose binarni podaci dobijeni izlaz je značajno brži i manji od izlaza dobijenog primenom tekstualnih formata kao što su XML ili JSON format. Detaljnije o porukama koje se koriste u protokolu može se pronaći u sekciji \ref{implementacija.2.2} 
+Za formatiranje poruka koje se razmenjuju među parnjacima koristi se biblioteka kompanije Google \textit{Protocol buffers} \cite{ProtocolBuffers}. Protocol buffers je biblioteka koja se koristi za binarnu serijalizaciju podataka. Biblioteka radi tako što se definiše struktura podataka koju želimo da serijalizujemo. Kada je struktura definisana vrši se njeno prevođenje u odgovarajući programski jezik. Definisana struktura podataka omogućava da se razmenjuju podaci između različitih programskih jezika. Pošto se prenose binarni podaci dobijeni izlaz je značajno brži i manji od izlaza dobijenog primenom tekstualnih formata kao što su XML ili JSON format. Detaljnije o porukama koje se koriste u protokolu može se pronaći u sekciji \ref{implementacija.2.2} 
 
 Za video plejer izabran je \textit{VLC} plejer \cite{VLC} zbog dobre podrške, dokumentacije i velikog izbora kodeka. Da bi VLC plejer mogao koristiti iz Java aplikacije upotrebljava se programski okvir VLCj \cite{VLCJ}. 
 
@@ -758,7 +758,7 @@ Poruka \textit{TerminatedMessage} predstavljena kodom \ref{TerminatedMessage} je
 Kako je Kikkar složen sistem bilo je neophodno izvršiti prepoznavanje odgovarajućih celina i razdvajanje sistema na delove. Pojednostavljen model softverske arhitekture parnjaka prikazan je na slici \ref{fig:arhitektura}. Identičan model koristi i parnjak i izvor. Jedina razlika koja razdvaja parnjaka od izvora u modelu je ta što izvor sadrži dodatnu komponentu - izvor multimedijalnog sadržaja. Ova komponenta omogućava izvoru da uzima multimedijalni sadržaj koji je potrebno distribuirati kroz mrežu. Sadržaj može biti unapred pripremljen ili trenutno emitovan. U nastavku sledi opis svakog dela modela, njegovog zaduženja i opis podataka koje sadrži.
 
 
-\subsubsection{Povezivač sa tragačem}
+\subsubsection{Komponenta povezivač sa tragačem}
 \label{implementacija.2.3.1}
 
 Komponenta \textit{povezivač sa tragačem} (u programu klasa \texttt{ServerConnector}) predstavlja modul koji se koristi za komunikaciju parnjaka i tragača. Komunikacija se odvija uz pomoć HTTP i NTP protokola. Komponenta od podataka čuva informacije o željenom kanalu i datum poslednje izmene podataka. Informacije o željenom kanalu koriste se za prosleđivanje tačnog upita o određenom kanalu tragača. Informacija o poslednjoj modifikaciji služi za smanjenje opterećenja tragača. Ukoliko se jato nije promenilo od poslednje modifikacije, tragač ignoriše zahtev za novim parnjacima. 
@@ -766,7 +766,7 @@ Komponenta \textit{povezivač sa tragačem} (u programu klasa \texttt{ServerConn
 Funkcionalnosti koje ovaj modul pruža su učitavanje kanala iz JSON formata, kreiranje poruka i komunikacija sa tragačem, sinhronizacija vremena sa serverom, prikupljanje liste aktivnih parnjaka i obaveštavanje tragača o trenutnim aktivnostima. U samom protokolu tragač obezbeđuje tačno vreme, ali se ovde zbog jednostavnosti koriste javno dostupni NTP serveri. Bitno je primetiti da se na ovaj način ne umanjuje opštost protokola.  
 
 
-\subsubsection{Povezivač sa parnjakom}
+\subsubsection{Komponenta povezivač sa parnjakom}
 \label{implementacija.2.3.2}
 
 Komponenta \textit{povezivač sa parnjakom} (u programu klasa \texttt{PeerConnector}) predstavlja modul koji se koristi za komunikaciju parnjaka sa ostatkom jata. Komunikacija se odvija uz pomoću UDP protokola. Ova komponenta je najniža komponenta za komunikaciju sa parnjacima i kao takva ne donosi nikakve odluke već samo izvršava naredbe viših komponenti. Modul čuva sve pakete koje je parnjak dobio preko mreže u blokirajućem redu kao i podatke o samom sebi.
@@ -774,7 +774,7 @@ Komponenta \textit{povezivač sa parnjakom} (u programu klasa \texttt{PeerConnec
 Funkcionalnosti koje ovaj modul pruža su slanje i primanje paketa, razmena ping-pong poruke u okviru koje se proverava koliko veza i uskladištenih podataka ima parnjak. Pored ping-pong poruke modul omogućava i razmene \textit{request-response} i \textit{keep-alive} poruka opisanih u poglavlju \ref{chp:p2p-protokol}. 
 			
 
-\subsubsection{Menadžer veze}
+\subsubsection{Komponenta menadžer veze}
 \label{implementacija.2.3.3}
 
 Komponenta \textit{menadžer veze} (u programu klasa \texttt{ConnectionManager}) predstavlja modul koji se koristi za održavanje topologije parnjaka. Glavni zadatak ove komponente je da sakrije topologiju mreže od viših nivoa aplikacije i da koordiniše komunikaciju između tragača i parnjaka. U zavisnosti da li je aplikacija pokrenuta u režimu izvora ili parnjaka, menadžer veze istim metodama različito održava topologiju i procesira pakete u skladu sa protokolom. Modul od podataka čuva reference ka povezivaču sa tragačem i parnjakom, soket, podatke o trenutnom kanalu, listu svih parnjaka, listu svih dobijenih pong poruka, sat, pakete za viši nivo aplikacije u blokirajućem redu kao i pristupni token tragača.
@@ -782,13 +782,13 @@ Komponenta \textit{menadžer veze} (u programu klasa \texttt{ConnectionManager})
 Funkcionalnosti koje ovaj modul obezbeđuje su osluškivanje i procesiranje paketa, primanje i slanje podataka upotrebom modula \textit{povezivač sa parnjakom} i \textit{povezivač sa tragačem}, kontrola zagušenja, slanje keep-alive poruke komšijama \ref{Kikkar.4}, kao i provera i održavanje topologije \ref{Kikkar.2}. Modul za svaki primljeni paket proverava da li je u dobrom redosledu i prosleđuje metodu za obradu paketa. U okviru ove metode svi paketi koji ne predstavljaju video sadržaj već kontrolne poruke se obrađuju u skladu sa protokolom. 
 
 
-\subsubsection{Sat}
+\subsubsection{Komponenta sat}
 \label{implementacija.2.3.4}
 
 Komponenta \textit{sat} (u programu klasa \texttt{ClockSingleton}) predstavlja modul koji se koristi za ujednačavanje vremena svih parnjaka u mreži. Sat koristi unikat (eng. \textit{singleton}) uzorak za projektovanje. Pri razvoju aplikacija često je potrebno omogućiti korišćenje samo jedne instance određene klase iz konceptualnih ili arhitekturalnih razloga. Treba biti oprezan pri korišćenju unikata jer sa njim uvodimo globalno stanje u aplikaciju čime se povećava njena kompleksnost. U većini slučajeva ubrizgavanje zavisnosti (eng. \textit{dependency injection}) treba koristiti umesto unikata. Korišćenjem ubrizgavanja zavisnosti ne postoji direktna zavisnost između klasa aplikacije jer objekat ne zna koja je klasa u pitanju već zna samo njen javni interfejs. Međutim, u aplikaciji se klasa sat koristi u različitim delovima programa te bi korišćenje ubrizgavanja zavisnosti previše zakomplikovalo kreiranje objekata željenih klasa pa se iz tog razloga koristi unikat.
 
 
-\subsubsection{Raspoređivač dolaznog saobraćaja}
+\subsubsection{Komponenta raspoređivač dolaznog saobraćaja}
 \label{implementacija.2.3.5}
 
 Komponenta \textit{raspoređivač dolaznog saobraćaja} (u programu implementirana klasom \texttt{DownloadScheduler}) predstavlja modul koji se koristi za menadžerisanje video sadržaja i kontrolnih poruka koje su povezane sa video sadržajem. Podaci koje klasa čuva su deljeno skladište za video sadržaj, menadžer veze za komunikaciju sa mrežom, raspoređivač odlaznog saobraćaja kojem se prosleđuju potrebne akcije za slanje video sadržaja i video kontrolnih poruka kroz mrežu. Razlikuju se metodi za procesiranje paketa u zavisnosti da li je aplikacija pokrenuta u modu parnjaka ili izvora.
@@ -796,14 +796,14 @@ Komponenta \textit{raspoređivač dolaznog saobraćaja} (u programu implementira
 Funkcionalnosti koje ovaj modul pruža su preuzimanje i obrada odgovarajućih paketa od menadžera veze. Takođe, modul je zadužen i za pozivanje raspoređivača odlaznog saobraćaja ukoliko za to postoji potreba.
 
 
-\subsubsection{Raspoređivač odlaznog saobraćaja}
+\subsubsection{Komponenta raspoređivač odlaznog saobraćaja}
 \label{implementacija.2.3.6}
 
 Komponenta \textit{raspoređivač odlaznog saobraćaja} (u programu implementirana klasom \texttt{DownloadScheduler}) predstavlja modul koji se koristi za menadžerisanje slanja video sadržaja i kontrolnih poruka koje imaju veze sa video sadržajem. Podaci koje klasa čuva su deljeno skladište za preuzimanje video sadržaja, menadžer veze za komunikaciju sa mrežom za dalje prosleđivanje poruka. Razlikuju se metodi za procesiranje paketa u zavisnosti da li je aplikacija pokrenuta u modu parnjaka ili izvora.
 
 Funkcionalnosti koje ovaj modul pruža su slanje kontrolne i nezainteresovane poruke, slanje video snimka, odgovaranje na tražene video snimke i pronalaženje nedostajajućih video snimaka.
 
-\subsubsection{Deljeno skladište}
+\subsubsection{Komponenta deljeno skladište}
 \label{implementacija.2.3.7}
 
 Komponenta \textit{deljeno skladište} (u programu klasa \texttt{SharingBufferSingleton}) predstavlja modul koji se koristi za skladištenje multimedijalnog sadržaja i njegovo prosleđivanje video plejeru i sinhronizaciju video sadržaja. Koristi unikat obrazac za projektovanje na isti način i iz istog razloga kao i komponenta sat. Klasa čuva objekat klase sat, niz objekata video snimaka i objekat video plejer. 
@@ -811,13 +811,13 @@ Komponenta \textit{deljeno skladište} (u programu klasa \texttt{SharingBufferSi
 Funkcionalnosti koje ovaj modul pruža su zapisivanje podataka iz skladišta u fajl i sinhronizacija video sadržaja metodama opisanim u sekciji \ref{Kikkar.5}.
 
 
-\subsubsection{Video plejer}
+\subsubsection{Komponenta video plejer}
 \label{implementacija.2.3.8}
 
 Komponenta \textit{video plejer} (u programu klasa \texttt{VLCPlayer}) predstavlja modul koji se koristi za prikazivanje multimedijalnog sadržaja. Koristi se radni okvir VLCj za pokretanje instance nativnog VLC medijskog plejera i skrivanje kompleksnosti rada sa LibVLC. VLCj radi na Linux, Windows i MacOSX operativnim sistemima. Od podataka klasa sadrži instancu plejera i putanju do video sadržaja. 
 
 
-\subsubsection{Izvor multimedijalnog sadržaja}
+\subsubsection{Komponenta izvor multimedijalnog sadržaja}
 \label{implementacija.2.3.9}
 Komponenta \textit{izvor multimedijalnog sadržaja} (u programu implementirana klasom \texttt{SourceVideoLoader}) predstavlja modul koji se koristi za prikupljanje multimedijalnog sadržaja. Multimedijalni sadržaj može biti snimljen ili emitovan. Ova komponenta se izdvaja od svih prethodno opisanih komponenti jer se povezuje sa ostalim komponentama samo u slučaju moda aplikacije izvor. Od podataka sadrži sat, deljeno skladište i raspoređivač odlaznog saobraćaja.
 
@@ -837,7 +837,7 @@ Pre eksperimentalnih rezultata testiranja aplikacije biće opisan teorijski mode
 
 Radi lakše analize pretpostavlja se da svi parnjaci imaju isti propusni opseg. U realnom slučaju kada parnjaci dolaze i odlaze iz mreže propusni opseg izvora se može izračunati formulom:
 
-$ bw_{dynamic} = b_{trans} X \sum_{i=0}^{ \lceil c/2 \rceil - 1} ( 1 - \frac{2i}{c}) $
+$ bw_{dynamic} = b_{trans} X \sum_{i=0}^{ \lceil c/2 \rceil - 1} ( 1 - \frac{2i}{c}) $ .
 
 gde je c ukupan broj klubova a $b_{trans}$ bitrejt koji video snimak zahteva da bi se pravilno reprodukovao. U slučaju da bitrejt nije konstantna vrednost, uzima se prosečna vrednost. 
 
@@ -850,7 +850,7 @@ gde je c ukupan broj klubova a $b_{trans}$ bitrejt koji video snimak zahteva da 
 \par
 
 
-Iz formule se jasno vidi da za 6 klubova izvor mora imati propusni opseg 2* bitrejt, dok za 12 klubova ova mera iznosi 3.5*bitrejt. Sa slike \ref{fig:teorijski-model} može se zaključiti da potrebna brzina odlaznog saobraćaja parnjaka neprekidno raste sve dok postoji jedan član u $ \lceil c/2 \rceil $ klubova. Kada mreža sadrži više od $ \lceil c/2 \rceil $ parnjaka, potrebna brzina odlaznog saobraćaja lagano opada. Kada u svakom klubu postoji bar jedan parnjak, mreža se stabilizuje i neophodni odlazni saobraćaj izvora je jedank bitrejtu video snimka koji šalje. Postojanje sve većeg broja klubova zahteva sve veći odlazni opseg izvora ali i manji propusni opseg parnjaka kako postoji manje ponovljenog sadržaja. Navedeno svojstvo važi i u obrnutom slučaju.
+Iz formule se može videti da za 6 klubova izvor mora imati propusni opseg 2* bitrejt, dok za 12 klubova ova mera iznosi 3.5*bitrejt. Sa slike \ref{fig:teorijski-model} može se zaključiti da potrebna brzina odlaznog saobraćaja parnjaka neprekidno raste sve dok postoji jedan član u $ \lceil c/2 \rceil $ klubova. Kada mreža sadrži više od $ \lceil c/2 \rceil $ parnjaka, potrebna brzina odlaznog saobraćaja lagano opada. Kada u svakom klubu postoji bar jedan parnjak, mreža se stabilizuje i neophodni odlazni saobraćaj izvora je jedank bitrejtu video snimka koji šalje. Postojanje sve većeg broja klubova zahteva sve veći odlazni opseg izvora ali i manji propusni opseg parnjaka kako postoji manje ponovljenog sadržaja. Navedeno svojstvo važi i u obrnutom slučaju.
 
 Mrežni saobraćaj je prikupljen korišćenjem alata Whireshark \cite{Whireshark}. Wireshark je besplatan programski alat otvorenog koda koji služi za analizu mrežnih paketa. On prikuplja podatke koji se šalju u paketima kroz mrežu i prikazuje sve njihove detalje. Pored mogućnosti prikazivanja omogućava i sortiranje paketa u klase prema zadatom kriterijumu. Ovo nam omogućava da detaljno pratimo stanje mreže i saobraćaj koji se na njoj odvija. Neke od najčešćih primena Wireshark-a su pomoć pri otklanjanju problema na mreži, razvoj i implementacija novih protokola i otkrivanje sigurnosnih propusta.
 
@@ -911,7 +911,7 @@ U ovom testu određena je veličina najvećeg UDP paketa koji se šalje kroz mre
 \end{tabular}
 \end{table} 
 
-U tabeli \ref{tab:mtu} predstavljen je odnos veličine i procenta izgubljenih paketa, pri velikom opterećenju mreže. Na osnovu nje izabrano je da največi udp paket bude manji od 1500 bajtova jer se pokazuje da preko te mere počinje značajno gubljenje paketa naročito kada je mreža opterećena. Takođe, veličina od 1500 bajtova nije uzeta samo zbog eksperimentalnih rezultata već je i najčešće korišćena maksimalna jedinica prenosa na internetu. Ovakva veličina omogućava maksimalnu efikasnost i propusnost kanala. Više može da se pročita u literaturi \cite{Kodikara} .
+U tabeli \ref{tab:mtu} predstavljen je odnos veličine i procenta izgubljenih paketa, pri velikom opterećenju mreže. Na osnovu nje izabrano je da največi udp paket bude manji od 1500 bajtova jer se pokazuje da preko te mere počinje značajno gubljenje paketa naročito kada je mreža opterećena. Takođe, veličina od 1500 bajtova nije uzeta samo zbog eksperimentalnih rezultata već je i najčešće korišćena maksimalna jedinica prenosa na internetu. Ovakva veličina omogućava maksimalnu efikasnost i propusnost kanala. Opširnije o ovoj temi može se pročiti u radu \cite{Kodikara} .
 
 
 
@@ -922,9 +922,24 @@ U tabeli \ref{tab:mtu} predstavljen je odnos veličine i procenta izgubljenih pa
 
 U ovom radu predstavljen je protokol Kikkar koji omogućava sinhronizovano prikazivanje video sadržaja kroz mrežu upotrebom mreže ravnopravnih računara. Pokazano je da efekat mreže ravnopravnih računara važi kada se u jatu nalazi šest ili više parnjaka. Takođe, pokazano je da je udeo dodatnog saobraćaja manji od 10\% što je u okviru standarda ovakvih mreža.
  
-Glavne karakteristike protokol Kikkar preuzima od protokola Screamer. Najvažnije karakteristike su da održava veoma mali početni zastoj i malo vreme propagacije. Kikkar uvodi i sinhronizovan prikaz sadržaja kroz celu mrežu za razliku od protokola Screamer. Pored opisa protokola nalazi se i implementacija protokola u programskom jeziku Java, sa ciljem demonstracije mogućnosti protokola i evaluacije rešenja. Takođe, evaluacijom rezultata prikazano je da je postignuta jednaka efikasnost protokola u odnosu na protokole koji ne omogućavaju sinhronizaciju. 
+Glavne karakteristike protokol Kikkar preuzima od protokola Screamer. Najvažnije preuzete karakteristike su održavanje veoma malog početnog zastoja i vremena propagacije. Kikkar uvodi i sinhronizovan prikaz sadržaja kroz celu mrežu za razliku od protokola Screamer. Pored opisa protokola nalazi se i implementacija protokola u programskom jeziku Java, sa ciljem demonstracije mogućnosti protokola i evaluacije rešenja. Takođe, evaluacijom rezultata prikazano je da je postignuta jednaka efikasnost protokola u odnosu na protokole koji ne omogućavaju sinhronizaciju. 
 
-Buduća unapređenja mogla bi da obuhvate implementiranje nekog vida provere validnosti dobijenog sadržaja. Trenutna verzija protokola pretpostavlja da je sav sadržaj za reprodukciju koji parnjak dobije stigao od izvora što u slučaju zlonamernih korisnika ne mora biti ispunjeno. Može se desiti da je u međuvremenu paket zamenjen malicioznim paketom. Takođe, trenutna verzija protokola je primenljiva samo u okviru lokalne mreže zbog manjka jedinstvenih adresa kod IPv4 protokola i primene nestandardizovanih prevođenja mrežnih adresa (eng. \textit{Network Address Translation, NAT}) za rešavanje problema. U narednim godinama se predviđa potpuni prelazak na IPv6 protokol pa će biti omogućeno korišćenje protokola Kikkar i na vebu. Takođe, trenutno postoji značajno vreme čekanja koje proizvodi video plejer. Ukoliko bi se omogućio niži pristup video plejeru i mogućnost finog podešavanja bafera, značajno bi se smanjilo vreme čekanja od trenutka pridruživanja mreži do trenutka prvog reprodukovanog sadržaja. 
+Buduća unapređenja protokola Kikkar mogla bi da obuhvate implementiranje nekog vida provere validnosti dobijenog sadržaja. Trenutna verzija protokola pretpostavlja da je sav sadržaj za reprodukciju koji parnjak dobije stigao od izvora što u slučaju zlonamernih korisnika ne mora da bude ispunjeno. Može se desiti da je u međuvremenu paket zamenjen malicioznim paketom, što može dovesti do pada celog sistema. Takođe, trenutna verzija protokola je primenljiva samo u okviru lokalne mreže zbog manjka jedinstvenih adresa kod IPv4 protokola i primene nestandardizovanih prevođenja mrežnih adresa (eng. \textit{Network Address Translation, NAT}) za rešavanje problema. U narednim godinama očekuje se potpuni prelazak na IPv6 protokol pa će biti omogućeno korišćenje protokola Kikkar i na vebu. Takođe, trenutno značajno vreme čekanja se proizvodi usled nemogućnosti radnog okvira \textit{VLCj} da promeni nativnom medijskom plejeru veličinu minimalne količine video sadržaja neophodnog za neometano reprodukovanje. Ukoliko bi se omogućio niži pristup video plejeru i mogućnost podešavanja minimalne količine video sadržaja, značajno bi se smanjilo vreme čekanja od trenutka pridruživanja mreži do trenutka prvog reprodukovanog sadržaja.
+
+
+
+
+%video plejer podešavanja minimalne količine video materijala neophodne za neometanu reprodukovanog sadržaja. Ukoliko bi se omogućio niži pristup video plejeru i mogućnost podešavanja minimalne količine video materijala neophodne za neometanu reprodukciju video sadržaja, značajno bi se smanjilo vreme čekanja od trenutka pridruživanja mreži do trenutka prvog reprodukovanog sadržaja. 
+ 
+
+
+%radni okvir VLCj za pokretanje instance nativnog VLC medijskog plejera
+
+%Takođe, trenutno postoji značajno vreme čekanja kao posledica nemogućnosti podešavanja video plejer. 
+
+
+
+%Ukoliko bi se omogućio niži pristup video plejeru i mogućnost finog podešavanja potrebne veličine bafera pre reprodukcije video snimka, značajno bi se smanjilo vreme čekanja od trenutka pridruživanja mreži do trenutka prvog reprodukovanog sadržaja. 
 
 % ------------------------------------------------------------------------------
 
