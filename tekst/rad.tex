@@ -52,9 +52,9 @@
 % Ime kandidata na srpskom jeziku (u odabranom pismu)
 \autor{Ozren Demonja}
 % Naslov teze na srpskom jeziku (u odabranom pismu)
-\naslov{Realizacija P2P protokola za dostavu sinhronizovanog sadržaja}
+\naslov{Realizacija P2P protokola za dostavu sinhronizovanog deljenog sadržaja}
 % Godina u kojoj je teza predana komisiji
-\godina{2018}
+\godina{2019}
 % Ime i afilijacija mentora (u odabranom pismu)
 \mentor{dr Aleksandar \textsc{Kartelj}, docent\\ Univerzitet u Beogradu, Matematički fakultet}
 % Ime i afilijacija prvog člana komisije (u odabranom pismu)
@@ -66,7 +66,7 @@
 
 % Apstrakt na srpskom jeziku (u odabranom pismu)
 \apstr{
-Popularnost deljenja video sadržaja putem interneta beleži značajan rast. Sadržaj generisan na ovakav način je obiman. Tako obiman sadržaj emiter može efikasnije distribuirati upotrebom mreže ravnopravnih računara. Upravo zbog kvaliteta mreže ravnopravnih računara pri razmeni video sadržaja implementiran je veliki broj protokola. Kako je veliki broj protokola vođen idejom brze distribucije sadržaja i malim dodatnim sadržajem, ne postoji ni jedan opšte prihvaceni protokol za dostavu sinhronizovanog sadržaja. U ovom radu predstavljen je potpuno novi protokol Kikkar. Protokol koristi hibridnu topologiju i omogućava dostavu sinhronizovanog sadržaja upotrebom mreže ravnopravnih računara. Eksperimentalni rezultati pokazali su da je dodatni sabraćaj koji protokol unosi kao i brzina propagacije sadržaja kroz mrežu slična sa drugim protokolima koji ne podržavaju sinhronizaciju.
+Popularnost deljenja video sadržaja putem interneta beleži značajan rast. Sadržaj generisan na ovakav način je obiman. Tako obiman sadržaj emiter može efikasnije distribuirati upotrebom mreže ravnopravnih računara. Upravo zbog kvaliteta mreže ravnopravnih računara pri razmeni video sadržaja implementiran je veliki broj protokola. Kako je veliki broj protokola vođen idejom brze distribucije sadržaja i malim dodatnim sadržajem, ne postoji ni jedan opšte prihvaceni protokol za dostavu sinhronizovanog deljenog sadržaja. U ovom radu predstavljen je potpuno novi protokol Kikkar. Protokol koristi hibridnu topologiju i omogućava dostavu sinhronizovanog deljenog sadržaja upotrebom mreže ravnopravnih računara. Eksperimentalni rezultati pokazali su da je dodatni sabraćaj koji protokol unosi kao i brzina propagacije sadržaja kroz mrežu slična sa drugim protokolima koji ne podržavaju sinhronizaciju.
 }
 
 % Ključne reči na srpskom jeziku (u odabranom pismu)
@@ -99,7 +99,7 @@ Svakodnevno se povećava broj dostupnih radio stanica i TV kanala koji se emituj
 
 Samoskalabilnost kao glavno svojstvo mreže ravnopravnih računara dugo je poznata i koristi se za dostavu video sadržaja u realnom vremenu. I pored široke primene, većina do sada poznatih sistema nema nikakav vid sinhronizacije. Kod ovakvog pristupa prikazani video u nekom vremenskom trenutku može se značajno razlikovati u zavisnosti od pozicije korisnika u mreži. Različitost u prikazu video sadržaja može izazvati širok spektar posledica, od gubljenja korisnika do nemogućnosti primene protokola u određenim uslovima u kojima je sinhronizacija bitan faktor.
 
-U radu je predstavljen protokol za dostavu sinhronizovanog sadržaja u realnom vremenu. Predstavljeni protokol koristi topologiju koja je prvi put predstavljena protokolom  Screamer i dodaje joj mogućnost dostave sinhronizovanog sadržaja u realnom vremenu sa malom zadrškom. Pored samog protokola rad obuhvata i implementaciju predloženog rešenja. Implementacija rešenja obuhvata dve aplikacije pisane u programskom jeziku Java. Radi kompletne slike predloženog protokola predstavljena je evaluacija dobijenog rešenja. 
+U radu je predstavljen protokol za dostavu sinhronizovanog deljenog sadržaja u realnom vremenu. Predstavljeni protokol koristi topologiju koja je prvi put predstavljena protokolom  Screamer i dodaje joj mogućnost dostave sinhronizovanog sadržaja u realnom vremenu sa malom zadrškom. Pored samog protokola rad obuhvata i implementaciju predloženog rešenja. Implementacija rešenja obuhvata dve aplikacije pisane u programskom jeziku Java. Radi kompletne slike predloženog protokola predstavljena je evaluacija dobijenog rešenja. 
   
 Glava \ref{chp:p2p-uvod} opisuje osnovne koncepte mreže ravnopravnih računara. Opisani su ukratko različiti koncepti i diskutovano je o njihovim manama i prednostima uzimajući u obzir deljenje sadržaja. U glavi \ref{chp:p2p-protokol} predstavljen je protokol Kikkar. U glavi \ref{chp:p2p-implementacija} detaljno je opisana implementacija predloženog protokola Kikkar. Implementacija protokola obuhvata dva Java programa, tragača i parnjaka. Glava \ref{chp:testiranja} predstavlja eksperimentalne rezultate i evaluira dobijena rešenja. U glavi \ref{chp:zakljucak} izveden je zaključak i date su neke ideje za buduća unapređenja protokola.
  
@@ -112,7 +112,7 @@ Tokom proteklih desetak godina mehanizmi za dostavu sadržaja u realnom vremenu 
 U poslednjih par godina istražuju se tehnologije koje bi ubrzale razmenu sadržaja. Jedna od takvih tehnologija koja se često pominje u novijim radovima je slučajno mrežno kodiranje (eng. \textit{random network coding}) \cite{Nguyen5462032}. Ova tehnologija je interesantna u naučnim krugovima. Sa druge strane, u industriji još uvek nije zaživela jer njena implementacija unosi značajan dodatni posao svakom parnjaku. 
 Pored dodatnog posla povećava se i kompleksnost samog slanja podatka. Još jedna tehnika koja izaziva dosta polemike u naučnim krugovima je upotreba nekog vida identifikacije parnjaka koji mogu doprineti mreži i njihovo isticanje. Jedno od takvih rešenja predstavljeno je u radu \cite{Esch6077117}. Nažalost, ni ovo rešenje nije zaživelo zbog nepredvidivosti parnjaka koje se ogleda u čestom napuštanju mreže i dinamičkom menjanju resursa.
 
-Kada se govori o sistemima za dostavu sinhronizovanog sadržaja u realnom vremenu nema značajnog pomaka u industriji i nauci. I pored značajnog interesovanja za ovakve sisteme autor ovog teksta nije uspeo pronaći ni jedan sistem za sinhronizovanu dostavu sadržaja sa korišćenjem mreže ravnopravnih članova za deljenje sadržaja. Svi takvi sistemi nikad nisu implementirani ili su implementirani samo konceptualno tako da njihova rešenja nisu proverena. Ipak, neke od ideja kao što su optimalne veličine paketa i način sinhronizacije jata su uzete iz rada \cite{Zhang4698112}.
+Kada se govori o sistemima za dostavu sinhronizovanog deljenog sadržaja u realnom vremenu nema značajnog pomaka u industriji i nauci. I pored značajnog interesovanja za ovakve sisteme autor ovog teksta nije uspeo pronaći ni jedan sistem za sinhronizovanu dostavu sadržaja sa korišćenjem mreže ravnopravnih članova za deljenje sadržaja. Svi takvi sistemi nikad nisu implementirani ili su implementirani samo konceptualno tako da njihova rešenja nisu proverena. Ipak, neke od ideja kao što su optimalne veličine paketa i način sinhronizacije jata su uzete iz rada \cite{Zhang4698112}.
 
 Prva analiza mreže ravnopravnih računara prezentovana je u radu \cite{Small}. Analizirane su performanse propagacije kašnjenja primenom topologije drveta. Prvi matematički model koji je opisivao topologiju mreže sa povlačenjem sadržaja opisan je u radu \cite{EURECOM+2326}.
 
